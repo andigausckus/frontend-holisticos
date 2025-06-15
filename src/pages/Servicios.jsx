@@ -90,7 +90,7 @@ function Servicios() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <Select
           options={opcionesSinIcono(categorias)}
-          placeholder="Seleccioná una categoría"
+          placeholder="Seleccioná categoría"
           value={categoriaSeleccionada}
           onChange={setCategoriaSeleccionada}
           styles={customStyles}
@@ -99,15 +99,16 @@ function Servicios() {
         />
         <Select
           options={opcionesSinIcono(modalidades)}
-          placeholder="Seleccioná una modalidad"
+          placeholder="Seleccioná modalidad"
           value={modalidadSeleccionada}
           onChange={setModalidadSeleccionada}
           styles={customStyles}
           isClearable
+          noOptionsMessage={() => "No hay modalidades disponibles."}
         />
         <Select
           options={opcionesSinIcono(provincias)}
-          placeholder="Seleccioná una provincia"
+          placeholder="Seleccioná provincia"
           value={provinciaSeleccionada}
           onChange={(prov) => {
             setProvinciaSeleccionada(prov);
@@ -121,7 +122,7 @@ function Servicios() {
         />
         <Select
           options={opcionesSinIcono(ciudades)}
-          placeholder="Seleccioná una ciudad"
+          placeholder="Seleccioná ciudad"
           value={ciudadSeleccionada}
           onChange={setCiudadSeleccionada}
           styles={customStyles}
@@ -143,7 +144,7 @@ function Servicios() {
             <div
               key={servicio.id}
               className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between"
-              style={{ height: "520px" }}
+              style={{ height: "450px" }}
             >
               <img
                 src={servicio.imagen}
@@ -160,13 +161,13 @@ function Servicios() {
                     <span className="text-yellow-500">(10) reseñas</span>
                   </div>
 
-                  {/* 🔄 BLOQUE MEJORADO */}
-                  <div className="mt-1 flex flex-col items-start space-y-2 text-[#333] text-sm">
-                    <div className="flex items-center gap-5">
+                  {/* Datos del servicio */}
+                  <div className="mt-3 pt-2 flex flex-row items-center justify-center gap-6 text-[#333] text-sm flex-wrap">
+                    <div className="flex items-center gap-1">
                       <FaUser className="text-pink-500 w-4 h-4" />
                       <span>{servicio.terapeuta}</span>
                     </div>
-                    <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-1">
                       {servicio.modalidad === "Online" ? (
                         <FaLaptop className="text-pink-500 w-4 h-4" />
                       ) : (
@@ -174,7 +175,7 @@ function Servicios() {
                       )}
                       <span>{servicio.modalidad}</span>
                     </div>
-                    <div className="flex items-center gap-5 font-semibold text-[17px]">
+                    <div className="flex items-center gap-1 font-semibold text-[17px]">
                       <FaDollarSign className="text-pink-500 w-4 h-4" />
                       <span>${servicio.precio}</span>
                     </div>

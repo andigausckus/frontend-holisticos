@@ -1,47 +1,37 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import serviciosData from "../data/servicios";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "../calendario.css";
 import {
-  FaWhatsapp,
-  FaVideo,
-  FaPhone,
-  FaSkype,
   FaUser,
   FaDollarSign,
   FaClock,
-  FaMapMarkedAlt,
-  FaWifi,
-  FaCouch,
+  FaMapMarkerAlt,
+  FaLaptop,
 } from "react-icons/fa";
 import { useState } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
-const iconosPlataforma = {
-  WhatsApp: <FaWhatsapp className="inline text-green-500 ml-1" />,
-  Zoom: <FaVideo className="inline text-blue-500 ml-1" />,
-  Meet: <FaVideo className="inline text-red-500 ml-1" />,
-  Teléfono: <FaPhone className="inline text-gray-500 ml-1" />,
-  Skype: <FaSkype className="inline text-blue-600 ml-1" />,
-};
-
-// Horarios ficticios por día (de prueba)
 const horariosFicticios = {
   "2025-06-10": ["10:00", "14:00"],
   "2025-06-11": [],
-  "2025-06-12": null, // el terapeuta no trabaja
+  "2025-06-12": null,
   "2025-06-13": ["16:00"],
 };
 
 function ServicioDetalle() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const servicio = serviciosData.find((s) => s.id === parseInt(id));
   const [mostrarDescripcion, setMostrarDescripcion] = useState(false);
   const [mostrarResenas, setMostrarResenas] = useState(false);
   const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
+
+  const tasaServicio = Math.round(servicio?.precio * 0.1);
+  const precioFinal = servicio?.precio + tasaServicio;
 
   if (!servicio) {
     return <div className="pt-24 text-center text-[#333]">Servicio no encontrado</div>;
@@ -67,7 +57,7 @@ function ServicioDetalle() {
   };
 
   return (
-    <div className="pt-24 pb-16 px-4 max-w-2xl mx-auto">
+    <div className="pt-20 pb-16 px-4 max-w-2xl mx-auto">
       <img
         src={servicio.imagen}
         alt={servicio.nombre}
@@ -75,45 +65,51 @@ function ServicioDetalle() {
       />
 
       <div className="bg-white text-sm rounded-xl shadow-md pl-6 p-4 text-[#333] space-y-4">
-        <h1 className="text-2xl font-bold text-center">{servicio.nombre}</h1>
+        <h1 className="text-xl font-bold text-center">{servicio.nombre}</h1>
 
-        <div className="flex justify-center items-center gap-5 text-yellow-500 text-sm -mt-1">
-          <span>★★★★★</span>
+        <div className="flex justify-center items-center gap-3 text-yellow-600 text-sm -mt-1">
+          <span className="text-gl">★★★★★</span>
           <span>(10) reseñas</span>
         </div>
 
-        <p className="flex items-center gap-2 text-gray-600">
-          <FaUser className="inline" />
-          Terapeuta - {servicio.terapeuta}
-        </p>
+        {/* Fila 1: ícono terapeuta + nombre, y ciudad + provincia en la misma línea */}
+        <div className="flex justify-center gap-12 text-center px-2">
+          <div className="flex items-center gap-6 text-gray-600 whitespace-nowrap">
+            <div className="flex items-center gap-1">
+              <FaUser className="text-pink-500" />
+              <span>{servicio.terapeuta}</span>
+            </div>
+            {servicio.modalidad === "Presencial" ? (
+              <div className="flex items-center gap-1">
+                <FaMapMarkerAlt className="text-pink-500" />
+                <span>
+                  {servicio.ciudad}, {servicio.provincia}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1">
+                <FaLaptop className="text-pink-500" />
+                <span>Online</span>
+              </div>
+            )}
+          </div>
+        </div>
 
-        <p className="flex items-center gap-2 text-gray-600">
-          {servicio.modalidad === "Presencial" ? (
-            <FaMapMarkedAlt className="inline" />
-          ) : (
-            <FaCouch className="inline" />
-          )}
-          Modalidad - {servicio.modalidad}
-        </p>
-
-        <p className="flex items-center gap-2 text-gray-600">
-          <FaClock className="inline" />
-          Duración - {servicio.duracion}
-        </p>
-
-        <p className="flex items-center gap-2 text-gray-600">
-          <FaDollarSign className="inline" />
-          Precio - ${servicio.precio}
-        </p>
-
-        <p className="flex items-center gap-2 text-gray-600">
-          <FaWifi className="inline" />
-          Plataforma - {servicio.plataforma} {iconosPlataforma[servicio.plataforma]}
-        </p>
+        {/* Fila 2 */}
+        <div className="flex justify-center gap-12 text-center px-2">
+          <p className="flex items-center gap-1 justify-center text-gray-600">
+            <FaClock className="text-pink-500" />
+            {servicio.duracion}
+          </p>
+          <p className="flex items-center gap-1 justify-center text-gray-600">
+            <FaDollarSign className="text-pink-500" />
+            ${servicio.precio}
+          </p>
+        </div>
       </div>
 
       {/* Botones Descripción / Reseñas */}
-      <div className="mt-6 flex gap-4">
+      <div className="mt-8 flex pt-4 gap-4">
         <button
           onClick={() => setMostrarDescripcion(!mostrarDescripcion)}
           className={`flex-1 flex justify-center items-center px-4 py-3 rounded-3xl shadow-sm font-semibold gap-2
@@ -161,7 +157,7 @@ function ServicioDetalle() {
 
       {/* Calendario */}
       <div className="mt-8">
-        <h2 className="text-lg font-semibold text-[#333] mb-4">Elegí una fecha para tu sesión</h2>
+        <h2 className="text-lg pt-4 font-semibold text-[#333] mb-4">Elegí una fecha para tu sesión</h2>
         <Calendar
           onChange={setFechaSeleccionada}
           value={fechaSeleccionada}
@@ -177,7 +173,10 @@ function ServicioDetalle() {
       {/* Botón reservar */}
       {estado === "disponible" && (
         <div className="mt-4 text-center">
-          <button className="bg-pink-300 hover:bg-pink-400 text-white px-6 py-3 rounded-3xl shadow">
+          <button
+            className="bg-pink-300 hover:bg-pink-400 text-white px-6 py-3 rounded-3xl shadow"
+            onClick={() => navigate("/pago", { state: { servicio } })}
+          >
             Reservar sesión
           </button>
         </div>

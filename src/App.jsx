@@ -1,46 +1,37 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import ScrollToTop from "./components/ScrollToTop";
-import Layout from "./components/Layout";
-import "./calendario.css";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
-// Importa tus páginas
 import Home from "./pages/Home";
 import Servicios from "./pages/Servicios";
-import ServicioDetalle from "./pages/ServicioDetalle";
-import Registro from "./pages/Registro";
 import Blog from "./pages/blog";
-import QueEsTerapiaHolistica from "./pages/blog/QueEsTerapiaHolistica";
-import Terminos from "./pages/Terminos";
-import Privacidad from "./pages/Privacidad";
 import Login from "./pages/Login";
-import Panel from "./pages/Panel";
-import Dashboard from "./pages/Dashboard";
+import Registro from "./pages/Registro";
+import NuevoServicio from "./pages/NuevoServicio";
+import PanelTerapeuta from "./components/PanelTerapeuta";
+import PerfilTerapeuta from "./components/PerfilTerapeuta";
+import CalendarioDisponibilidad from "./pages/CalendarioDisponibilidad";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop /> {/* 👈 Se activa al cambiar de página */}
-      <div className="font-montserrat">
-        <Routes>
-          {/* Rutas con Navbar y Footer */}
-          <Route element={<Layout />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/servicios" element={<Servicios />} />
-            <Route path="/servicios/:id" element={<ServicioDetalle />} />
-            
-            <Route path="/registro" element={<Registro />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/blog/que-es-terapia-holistica" element={<QueEsTerapiaHolistica />} />
-            <Route path="/terminos-y-condiciones" element={<Terminos />} />
-            <Route path="/politica-de-privacidad" element={<Privacidad />} />
-          </Route>
+      <Navbar />
 
-          {/* Rutas especiales sin Navbar/Footer */}
-          <Route path="/panel" element={<Panel />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+      <div className="pt-16">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/servicios" element={<Servicios />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
+          <Route path="/nuevo-servicio" element={<NuevoServicio />} />
+          <Route path="/panel" element={<PanelTerapeuta />} />
+          <Route path="/terapeuta/:id" element={<PerfilTerapeuta />} />
+          <Route path="/configurar-horarios/:id" element={<CalendarioDisponibilidad />} />
         </Routes>
       </div>
+
+      <Footer />
     </BrowserRouter>
   );
 }

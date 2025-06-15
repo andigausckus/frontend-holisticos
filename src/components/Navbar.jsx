@@ -1,9 +1,23 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logueado, setLogueado] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setLogueado(!!token);
+  }, []);
+
   const toggleMenu = () => setMenuOpen(!menuOpen);
+
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    setLogueado(false);
+    navigate("/");
+  };
 
   return (
     <header className="bg-white fixed top-0 left-0 w-full z-50 shadow-sm">
@@ -19,39 +33,26 @@ export default function Navbar() {
 
         {/* Menú escritorio */}
         <ul className="hidden md:flex space-x-6 text-[#333] font-medium">
-          <li>
-            <Link to="/" className="hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-              Inicio
-            </Link>
-          </li>
-          <li>
-            <Link to="/servicios" className="hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-              Servicios
-            </Link>
-          </li>
-          <li>
-            <Link to="/blog" className="hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-              Blog
-            </Link>
-          </li>
-          <li>
-            <a href="#terapeutas" className="hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-              Terapeutas
-            </a>
-          </li>
-          <li>
-            <a href="/login" className="hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-              Iniciar sesión
-            </a>
-          </li>
-          <li>
-            <a href="/registro" className="hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-              Regístrate
-            </a>
-          </li>
+          <li><Link to="/" className="hover:text-violet-600">Inicio</Link></li>
+          <li><Link to="/servicios" className="hover:text-violet-600">Servicios</Link></li>
+          <li><Link to="/blog" className="hover:text-violet-600">Blog</Link></li>
+          <li><a href="#terapeutas" className="hover:text-violet-600">Terapeutas</a></li>
+
+          {logueado ? (
+            <>
+              <li><Link to="/panel" className="hover:text-violet-600">Panel</Link></li>
+              <li><Link to="/nuevo-servicio" className="hover:text-violet-600">Subir servicio</Link></li>
+              <li><button onClick={cerrarSesion} className="hover:text-violet-600">Cerrar sesión</button></li>
+            </>
+          ) : (
+            <>
+              <li><Link to="/login" className="hover:text-violet-600">Iniciar sesión</Link></li>
+              <li><Link to="/registro" className="hover:text-violet-600">Regístrate</Link></li>
+            </>
+          )}
         </ul>
 
-        {/* Menú hamburguesa (mobile) */}
+        {/* Botón hamburguesa */}
         <div className="md:hidden flex items-center">
           <button
             onClick={toggleMenu}
@@ -80,36 +81,23 @@ export default function Navbar() {
       {menuOpen && (
         <div className="md:hidden bg-white px-4 py-4 border-b-0">
           <ul className="space-y-3 text-[#444444] font-medium text-center">
-            <li>
-              <Link to="/" className="block hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-                Inicio
-              </Link>
-            </li>
-            <li>
-              <Link to="/servicios" className="block hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-                Servicios
-              </Link>
-            </li>
-            <li>
-              <Link to="/blog" className="block hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-                Blog
-              </Link>
-            </li>
-            <li>
-              <a href="#terapeutas" className="block hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-                Terapeutas
-              </a>
-            </li>
-            <li>
-              <a href="/login" className="block hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-                Iniciar sesión
-              </a>
-            </li>
-            <li>
-              <a href="/registro" className="block hover:text-violet-600" onClick={() => setMenuOpen(false)}>
-                Regístrate
-              </a>
-            </li>
+            <li><Link to="/" onClick={toggleMenu}>Inicio</Link></li>
+            <li><Link to="/servicios" onClick={toggleMenu}>Servicios</Link></li>
+            <li><Link to="/blog" onClick={toggleMenu}>Blog</Link></li>
+            <li><a href="#terapeutas" onClick={toggleMenu}>Terapeutas</a></li>
+
+            {logueado ? (
+              <>
+                <li><Link to="/panel" onClick={toggleMenu}>Panel</Link></li>
+                <li><Link to="/nuevo-servicio" onClick={toggleMenu}>Subir servicio</Link></li>
+                <li><button onClick={cerrarSesion}>Cerrar sesión</button></li>
+              </>
+            ) : (
+              <>
+                <li><Link to="/login" onClick={toggleMenu}>Iniciar sesión</Link></li>
+                <li><Link to="/registro" onClick={toggleMenu}>Regístrate</Link></li>
+              </>
+            )}
           </ul>
         </div>
       )}

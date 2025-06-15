@@ -7,6 +7,7 @@ import PorQueElegirnos from "../components/PorQueElegirnos";
 import Contacto from "../components/Contacto";
 import PreguntasFrecuentes from "../components/PreguntasFrecuentes";
 import BlogCard from "../components/BlogCard";
+import FrasesInspiradoras from "../components/FrasesInspiradoras";
 
 export default function Home() {
   return (
@@ -24,9 +25,14 @@ export default function Home() {
 
       <div className="bg-[#ffffff] text-[#333333] px-6 md:px-12 py-14 max-w-screen-xl mx-auto">
         {/* Título principal */}
-        <h1 className="text-2xl md:text-5xl font-bold mb-16 mt-6 max-w-4xl text-left">
-          Bienvenidos al primer Marketplace de terapias holísticas de Argentina 🌿
-        </h1>
+<h1 className="text-2xl md:text-5xl font-bold mb-4 mt-6 max-w-4xl text-left">
+  Bienvenidos al primer Marketplace de terapias holísticas de Argentina 🌿
+</h1>
+
+{/* Subtítulo */}
+<p className="text-sm md:text-base italic text-[#444444] mb-16 max-w-3xl text-left">
+  🌸 Tu espacio de confianza para sanar y crecer.
+</p>
 
         {/* Sección para usuarios */}
         <section className="bg-[#fff9e5] rounded-2xl p-8 max-w-5xl mx-auto mb-16">
@@ -36,11 +42,6 @@ export default function Home() {
           <p className="mt-4 text-left text-[#333]">
             Este es tu espacio para encontrar calma, equilibrio y respuestas. Acá te esperan terapeutas que acompañan desde el corazón, para que puedas iniciar o continuar tu camino de sanación y crecimiento personal.
           </p>
-
-          {/* Frase emocional */}
-          <blockquote className="mt-6 border-l-4 border-[#7F56D9] pl-4 italic text-[#333]">
-            Tu bienestar importa. Tu historia importa. No estás sol@, estamos acá para acompañarte.
-          </blockquote>
 
           {/* Botón CTA */}
           <Link
@@ -70,6 +71,7 @@ export default function Home() {
 
         {/* Cómo funciona, categorías, por qué elegirnos */}
         <ComoFunciona />
+        <FrasesInspiradoras />
         <Categorias />
         <PorQueElegirnos />
 
