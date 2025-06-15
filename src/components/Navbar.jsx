@@ -39,11 +39,11 @@ export default function Navbar() {
           <li><a href="#terapeutas" className="hover:text-violet-600">Terapeutas</a></li>
 
           {logueado ? (
-            <>
-              <li><Link to="/panel" className="hover:text-violet-600">Panel</Link></li>
-              <li><Link to="/nuevo-servicio" className="hover:text-violet-600">Subir servicio</Link></li>
-              <li><button onClick={cerrarSesion} className="hover:text-violet-600">Cerrar sesión</button></li>
-            </>
+            <li>
+              <button onClick={cerrarSesion} className="hover:text-violet-600">
+                Cerrar sesión
+              </button>
+            </li>
           ) : (
             <>
               <li><Link to="/login" className="hover:text-violet-600">Iniciar sesión</Link></li>
@@ -87,11 +87,7 @@ export default function Navbar() {
             <li><a href="#terapeutas" onClick={toggleMenu}>Terapeutas</a></li>
 
             {logueado ? (
-              <>
-                <li><Link to="/panel" onClick={toggleMenu}>Panel</Link></li>
-                <li><Link to="/nuevo-servicio" onClick={toggleMenu}>Subir servicio</Link></li>
-                <li><button onClick={cerrarSesion}>Cerrar sesión</button></li>
-              </>
+              <li><button onClick={() => { toggleMenu(); cerrarSesion(); }}>Cerrar sesión</button></li>
             ) : (
               <>
                 <li><Link to="/login" onClick={toggleMenu}>Iniciar sesión</Link></li>

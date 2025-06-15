@@ -8,7 +8,7 @@ export default function Blog() {
       summary:
         "Exploramos qué significa realmente la terapia holística, cómo funciona y por qué tantas personas la eligen hoy para su bienestar integral.",
       image: "https://i.postimg.cc/mDqm5fqc/rocks-7354363-1280.jpg",
-      link: "/blog/que-es-terapia-holistica",
+      link: "/blog/que-es-una-terapia-holistica",
     },
   ];
 

@@ -23,19 +23,21 @@ export default function Home() {
         />
       </section>
 
+      {/* Contenedor común */}
       <div className="bg-[#ffffff] text-[#333333] px-6 md:px-12 py-14 max-w-screen-xl mx-auto">
-        {/* Título principal */}
-<h1 className="text-2xl md:text-5xl font-bold mb-4 mt-6 max-w-4xl text-left">
-  Bienvenidos al primer Marketplace de terapias holísticas de Argentina 🌿
-</h1>
 
-{/* Subtítulo */}
-<p className="text-sm md:text-base italic text-[#444444] mb-16 max-w-3xl text-left">
-  🌸 Tu espacio de confianza para sanar y crecer.
-</p>
+        {/* Título principal */}
+        <h1 className="text-2xl md:text-5xl font-bold mb-4 mt-6 max-w-4xl text-left">
+          Bienvenidos al primer Marketplace de terapias holísticas de Argentina 🌿
+        </h1>
+
+        {/* Subtítulo */}
+        <p className="text-sm md:text-base italic text-[#444444] mb-16 max-w-3xl text-left">
+          🌸 Tu espacio de confianza para sanar y crecer.
+        </p>
 
         {/* Sección para usuarios */}
-        <section className="bg-[#fff9e5] rounded-2xl p-8 max-w-5xl mx-auto mb-16">
+        <section className="bg-[#f3e8c6] rounded-2xl p-8 mb-16">
           <h2 className="text-xl md:text-3xl font-semibold text-[#7F56D9] text-left">
             Conectá con tu bienestar
           </h2>
@@ -46,14 +48,14 @@ export default function Home() {
           {/* Botón CTA */}
           <Link
             to="/servicios"
-            className="mt-8 inline-block bg-[#f48fb1] text-white px-6 py-3 rounded-full hover:opacity-90 transition"
+            className="mt-8 inline-block bg-[#c96a8c] text-white px-6 py-3 rounded-full hover:opacity-90 transition"
           >
             Ver servicios disponibles
           </Link>
         </section>
 
         {/* Sección para terapeutas */}
-        <section className="bg-[#ffeff3] rounded-2xl p-8 max-w-5xl mx-auto mb-16">
+        <section className="bg-[#f5d7dd] rounded-2xl p-8 mb-16">
           <h2 className="text-xl md:text-3xl font-semibold text-[#7F56D9] text-left">
             Unite a nuestra comunidad
           </h2>
@@ -63,19 +65,19 @@ export default function Home() {
 
           <Link
             to="/registro"
-            className="mt-10 inline-block bg-[#f48fb1] text-white px-6 py-3 rounded-full hover:opacity-90 transition"
+            className="mt-10 inline-block bg-[#c96a8c] text-white px-6 py-3 rounded-full hover:opacity-90 transition"
           >
             Registrate como Terapeuta
           </Link>
         </section>
 
-        {/* Cómo funciona, categorías, por qué elegirnos */}
+        {/* Componentes adicionales */}
         <ComoFunciona />
         <FrasesInspiradoras />
         <Categorias />
         <PorQueElegirnos />
 
-        {/* Sección del Blog */}
+        {/* Blog */}
         <section className="mt-20 mb-16">
           <h2 className="text-2xl md:text-3xl font-semibold text-[#7F56D9] mb-6">
             Últimos artículos del Blog
@@ -83,7 +85,7 @@ export default function Home() {
           <BlogCard />
         </section>
 
-        {/* Preguntas Frecuentes y Contacto */}
+        {/* FAQs y contacto */}
         <PreguntasFrecuentes />
         <Contacto />
       </div>

@@ -1,6 +1,6 @@
 export default function ComoFunciona() {
   return (
-    <section className="bg-[#d4f1f9] rounded-xl py-20 px-4" id="como-funciona">
+    <section className="bg-[#a3cbe3] rounded-xl py-20 px-4" id="como-funciona">
       <div className="max-w-5xl mx-auto text-center">
         <h2 className="text-2xl md:text-4xl font-bold text-[#333333] mb-10">¿Cómo funciona?</h2>
 
@@ -8,7 +8,7 @@ export default function ComoFunciona() {
           {/* Paso 1 */}
           <div className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition">
             <div className="flex justify-center text-4xl mb-4">🔍</div>
-            <h3 className="text-lg font-semibold mb-2 text-[#7F56D9]">Explorá terapias</h3>
+            <h3 className="text-lg font-semibold mb-2 text-[#7f56d9]">Explorá terapias</h3>
             <p className="text-[#555]">
               Descubrí diferentes tipos de terapias holísticas y conocé a los terapeutas disponibles.
             </p>

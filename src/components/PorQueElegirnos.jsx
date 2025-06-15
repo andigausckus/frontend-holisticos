@@ -23,7 +23,7 @@ export default function PorQueElegirnos() {
   ];
 
   return (
-    <section className="py-12 px-4 rounded-xl :px-8 lg:px-16 bg-[#e8fbf2]">
+    <section className="py-12 px-4 rounded-xl :px-8 lg:px-16 bg-[#a9d5be]">
       <h2 className="text-2xl font-bold text-[#333333] mb-10 text-center">
         ¿Por qué elegirnos?
       </h2>

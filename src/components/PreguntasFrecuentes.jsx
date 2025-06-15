@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 const AccordionItem = ({ question, answer, isOpen, onClick }) => (
-  <div className="border-b border-gray-200 py-4">
+  <div className="border-b border-gray-100 py-4">
     <button
       onClick={onClick}
-      className="w-full flex justify-between items-center text-left text-[#7F56D9] font-medium text-base md:text-lg transition-colors duration-200"
+      className="w-full flex justify-between items-center text-left text-[#333333] font-medium text-base md:text-lg transition-colors duration-200"
     >
       {question}
       <span className={`flex items-center justify-center w-6 h-6 rounded-full bg-[#444444] transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}>

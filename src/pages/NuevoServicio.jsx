@@ -13,7 +13,6 @@ export default function NuevoServicio() {
     duracionMinutos: "",
     precio: "",
     categoria: "",
-    imagen: null,
   });
 
   const handleChange = (e) => {
@@ -31,11 +30,6 @@ export default function NuevoServicio() {
           modalidad: prev.modalidad.filter((mod) => mod !== value),
         }));
       }
-    } else if (type === "file") {
-      setFormulario((prev) => ({
-        ...prev,
-        imagen: e.target.files[0],
-      }));
     } else {
       setFormulario((prev) => ({
         ...prev,
@@ -47,20 +41,7 @@ export default function NuevoServicio() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validación básica
-    if (
-      !formulario.titulo ||
-      !formulario.descripcion ||
-      formulario.modalidad.length === 0 ||
-      !formulario.ubicacion ||
-      !formulario.duracionHoras ||
-      !formulario.duracionMinutos ||
-      !formulario.precio ||
-      !formulario.categoria
-    ) {
-      alert("Por favor completá todos los campos obligatorios.");
-      return;
-    }
+    // Validaciones...
 
     const token = localStorage.getItem("token");
     if (!token) {
@@ -68,41 +49,41 @@ export default function NuevoServicio() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("titulo", formulario.titulo);
-    formData.append("descripcion", formulario.descripcion);
-    formulario.modalidad.forEach((mod) =>
-      formData.append("modalidad", mod)
-    );
-    formData.append("ubicacion", formulario.ubicacion);
+    // Construir objeto
+    const duracionTotalMinutos = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
 
-    // Enviamos duracion en minutos totales (puedes cambiar a enviar horas y minutos separados si el backend lo prefiere)
-    const duracionTotalMinutos =
-      Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
-    formData.append("duracion", duracionTotalMinutos);
-
-    formData.append("precio", Number(formulario.precio));
-    formData.append("categoria", formulario.categoria);
-    if (formulario.imagen) {
-      formData.append("imagen", formulario.imagen);
-    }
+    const body = {
+      titulo: formulario.titulo,
+      descripcion: formulario.descripcion,
+      modalidad: formulario.modalidad, // Puede ser array o string, depende backend
+      ubicacion: formulario.modalidad.includes("Presencial") ? formulario.ubicacion : undefined,
+      duracion: duracionTotalMinutos,
+      precio: Number(formulario.precio),
+      categoria: formulario.categoria,
+    };
 
     try {
-      const res = await fetch(
-        "https://servicios-holisticos-backend.onrender.com/api/servicios",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const res = await fetch("https://servicios-holisticos-backend.onrender.com/api/servicios", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      const text = await res.text();
+      console.log("Status:", res.status);
+      console.log("Respuesta:", text);
 
       if (!res.ok) {
-        const errorText = await res.text();
-        alert("Error del servidor: " + errorText);
-        throw new Error(errorText);
+        let errorMsg = text;
+        try {
+          const errorJson = JSON.parse(text);
+          errorMsg = errorJson.error || errorJson.message || text;
+        } catch {}
+        alert("Error del servidor: " + errorMsg);
+        throw new Error(errorMsg);
       }
 
       alert("Servicio creado con éxito.");
@@ -112,6 +93,7 @@ export default function NuevoServicio() {
       console.error(error);
     }
   };
+
 
   return (
     <form
@@ -167,17 +149,18 @@ export default function NuevoServicio() {
         </label>
       </fieldset>
 
-      <label className="block mb-2">
-        Ubicación *
-        <input
-          type="text"
-          name="ubicacion"
-          value={formulario.ubicacion}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-      </label>
+      {formulario.modalidad.includes("Presencial") && (
+        <label className="block mb-2">
+          Ubicación *
+          <input
+            type="text"
+            name="ubicacion"
+            value={formulario.ubicacion}
+            onChange={handleChange}
+            className="w-full p-2 border rounded"
+          />
+        </label>
+      )}
 
       <div className="flex gap-4 mb-2">
         <label className="flex-1">
@@ -221,7 +204,7 @@ export default function NuevoServicio() {
         />
       </label>
 
-      <label className="block mb-2">
+      <label className="block mb-4">
         Categoría *
         <input
           type="text"
@@ -231,17 +214,6 @@ export default function NuevoServicio() {
           className="w-full p-2 border rounded"
           placeholder="Ejemplo: Meditación, Reiki..."
           required
-        />
-      </label>
-
-      <label className="block mb-4">
-        Imagen (opcional)
-        <input
-          type="file"
-          name="imagen"
-          accept="image/*"
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
         />
       </label>
 
