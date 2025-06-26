@@ -1,0 +1,92 @@
+.react-calendar__tile.tile-green {
+  background-color: #d1fae5; /* verde claro */
+  border-radius: 10px;
+  color: #065f46;
+}
+
+.react-calendar__tile.tile-green:hover {
+  background-color: #a7f3d0;
+}
+
+.react-calendar__tile.tile-gray {
+  background-color: #e5e7eb; /* gris claro */
+  color: #6b7280;
+  border-radius: 10px;
+}
+
+.react-calendar__tile.tile-red {
+  background-color: #fee2e2; /* rojo claro */
+  color: #991b1b;
+  border-radius: 10px;
+}
+/* Centrar y agrandar el calendario */
+.react-calendar {
+  margin: 0 auto;           /* Centra horizontalmente */
+  max-width: 100%;
+  width: 100% !important;
+  border: none !important;  /* Elimina borde exterior */
+  box-shadow: none !important;
+}
+
+/* Quitar el subrayado feo debajo de los días de la semana */
+.react-calendar__month-view__weekdays__weekday abbr {
+  text-decoration: none !important;
+}
+
+/* Estilo de las celdas del calendario (más altas y espaciosas) */
+.react-calendar__tile {
+  padding: 0.5rem 0.5rem;
+  font-size: 1rem;
+  border-radius: 0.75rem;
+  transition: background 0.3s;
+}
+
+/* Eliminar bordes individuales si los tuviera */
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #fce4ec; /* tono rosa suave al hacer hover */
+}
+
+/* Colorear el día seleccionado */
+.react-calendar__tile--active {
+  background: #f48fb1 !important;
+  color: white !important;
+}
+
+/* Centrado del contenedor (por si lo envolvés en un div externo) */
+.calendar-wrapper {
+  
+  max-width: 500px !important;
+  margin: 0 auto !important;
+}
+
+/* Día actual: fondo gris suave y forma redonda */
+.react-calendar__tile--now {
+  background: #e5e5e5 !important;  /* Gris suave */
+  border-radius: 999px !important;
+  width: 35px;
+  height: 35px;
+  border-radius: 45% !important;
+  margin: auto;
+  display: flex;
+  justify-content: center;/* Redondo */
+  color: #333333 !important;       /* Texto oscuro para contraste */
+}
+
+/* Día seleccionado: fondo rosa oscuro y forma redonda */
+.react-calendar__tile--active {
+  background: #f48fb1 !important;  /* Rosa oscuro */
+  width: 35px;
+  height: 35px;
+  border-radius: 45% !important;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  
+  color: #ffffff !important;       /* Texto blanco */
+}
+
+/* Tamaño del número del día */
+.react-calendar__tile {
+  font-size: 0.9rem;  /* Un poco más grande que el default */
+}
