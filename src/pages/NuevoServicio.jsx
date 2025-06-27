@@ -136,12 +136,12 @@ export default function NuevoServicio() {
   return (
     <div className="bg-white min-h-screen">
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4 mb-40">
-        <h2 className="text-2xl font-semibold pt-12 text-center mb-6">Crear nuevo servicio 🍃</h2>
+        <h2 className="text-2xl font-semibold pt-12 text-center mb-6">Crear nuevo servicio 🩷</h2>
 
         {/* Título */}
         <label className="block mb-4">
           <span className="block mb-2">Título *</span>
-          <p className="text-sm text-gray-500 mb-1">Sugerimos entre 4 y 8 palabras.</p>
+          <p className="text-sm text-gray-500 mb-1">Entre 4 y 8 palabras para armonia visual</p>
           <input
             type="text"
             name="titulo"
@@ -220,7 +220,7 @@ export default function NuevoServicio() {
 
         {/* Plataformas */}
         <label className="block mb-4">
-          <span className="block mb-1">Plataformaparalasesión</span>
+          <span className="block mb-1">Plataforma para la sesión</span>
           <div className="flex flex-wrap justify-between p-3 border border-[#c7b6eb] rounded">
             {plataformasDisponibles.map(({ nombre, icono }) => (
               <label key={nombre} className="flex flex-col items-center text-center text-sm cursor-pointer w-1/4">
@@ -258,11 +258,11 @@ export default function NuevoServicio() {
         {/* Imagen */}
         <label className="block mb-8">
           <span className="block mb-2">Imagen del servicio *</span>
-          <p className="text-sm text-gray-500 mb-2">
-            Subí una imagen clara y limpia relacionada con tu servicio. Evitá textos promocionales, nombres de otras terapias o números de WhatsApp. 
-            Revisamos cada publicación para mantener el estilo minimalista del Marketplace.
+          <p className="text-sm pt-2 text-gray-500 mb-2">
+            Subí una imagen clara y limpia de tu servicio. Evitá imágenes con nombres de otras terapias o número de WhatsApp, para mejorar la experiencia del usuario.
+            Revisamos cada publicación para mantener un estilo minimalista y simple del Marketplace.
           </p>
-          <input type="file" accept="image/*" onChange={handleImageChange} className="mb-2" />
+          <input type="file" accept="image/*" onChange={handleImageChange} className="mb-2 pt-6" />
           {formulario.imagen && (
             <div className="mt-4">
               <p className="text-sm text-gray-600 mb-2">Vista previa:</p>

@@ -302,15 +302,18 @@ export default function EditarServicio() {
           />
         </label>
 
-        {/* Imagen */}
-        <label className="block mb-8">
-          <span className="block mb-2">Imagen del servicio</span>
-          <p className="text-sm text-gray-500 mb-2">
-            Subí una imagen clara y limpia relacionada con tu servicio. Evitá textos promocionales, nombres de otras terapias o números de WhatsApp.
+    {/* Imagen */}
+    <label className="block mb-8">
+      <span className="block mb-2">Imagen del servicio *</span>
+      <p className="text-sm pt-2 text-gray-500 mb-2">
+    Si no subís una nueva imagen, se mantendrá la actual.
+        
+    Recordá subir una imagen clara y limpia de tu servicio, sin nombres de otras terapias ni número de WhatsApp, para mejorar la experiencia del usuario.
+            
           </p>
           <input type="file" accept="image/*" onChange={handleImageChange} />
           {nuevaImagenPreview && (
-            <div className="mt-4">
+            <div className="mt-4 pt-2">
               <p className="text-sm text-gray-600 mb-2">Vista previa:</p>
               <img
                 src={nuevaImagenPreview}

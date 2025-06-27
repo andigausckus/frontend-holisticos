@@ -7,7 +7,7 @@ requiredFiles = [".replit", "replit.nix", "package.json", "package-lock.json"]
 
 [nix]
 channel = "stable-24_11"
-packages = ["unzip", "nix-output-monitor"]
+packages = ["unzip"]
 
 [deployment]
 run = ["node", "index.js"]
@@ -17,7 +17,3 @@ ignorePorts = false
 [[ports]]
 localPort = 3000
 externalPort = 80
-
-[[ports]]
-localPort = 3001
-externalPort = 3001

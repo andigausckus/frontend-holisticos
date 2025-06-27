@@ -111,7 +111,7 @@ function Servicios() {
             <div
               key={servicio._id}
               className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between"
-              style={{ height: "450px" }}
+              style={{ height: "470px" }}
             >
               <img
                 src={`https://servicios-holisticos-backend.onrender.com/uploads/${servicio.imagen}`}
@@ -123,10 +123,10 @@ function Servicios() {
                   <h3 className="text-xl text-[#333] font-semibold mb-2 mt-2">
                     {servicio.titulo}
                   </h3>
-                  <div className="flex items-center justify-center gap-1 text-yellow-500 mb-3 text-sm">
-                    <span>★★★★★</span>
-                    <span className="text-yellow-500">(10) reseñas</span>
-                  </div>
+                  <div className="flex items-center justify-center gap-1 text-gray-400 mb-3 text-sm">
+  <span>☆☆☆☆☆</span>
+  <span className="text-gray-400">(0) reseñas</span>
+</div>
 
                   <div className="mt-3 pt-2 flex flex-row items-center justify-center gap-6 text-[#333] text-sm flex-wrap">
                     <div className="flex items-center gap-1">
