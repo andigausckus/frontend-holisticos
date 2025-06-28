@@ -74,19 +74,24 @@ export default function NuevoServicio() {
     }
 
     try {
+      console.log("🔑 Token JWT:", token); // Esto es lo nuevo
+
       const res = await fetch(`https://servicios-holisticos-backend.onrender.com/api/servicios`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
+
       const data = await res.json();
+      console.log("📦 Respuesta del servidor:", data); // Esto también es útil
+
       if (!res.ok) throw new Error(data.error || "Error al guardar");
 
       alert("Servicio creado correctamente");
-      navigate("/panel");
+      navigate(`/disponibilidad/${data._id}`);
     } catch (err) {
       console.error("❌ Error:", err);
-      alert("No se pudo guardar el servicio.");
+      alert(`No se pudo guardar el servicio. Motivo: ${err.message}`);
     }
   };
 

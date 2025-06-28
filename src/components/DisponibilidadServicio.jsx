@@ -1,7 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
+import dayjs from "dayjs";
+import "dayjs/locale/es";
+
+dayjs.locale("es");
 
 const diasSemana = [
   "Lunes",
@@ -13,22 +17,34 @@ const diasSemana = [
   "Domingo",
 ];
 
+function obtenerFechasDeSemana() {
+  const hoy = dayjs();
+  const inicioSemana = hoy.startOf("week").add(1, "day"); // Lunes
+  return diasSemana.map((dia, index) => {
+    const fecha = inicioSemana.add(index, "day");
+    return {
+      dia,
+      fecha: fecha.format("D [de] MMMM"),
+      rangos: [],
+    };
+  });
+}
+
 export default function DisponibilidadServicio() {
   const { servicioId } = useParams();
   const navigate = useNavigate();
 
-  const [disponibilidad, setDisponibilidad] = useState(
-    diasSemana.map((dia) => ({ dia, rangos: [] }))
-  );
+  const [disponibilidad, setDisponibilidad] = useState([]);
+
+  useEffect(() => {
+    setDisponibilidad(obtenerFechasDeSemana());
+  }, []);
 
   const agregarRango = (dia) => {
     setDisponibilidad((prev) =>
       prev.map((d) =>
         d.dia === dia
-          ? {
-              ...d,
-              rangos: [...d.rangos, { desde: null, hasta: null }],
-            }
+          ? { ...d, rangos: [...d.rangos, { desde: null, hasta: null }] }
           : d
       )
     );
@@ -58,9 +74,9 @@ export default function DisponibilidadServicio() {
   const aplicarATodaLaSemana = (diaReferencia) => {
     const referencia = disponibilidad.find((d) => d.dia === diaReferencia);
     if (!referencia || referencia.rangos.length === 0) return;
-    setDisponibilidad(
-      diasSemana.map((dia) => ({
-        dia,
+    setDisponibilidad((prev) =>
+      prev.map((d) => ({
+        ...d,
         rangos: [...referencia.rangos],
       }))
     );
@@ -97,13 +113,15 @@ export default function DisponibilidadServicio() {
   return (
     <div className="bg-white min-h-screen py-10 px-4 max-w-4xl mx-auto">
       <h2 className="text-xl font-semibold text-center text-[#333] mb-10">
-        Agregá tu disponibilidad horaria para este servicio
+        Agregá tu disponibilidad semanal 🌿
       </h2>
 
-      {disponibilidad.map((dia) => (
+      {disponibilidad.map((dia, index) => (
         <div key={dia.dia} className="mb-4 border-b pb-6">
-          <div className="flex justify-between items-center mb-3">
-            <h3 className="text-base text-[#444]">{dia.dia}</h3>
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-base text-[#444]">
+              {dia.dia} <span className="text-sm text-[#666]">{dia.fecha}</span>
+            </h3>
             <div className="bg-pink-300 rounded-3xl px-4 py-1 hover:bg-pink-400 transition">
               <button
                 type="button"
@@ -147,7 +165,7 @@ export default function DisponibilidadServicio() {
             </div>
           ))}
 
-          {dia.rangos.length > 0 && (
+          {dia.dia === "Lunes" && dia.rangos.length > 0 && (
             <button
               type="button"
               onClick={() => aplicarATodaLaSemana(dia.dia)}

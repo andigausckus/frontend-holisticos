@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
-import "../calendario.css";
+import { useState, useEffect } from "react";
+import { FiChevronDown } from "react-icons/fi";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import {
   FaUser,
   FaDollarSign,
@@ -12,10 +13,7 @@ import {
   FaGoogle,
   FaSkype,
 } from "react-icons/fa";
-import { useState, useEffect } from "react";
-import { FiChevronDown } from "react-icons/fi";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import CalendarioSemanal from "../components/CalendarioSemanal";
 
 function ServicioDetalle() {
   const { id } = useParams();
@@ -24,17 +22,19 @@ function ServicioDetalle() {
   const [servicio, setServicio] = useState(null);
   const [mostrarDescripcion, setMostrarDescripcion] = useState(false);
   const [mostrarResenas, setMostrarResenas] = useState(false);
-  const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
-  const [disponibilidad, setDisponibilidad] = useState({});
+  const [disponibilidad, setDisponibilidad] = useState([]);
+  const [seleccion, setSeleccion] = useState(null);
 
   useEffect(() => {
     const fetchServicio = async () => {
       try {
-        const response = await fetch(`https://servicios-holisticos-backend.onrender.com/api/servicios/publico/${id}`);
+        const response = await fetch(
+          `https://servicios-holisticos-backend.onrender.com/api/servicios/publico/${id}`
+        );
         if (!response.ok) throw new Error("No se pudo obtener el servicio");
         const data = await response.json();
+        console.log("🎯 Servicio recibido:", data);
 
-        // 🕒 Formatear duración
         const duracionMin = parseInt(data.duracion);
         const horas = Math.floor(duracionMin / 60);
         const minutos = duracionMin % 60;
@@ -53,20 +53,17 @@ function ServicioDetalle() {
 
   useEffect(() => {
     const obtenerDisponibilidad = async () => {
-      if (!servicio?._id) return;
+      if (!servicio || typeof servicio._id === "undefined") return;
+
       try {
-        const response = await fetch(`https://servicios-holisticos-backend.onrender.com/api/terapeutas/disponibilidad/${servicio._id}`);
-        if (!response.ok) throw new Error("Error al obtener disponibilidad");
-
-        const data = await response.json();
-        const disponibilidadFormateada = {};
-        data.forEach((item) => {
-          disponibilidadFormateada[item.fecha] = item.horas;
-        });
-
-        setDisponibilidad(disponibilidadFormateada);
+        const res = await fetch(
+          `https://servicios-holisticos-backend.onrender.com/api/terapeutas/disponibilidad/${servicio._id}`
+        );
+        if (!res.ok) throw new Error("No se pudo obtener la disponibilidad");
+        const data = await res.json();
+        setDisponibilidad(data);
       } catch (error) {
-        console.error("Error al cargar disponibilidad:", error);
+        console.error("Error al obtener disponibilidad:", error);
       }
     };
 
@@ -77,25 +74,6 @@ function ServicioDetalle() {
     return <div className="pt-24 text-center text-[#333]">Servicio no encontrado</div>;
   }
 
-  const fechaKey = format(fechaSeleccionada, "yyyy-MM-dd");
-  const horarios = disponibilidad[fechaKey];
-
-  let estado = "sin-horarios";
-  if (horarios === null) estado = "no-trabaja";
-  else if (horarios && horarios.length > 0) estado = "disponible";
-
-  const mensajeEstado = {
-    disponible: "Elegí el horario para tu sesión online",
-    "sin-horarios": "No hay disponibilidad para este día",
-    "no-trabaja": "El terapeuta no atiende este día",
-  };
-
-  const colorEstado = {
-    disponible: "text-green-600",
-    "sin-horarios": "text-gray-600",
-    "no-trabaja": "text-red-500",
-  };
-
   const obtenerIconoPlataforma = (nombre) => {
     switch (nombre.toLowerCase()) {
       case "whatsapp":
@@ -104,23 +82,26 @@ function ServicioDetalle() {
         return <FaVideo key={nombre} className="text-blue-500" title="Zoom" />;
       case "meet":
         return <FaGoogle key={nombre} className="text-red-500" title="Google Meet" />;
-        case "skype":
-      return <FaSkype key={nombre} className="text-sky-600" title="Skype" />;
-        
+      case "skype":
+        return <FaSkype key={nombre} className="text-sky-600" title="Skype" />;
       default:
-        return <span className="text-gray-500" key={nombre}>{nombre}</span>;
+        return (
+          <span className="text-gray-500" key={nombre}>
+            {nombre}
+          </span>
+        );
     }
   };
 
-const duracionFormateada = (minutos) => {
-  const horas = Math.floor(minutos / 60);
-  const mins = minutos % 60;
+  const duracionFormateada = (minutos) => {
+    const horas = Math.floor(minutos / 60);
+    const mins = minutos % 60;
 
-  if (horas > 0 && mins > 0) return `${horas} h ${mins} min`;
-  if (horas > 0) return `${horas} h`;
-  return `${mins} min`;
-};
-  
+    if (horas > 0 && mins > 0) return `${horas} h ${mins} min`;
+    if (horas > 0) return `${horas} h`;
+    return `${mins} min`;
+  };
+
   return (
     <div className="pt-12 bg-white pb-16 px-4 max-w-2xl mx-auto">
       <img
@@ -132,11 +113,11 @@ const duracionFormateada = (minutos) => {
       <div className="bg-white text-sm rounded-xl shadow-md pl-6 p-4 text-[#333] space-y-4">
         <h1 className="text-xl font-bold text-center">{servicio.titulo}</h1>
         <div className="flex justify-center gap-1 text-gray-400 text-sm -mt-1">
-  <span>☆☆☆☆☆</span>
-  <span>(0) reseñas</span>
-</div>
+          <span>☆☆☆☆☆</span>
+          <span>(0) reseñas</span>
+        </div>
 
-        {/* Fila 1: Terapeuta, Modalidad, Precio */}
+        {/* Fila 1 */}
         <div className="flex justify-center gap-6 text-center px-2 flex-wrap">
           <div className="flex items-center gap-1 text-gray-600">
             <FaUser className="text-pink-500" />
@@ -154,7 +135,7 @@ const duracionFormateada = (minutos) => {
           </div>
         </div>
 
-        {/* Fila 2: Duración, Plataformas */}
+        {/* Fila 2 */}
         <div className="flex justify-center gap-6 text-center px-2 flex-wrap">
           <div className="flex items-center gap-1 text-gray-600">
             <FaClock className="text-pink-500" />
@@ -174,7 +155,7 @@ const duracionFormateada = (minutos) => {
         </div>
       </div>
 
-      {/* Botones */}
+      {/* Botones de descripción y reseñas */}
       <div className="mt-8 flex pt-4 gap-4">
         <button
           onClick={() => setMostrarDescripcion(!mostrarDescripcion)}
@@ -201,7 +182,6 @@ const duracionFormateada = (minutos) => {
         </button>
       </div>
 
-      {/* Contenido Descripción / Reseñas */}
       {(mostrarDescripcion || mostrarResenas) && (
         <div className="mt-4 flex flex-col md:flex-row gap-4 overflow-x-auto">
           {mostrarDescripcion && (
@@ -217,25 +197,23 @@ const duracionFormateada = (minutos) => {
         </div>
       )}
 
-      {/* Calendario */}
+      {/* Calendario semanal */}
       <div className="mt-8">
         <h2 className="text-xl text-center pt-4 font-semibold text-[#333] mb-4">
-          Elegí una fecha para tu sesión
+          Elegí una fecha y horario para tu sesión
         </h2>
-        <Calendar
-          onChange={setFechaSeleccionada}
-          value={fechaSeleccionada}
-          locale="es"
+
+        <CalendarioSemanal
+          servicio={servicio}
+          disponibilidad={disponibilidad}
+          duracionMinutos={servicio.duracion}
+          onSeleccionar={(fecha, hora) => {
+            setSeleccion({ fecha, hora });
+          }}
         />
       </div>
 
-      {/* Estado del día */}
-      <div className={`mt-6 text-center font-medium ${colorEstado[estado]}`}>
-        {mensajeEstado[estado]}
-      </div>
-
-      {/* Botón reservar */}
-      {estado === "disponible" && (
+      {seleccion && (
         <div className="mt-4 text-center">
           <button
             className="bg-[#009929] hover:bg-[#006414] text-white px-6 py-3 rounded-3xl shadow"
@@ -243,8 +221,8 @@ const duracionFormateada = (minutos) => {
               navigate("/pago", {
                 state: {
                   servicio,
-                  fecha: fechaSeleccionada,
-                  hora: horarios?.[0] || "Sin horario",
+                  fecha: seleccion.fecha,
+                  hora: seleccion.hora,
                 },
               })
             }
