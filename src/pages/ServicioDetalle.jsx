@@ -12,6 +12,7 @@ import {
   FaSkype,
 } from "react-icons/fa";
 import CalendarioSemanal from "../components/CalendarioSemanal";
+import { FaWifi } from "react-icons/fa";
 
 function ServicioDetalle() {
   const { id } = useParams();
@@ -31,7 +32,6 @@ function ServicioDetalle() {
         );
         if (!response.ok) throw new Error("No se pudo obtener el servicio");
         const data = await response.json();
-        console.log("🎯 Servicio recibido:", data);
 
         const duracionMin = parseInt(data.duracion);
         const horas = Math.floor(duracionMin / 60);
@@ -49,7 +49,6 @@ function ServicioDetalle() {
     fetchServicio();
   }, [id]);
 
-  // ✅ NUEVO BLOQUE: Obtener disponibilidad por fechas
   useEffect(() => {
     const obtenerDisponibilidad = async () => {
       if (!servicio || typeof servicio._id === "undefined") return;
@@ -60,7 +59,6 @@ function ServicioDetalle() {
         );
         if (!res.ok) throw new Error("No se pudo obtener la disponibilidad");
         const data = await res.json();
-        console.log("📆 Disponibilidad recibida:", data);
         setDisponibilidad(data);
       } catch (error) {
         console.error("❌ Error al obtener disponibilidad:", error);
@@ -70,12 +68,8 @@ function ServicioDetalle() {
     obtenerDisponibilidad();
   }, [servicio]);
 
-  if (!servicio) {
-    return <div className="pt-24 text-center text-[#333]">Servicio no encontrado</div>;
-  }
-
   const obtenerIconoPlataforma = (nombre) => {
-    switch (nombre.toLowerCase()) {
+    switch (nombre?.toLowerCase()) {
       case "whatsapp":
         return <FaWhatsapp key={nombre} className="text-green-600" title="WhatsApp" />;
       case "zoom":
@@ -85,22 +79,21 @@ function ServicioDetalle() {
       case "skype":
         return <FaSkype key={nombre} className="text-sky-600" title="Skype" />;
       default:
-        return (
-          <span className="text-gray-500" key={nombre}>
-            {nombre}
-          </span>
-        );
+        return <span className="text-gray-500" key={nombre}>Sin definir</span>;
     }
   };
 
   const duracionFormateada = (minutos) => {
     const horas = Math.floor(minutos / 60);
     const mins = minutos % 60;
-
     if (horas > 0 && mins > 0) return `${horas} h ${mins} min`;
     if (horas > 0) return `${horas} h`;
     return `${mins} min`;
   };
+
+  if (!servicio) {
+    return <div className="pt-24 text-center text-[#333]">Servicio no encontrado</div>;
+  }
 
   return (
     <div className="pt-12 bg-white pb-16 px-4 max-w-2xl mx-auto">
@@ -117,45 +110,44 @@ function ServicioDetalle() {
           <span>(0) reseñas</span>
         </div>
 
-        {/* Fila 1 */}
         <div className="flex justify-center gap-6 text-center px-2 flex-wrap">
-          <div className="flex items-center gap-1 text-gray-600">
-            <FaUser className="text-pink-500" />
-            <span>{servicio.terapeuta?.nombreCompleto}</span>
-          </div>
+  <div className="flex items-center gap-1 text-gray-600">
+    <FaUser className="text-pink-500" />
+    <span>{servicio.terapeuta?.nombreCompleto}</span>
+  </div>
 
-          <div className="flex items-center gap-1 text-gray-600">
-            <FaLaptop className="text-pink-500" />
-            <span>Online</span>
-          </div>
+  <div className="flex items-center gap-1 text-gray-600">
+    <FaLaptop className="text-pink-500" />
+    <span>{servicio.modalidad || "Sin definir"}</span>
+  </div>
 
-          <div className="flex items-center gap-1 text-gray-600">
-            <FaDollarSign className="text-pink-500" />
-            <span>{servicio.precio}</span>
-          </div>
-        </div>
+  <div className="flex items-center gap-1 text-gray-600">
+    <FaDollarSign className="text-pink-500" />
+    <span>{servicio.precio}</span>
+  </div>
+</div>
 
-        {/* Fila 2 */}
-        <div className="flex justify-center gap-6 text-center px-2 flex-wrap">
-          <div className="flex items-center gap-1 text-gray-600">
-            <FaClock className="text-pink-500" />
-            <span>{duracionFormateada(servicio.duracion)}</span>
-          </div>
+<div className="flex justify-center gap-6 text-center px-2 flex-wrap">
+  <div className="flex items-center gap-1 text-gray-600">
+    <FaClock className="text-pink-500" />
+    <span>{duracionFormateada(servicio.duracion)}</span>
+  </div>
 
-          <div className="flex items-center gap-2 text-gray-600">
-            <span className="text-pink-500">🔗</span>
-            {servicio.plataformas?.length > 0 ? (
-              servicio.plataformas.map((p, i) => (
-                <span key={i}>{obtenerIconoPlataforma(p)}</span>
-              ))
-            ) : (
-              <span className="text-gray-400">Sin plataforma</span>
-            )}
-          </div>
-        </div>
-      </div>
+  <div className="flex items-center gap-2 text-gray-600">
+  <FaWifi className="text-pink-500" />
+  <span>Se brinda por</span>
+  {servicio.plataformas?.length > 0 ? (
+    servicio.plataformas.map((p, i) => (
+      <span key={i}>{obtenerIconoPlataforma(p)}</span>
+    ))
+  ) : (
+    <span className="text-gray-400 ml-1">Sin definir</span>
+  )}
+</div>
+</div>
+  </div>
 
-      {/* Botones de descripción y reseñas */}
+
       <div className="mt-8 flex pt-4 gap-4">
         <button
           onClick={() => setMostrarDescripcion(!mostrarDescripcion)}
@@ -215,21 +207,16 @@ function ServicioDetalle() {
   </div>
 )}
 
-      {/* Calendario semanal */}
-      <div className="mt-8">
-        <h2 className="text-xl text-center pt-4 font-semibold text-[#333] mb-4">
-          Elegí una fecha para tu sesión
-        </h2>
-
-        <CalendarioSemanal
-          servicio={servicio}
-          disponibilidad={disponibilidad}
-          duracionMinutos={servicio.duracion}
-          onSeleccionar={(fecha, hora) => {
-            setSeleccion({ fecha, hora });
-          }}
-        />
-      </div>
+<div className="mt-8">
+  <CalendarioSemanal
+    servicio={servicio}
+    disponibilidad={disponibilidad}
+    duracionMinutos={servicio.duracion}
+    onSeleccionar={(fecha, hora) => {
+      setSeleccion({ fecha, hora });
+    }}
+  />
+</div>
 
       {seleccion && (
         <div className="mt-4 text-center">

@@ -1,6 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 
+import {
+  FaWhatsapp,
+  FaVideo,
+  FaGoogle,
+  FaSkype
+} from "react-icons/fa";
+
+// ✅ Función para mostrar ícono según la plataforma
+const obtenerIconoPlataforma = (nombre) => {
+  if (!nombre) return null;
+  switch (nombre.toLowerCase()) {
+    case "whatsapp":
+      return <FaWhatsapp className="inline-block text-green-600 ml-1" title="WhatsApp" />;
+    case "zoom":
+      return <FaVideo className="inline-block text-blue-500 ml-1" title="Zoom" />;
+    case "meet":
+      return <FaGoogle className="inline-block text-red-500 ml-1" title="Google Meet" />;
+    case "skype":
+      return <FaSkype className="inline-block text-sky-600 ml-1" title="Skype" />;
+    default:
+      return (
+        <span className="inline-block text-gray-500 ml-1" title={nombre}>
+          {nombre}
+        </span>
+      );
+  }
+};
+
+function formatearDuracion(minutos) {
+  const h = Math.floor(minutos / 60);
+  const m = minutos % 60;
+  if (h > 0 && m > 0) return `${h} h ${m} min`;
+  if (h > 0) return `${h} h`;
+  return `${m} min`;
+}
+
 function PaginaPagoSimple() {
   const location = useLocation();
   const { servicio, fecha, hora } = location.state || {};
@@ -83,18 +119,58 @@ function PaginaPagoSimple() {
       {/* 🧾 Resumen */}
       <div className="bg-white rounded-xl p-5 mb-8 shadow-md text-sm">
         <h3 className="text-lg font-semibold mb-4 text-center">Resumen de tu reserva 🌸</h3>
-        <div className="grid grid-cols-2 divide-x divide-gray-200 border rounded-[5px] overflow-hidden">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+          {/* Columna izquierda */}
           <div className="space-y-4 p-4 divide-y divide-gray-200">
-            <p className="pt-1"><span className="font-semibold">Servicio:</span><br />{servicio?.nombre}</p>
-            <p className="pt-4"><span className="font-semibold">Terapeuta:</span><br />{servicio?.terapeuta}</p>
-            <p className="pt-4"><span className="font-semibold">Modalidad:</span><br />{servicio?.modalidad}</p>
-            <p className="pt-4"><span className="font-semibold">Día:</span><br />{fecha ? new Date(fecha).toLocaleDateString("es-AR") : "-"}</p>
+            <p className="pt-1">
+              <span className="font-semibold">Servicio:</span><br />
+              {servicio?.titulo}
+            </p>
+            <p className="pt-4">
+              <span className="font-semibold">Modalidad:</span><br />
+              {servicio?.modalidad}
+            </p>
+            <p className="pt-4">
+              <span className="font-semibold">Día:</span><br />
+              {fecha
+                ? new Date(fecha).toLocaleDateString("es-AR", {
+                    day: "numeric",
+                    month: "long",
+                  })
+                : "-"}
+            </p>
+            <p className="pt-4">
+              <span className="font-semibold">Duración:</span><br />
+              {formatearDuracion(servicio?.duracion)}
+            </p>
           </div>
+
+          {/* Columna derecha */}
           <div className="space-y-4 p-4 divide-y divide-gray-200">
-            <p className="pt-1"><span className="font-semibold">Hora:</span><br />{hora}</p>
-            <p className="pt-4"><span className="font-semibold">Duración:</span><br />{servicio?.duracion}</p>
-            <p className="pt-4"><span className="font-semibold">Precio:</span><br />${servicio?.precio}</p>
-            <p className="pt-4"><span className="font-semibold">Plataforma:</span><br />{servicio?.plataforma}</p>
+            <p className="pt-1">
+              <span className="font-semibold">Terapeuta:</span><br />
+              {servicio?.terapeuta?.nombreCompleto || "Sin definir"}
+            </p>
+            <p className="pt-4">
+              <span className="font-semibold">Precio:</span><br />
+              ${servicio?.precio}
+            </p>
+            <p className="pt-4">
+              <span className="font-semibold">Hora:</span><br />
+              {hora} hs
+            </p>
+            <div className="pt-4">
+              <span className="font-semibold">Plataforma:</span><br />
+              {Array.isArray(servicio?.plataformas) && servicio.plataformas.length > 0 ? (
+                <div className="flex gap-2 mt-1">
+                  {servicio.plataformas.map((p, i) => (
+                    <span key={i}>{obtenerIconoPlataforma(p)}</span>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-gray-500">No especificada</span>
+              )}
+            </div>
           </div>
         </div>
       </div>
