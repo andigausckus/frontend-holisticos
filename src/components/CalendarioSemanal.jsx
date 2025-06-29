@@ -1,77 +1,49 @@
 import { useEffect, useState } from "react";
-import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 function obtenerSemana(fechaActual) {
-  const inicioSemana = new Date(fechaActual);
-  inicioSemana.setDate(inicioSemana.getDate() - inicioSemana.getDay() + 1); // Lunes
+  const hoy = new Date(fechaActual);
+  const diaSemana = hoy.getDay(); // 0 (domingo) a 6 (sábado)
+  const diferencia = diaSemana === 0 ? -6 : 1 - diaSemana; // si es domingo, restar 6
+  const lunes = new Date(hoy);
+  lunes.setDate(hoy.getDate() + diferencia);
+  lunes.setHours(0, 0, 0, 0);
 
   const dias = [];
   for (let i = 0; i < 7; i++) {
-    const fecha = new Date(inicioSemana);
-    fecha.setDate(fecha.getDate() + i);
+    const fecha = new Date(lunes);
+    fecha.setDate(lunes.getDate() + i);
     dias.push(fecha);
   }
+
   return dias;
 }
 
-function formatearFechaCompleta(fecha) {
-  const opciones = { weekday: "long", day: "numeric", month: "long" };
-  return fecha.toLocaleDateString("es-AR", opciones);
+function formatearHora(horaStr) {
+  const [h, m] = horaStr.split(":");
+  return `${h}:${m}`;
 }
 
 function formatearDiaCorto(fecha) {
   return fecha.toLocaleDateString("es-AR", { weekday: "short" }).toUpperCase();
 }
 
-function formatearDiaNumero(fecha) {
-  return fecha.getDate();
-}
-
 const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar }) => {
-  const [semanaActual, setSemanaActual] = useState(new Date());
   const [dias, setDias] = useState([]);
   const [seleccion, setSeleccion] = useState(null);
 
   useEffect(() => {
-    const nuevaSemana = obtenerSemana(semanaActual);
-    console.log("📅 Días calculados para la semana:", nuevaSemana);
-    setDias(nuevaSemana);
-  }, [semanaActual]);
-
-  const avanzarSemana = () => {
-    const nuevaFecha = new Date(semanaActual);
-    nuevaFecha.setDate(nuevaFecha.getDate() + 7);
-    setSemanaActual(nuevaFecha);
-  };
-
-  const retrocederSemana = () => {
-    const nuevaFecha = new Date(semanaActual);
-    nuevaFecha.setDate(nuevaFecha.getDate() - 7);
-    setSemanaActual(nuevaFecha);
-  };
-
-  const estaDisponible = (fecha) => {
-    const fechaISO = fecha.toISOString().split("T")[0];
-    return disponibilidad.find(d => d.fecha === fechaISO);
-  };
+    const semana = obtenerSemana(new Date());
+    setDias(semana);
+  }, []);
 
   const obtenerRangos = (fecha) => {
     const fechaISO = fecha.toISOString().split("T")[0];
-    const dia = disponibilidad.find(d => d.fecha === fechaISO);
+    const dia = disponibilidad.find((d) => d.fecha === fechaISO);
     return dia ? dia.rangos : [];
   };
 
-  const formatearHora = (horaStr) => {
-    const [h, m] = horaStr.split(":");
-    return `${h}:${m}`;
-  };
-
-  // 🧩 Verificar que `dias` tenga datos
   const fechaInicio = dias.length > 0 ? dias[0] : null;
   const fechaFin = dias.length > 0 ? dias[6] : null;
-
-  console.log("🔍 Inicio de semana:", fechaInicio, "Fin:", fechaFin);
-  console.log("🧩 Disponibilidad recibida:", disponibilidad);
 
   if (!fechaInicio || !fechaFin) {
     return <p className="text-center text-gray-500">Cargando semana...</p>;
@@ -79,23 +51,6 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar }) =
 
   return (
     <div className="mt-8">
-      {/* Botones de semana */}
-      <div className="flex justify-between items-center mb-2">
-        <button
-          className="text-sm bg-gray-100 px-3 py-2 rounded-xl shadow hover:bg-gray-200"
-          onClick={retrocederSemana}
-        >
-          <FaArrowLeft className="inline mr-1" /> Semana anterior
-        </button>
-        <button
-          className="text-sm bg-gray-100 px-3 py-2 rounded-xl shadow hover:bg-gray-200"
-          onClick={avanzarSemana}
-        >
-          Semana siguiente <FaArrowRight className="inline ml-1" />
-        </button>
-      </div>
-
-      {/* Texto de rango de semana */}
       <h3 className="text-center font-medium text-[#333] mb-4">
         Semana del{" "}
         {fechaInicio.toLocaleDateString("es-AR", {
@@ -109,17 +64,13 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar }) =
         })}
       </h3>
 
-      {/* Días de la semana */}
       <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
         {dias.map((dia, index) => {
           const fechaISO = dia.toISOString().split("T")[0];
           const rangos = obtenerRangos(dia);
 
           return (
-            <div
-              key={index}
-              className="bg-white p-3 rounded-2xl shadow border"
-            >
+            <div key={index} className="bg-white p-3 rounded-2xl shadow border">
               <p className="text-sm font-semibold text-center text-[#333] capitalize">
                 {formatearDiaCorto(dia)}
               </p>

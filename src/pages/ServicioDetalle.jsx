@@ -1,8 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FiChevronDown } from "react-icons/fi";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import {
   FaUser,
   FaDollarSign,
@@ -51,19 +49,21 @@ function ServicioDetalle() {
     fetchServicio();
   }, [id]);
 
+  // ✅ NUEVO BLOQUE: Obtener disponibilidad por fechas
   useEffect(() => {
     const obtenerDisponibilidad = async () => {
       if (!servicio || typeof servicio._id === "undefined") return;
 
       try {
         const res = await fetch(
-          `https://servicios-holisticos-backend.onrender.com/api/terapeutas/disponibilidad/${servicio._id}`
+          `https://servicios-holisticos-backend.onrender.com/api/terapeutas/disponibilidad-fechas/${servicio._id}`
         );
         if (!res.ok) throw new Error("No se pudo obtener la disponibilidad");
         const data = await res.json();
+        console.log("📆 Disponibilidad recibida:", data);
         setDisponibilidad(data);
       } catch (error) {
-        console.error("Error al obtener disponibilidad:", error);
+        console.error("❌ Error al obtener disponibilidad:", error);
       }
     };
 
@@ -197,10 +197,28 @@ function ServicioDetalle() {
         </div>
       )}
 
+      {disponibilidad.length > 0 && (
+  <div className="mt-8 text-sm text-[#333] bg-gray-100 rounded-xl px-6 py-4 space-y-2">
+    <h3 className="text-base font-semibold">Disponibilidad del terapeuta:</h3>
+    {disponibilidad.map((dia, index) => (
+      <div key={index}>
+        <strong>{dia.fecha}</strong>
+        <ul className="list-disc ml-5">
+          {dia.rangos.map((rango, i) => (
+            <li key={i}>
+              {rango.desde} - {rango.hasta}
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+)}
+
       {/* Calendario semanal */}
       <div className="mt-8">
         <h2 className="text-xl text-center pt-4 font-semibold text-[#333] mb-4">
-          Elegí una fecha y horario para tu sesión
+          Elegí una fecha para tu sesión
         </h2>
 
         <CalendarioSemanal

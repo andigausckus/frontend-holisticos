@@ -2,10 +2,6 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import TimePicker from "react-time-picker";
 import "react-time-picker/dist/TimePicker.css";
-import dayjs from "dayjs";
-import "dayjs/locale/es";
-
-dayjs.locale("es");
 
 const diasSemana = [
   "Lunes",
@@ -17,27 +13,42 @@ const diasSemana = [
   "Domingo",
 ];
 
-function obtenerFechasDeSemana() {
-  const hoy = dayjs();
-  const inicioSemana = hoy.startOf("week").add(1, "day"); // Lunes
-  return diasSemana.map((dia, index) => {
-    const fecha = inicioSemana.add(index, "day");
-    return {
-      dia,
-      fecha: fecha.format("D [de] MMMM"),
-      rangos: [],
-    };
-  });
+// 🔧 NUEVO: función para calcular el lunes de la semana actual
+function obtenerSemanaActual() {
+  const hoy = new Date();
+  const dia = hoy.getDay(); // 0 (domingo) a 6 (sábado)
+  const diferencia = dia === 0 ? -6 : 1 - dia;
+  const lunes = new Date(hoy);
+  lunes.setDate(hoy.getDate() + diferencia);
+
+  const dias = [];
+  for (let i = 0; i < 7; i++) {
+    const fecha = new Date(lunes);
+    fecha.setDate(lunes.getDate() + i);
+    dias.push(fecha);
+  }
+
+  return dias;
 }
 
 export default function DisponibilidadServicio() {
   const { servicioId } = useParams();
   const navigate = useNavigate();
-
+  const [diasConFecha, setDiasConFecha] = useState([]);
   const [disponibilidad, setDisponibilidad] = useState([]);
 
   useEffect(() => {
-    setDisponibilidad(obtenerFechasDeSemana());
+    const dias = obtenerSemanaActual();
+    setDiasConFecha(dias);
+
+    // Inicializamos el estado con los nombres y fechas
+    setDisponibilidad(
+      dias.map((fecha, index) => ({
+        dia: diasSemana[index],
+        fecha,
+        rangos: [],
+      }))
+    );
   }, []);
 
   const agregarRango = (dia) => {
@@ -74,8 +85,8 @@ export default function DisponibilidadServicio() {
   const aplicarATodaLaSemana = (diaReferencia) => {
     const referencia = disponibilidad.find((d) => d.dia === diaReferencia);
     if (!referencia || referencia.rangos.length === 0) return;
-    setDisponibilidad((prev) =>
-      prev.map((d) => ({
+    setDisponibilidad(
+      disponibilidad.map((d) => ({
         ...d,
         rangos: [...referencia.rangos],
       }))
@@ -113,14 +124,15 @@ export default function DisponibilidadServicio() {
   return (
     <div className="bg-white min-h-screen py-10 px-4 max-w-4xl mx-auto">
       <h2 className="text-xl font-semibold text-center text-[#333] mb-10">
-        Agregá tu disponibilidad semanal 🌿
+        Agregá tu disponibilidad horaria para esta semana
       </h2>
 
       {disponibilidad.map((dia, index) => (
         <div key={dia.dia} className="mb-4 border-b pb-6">
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-base text-[#444]">
-              {dia.dia} <span className="text-sm text-[#666]">{dia.fecha}</span>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-base text-[#444] capitalize">
+              {dia.dia} {dia.fecha.getDate()} de{" "}
+              {dia.fecha.toLocaleDateString("es-AR", { month: "long" })}
             </h3>
             <div className="bg-pink-300 rounded-3xl px-4 py-1 hover:bg-pink-400 transition">
               <button
@@ -143,7 +155,6 @@ export default function DisponibilidadServicio() {
                 clearIcon={null}
                 locale="es-ES"
                 className="!h-14 !w-36 px-4 border border-pink-200 bg-pink-50 rounded-3xl shadow-sm text-[#333] text-center tracking-widest text-lg focus:outline-none"
-                clockIcon={null}
               />
               <span className="text-[#555]">a</span>
               <TimePicker
@@ -154,7 +165,6 @@ export default function DisponibilidadServicio() {
                 clearIcon={null}
                 locale="es-ES"
                 className="!h-14 !w-36 px-4 border border-pink-200 bg-pink-50 rounded-3xl shadow-sm text-[#333] text-center tracking-widest text-lg focus:outline-none"
-                clockIcon={null}
               />
               <button
                 onClick={() => eliminarRango(dia.dia, i)}
@@ -165,7 +175,8 @@ export default function DisponibilidadServicio() {
             </div>
           ))}
 
-          {dia.dia === "Lunes" && dia.rangos.length > 0 && (
+          {/* Mostrar solo en Lunes si hay rangos */}
+          {index === 0 && dia.rangos.length > 0 && (
             <button
               type="button"
               onClick={() => aplicarATodaLaSemana(dia.dia)}
