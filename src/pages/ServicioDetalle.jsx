@@ -71,13 +71,14 @@ function ServicioDetalle() {
   const obtenerIconoPlataforma = (nombre) => {
     switch (nombre?.toLowerCase()) {
       case "whatsapp":
-        return <FaWhatsapp key={nombre} className="text-green-600" title="WhatsApp" />;
+        return <FaWhatsapp key={nombre} className="text-2xl text-green-600" title="WhatsApp" />;
       case "zoom":
-        return <FaVideo key={nombre} className="text-blue-500" title="Zoom" />;
-      case "meet":
-        return <FaGoogle key={nombre} className="text-red-500" title="Google Meet" />;
+        return <FaVideo key={nombre} className="text-2xl text-blue-500" title="Zoom" />;
+      case "google meet":
+case "meet":
+  return <FaGoogle key={nombre} className="text-2xl text-green-600" title="Google Meet" />;
       case "skype":
-        return <FaSkype key={nombre} className="text-sky-600" title="Skype" />;
+        return <FaSkype key={nombre} className="text-2xl text-sky-600" title="Skype" />;
       default:
         return <span className="text-gray-500" key={nombre}>Sin definir</span>;
     }

@@ -14,12 +14,12 @@ const diasSemana = [
 ];
 
 // 🔧 NUEVO: función para calcular el lunes de la semana actual
-function obtenerSemanaActual() {
+function obtenerSemanaSiguiente() {
   const hoy = new Date();
   const dia = hoy.getDay(); // 0 (domingo) a 6 (sábado)
   const diferencia = dia === 0 ? -6 : 1 - dia;
   const lunes = new Date(hoy);
-  lunes.setDate(hoy.getDate() + diferencia);
+  lunes.setDate(hoy.getDate() + diferencia + 7); // 👈 sumamos 7 días para ir a la próxima semana
 
   const dias = [];
   for (let i = 0; i < 7; i++) {

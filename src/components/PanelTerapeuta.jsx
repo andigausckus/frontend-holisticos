@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 export default function PanelTerapeuta() {
   const [terapeuta, setTerapeuta] = useState(null);
   const [misServicios, setMisServicios] = useState([]);
+  const [mostrarAviso, setMostrarAviso] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,14 +22,46 @@ export default function PanelTerapeuta() {
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
         setTerapeuta(data);
-        setMisServicios(data.servicios || []); // esto depende de cómo guardes los servicios
+        setMisServicios(data.servicios || []);
       } catch (err) {
         console.error("Error al cargar perfil:", err);
         navigate("/login");
       }
     };
 
+    const verificarDisponibilidad = async () => {
+      const hoy = new Date();
+      const diaSemana = hoy.getDay(); // 0 = domingo
+      const hora = hoy.getHours();
+
+      if (diaSemana !== 0 || hora < 8) return; // solo domingos desde 8am
+
+      const inicioSemana = new Date();
+      inicioSemana.setDate(hoy.getDate() + 1); // lunes
+      inicioSemana.setHours(0, 0, 0, 0);
+
+      const finSemana = new Date(inicioSemana);
+      finSemana.setDate(inicioSemana.getDate() + 6); // domingo siguiente
+      finSemana.setHours(23, 59, 59, 999);
+
+      try {
+        const res = await fetch(
+          `https://servicios-holisticos-backend.onrender.com/api/disponibilidad/mis-horarios?desde=${inicioSemana.toISOString()}&hasta=${finSemana.toISOString()}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) {
+          setMostrarAviso(true); // no hay horarios cargados esta semana
+        }
+      } catch (err) {
+        console.error("Error al verificar disponibilidad:", err);
+      }
+    };
+
     fetchPerfil();
+    verificarDisponibilidad();
   }, [navigate]);
 
   if (!terapeuta) return <p className="p-6 text-gray-600">Cargando perfil...</p>;
@@ -41,15 +74,30 @@ export default function PanelTerapeuta() {
         </h1>
         <p className="text-gray-600 text-base mb-10">¿Qué deseas hacer hoy?</p>
 
-        <div className="flex flex-col gap-4 mb-12">
+        {/* 🔔 Aviso dinámico */}
+        {mostrarAviso && (
+          <div className="bg-pink-50 border-l-4 border-pink-400 text-[#333] p-4 mb-6 rounded-xl shadow text-left">
+            <h3 className="text-xl font-semibold mb-2">🗓️ Organizá tu semana</h3>
+            <p className="mb-4">
+              Agregá tus horarios disponibles para que los usuarios puedan reservar sesiones esta semana.
+            </p>
+            <button
+              onClick={() => navigate("/disponibilidad")}
+              className="bg-pink-500 text-white px-5 py-2 rounded-3xl hover:bg-pink-600 transition"
+            >
+              Agregar disponibilidad
+            </button>
+          </div>
+        )}
 
+        <div className="flex flex-col gap-4 mb-12">
           <button
-  onClick={() => navigate("/nuevo-servicio")}
-  className="w-full bg-pink-400 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-pink-500 hover:scale-105 transition-transform duration-200 ease-in-out focus:outline-none focus:ring-0"
->
-  ➕ Agregar un servicio
-</button>
-          
+            onClick={() => navigate("/nuevo-servicio")}
+            className="w-full bg-pink-400 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-pink-500 hover:scale-105 transition-transform duration-200 ease-in-out focus:outline-none focus:ring-0"
+          >
+            ➕ Agregar un servicio
+          </button>
+
           <button
             onClick={() => navigate("/editar-mis-servicios")}
             className="w-full bg-teal-400 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-teal-500 hover:scale-105 transition-transform duration-200 ease-in-out focus:outline-none focus:ring-0"

@@ -56,6 +56,7 @@ export default function App() {
 <Route path="/pago-pendiente" element={<PaginaPagoPendiente />} />
           <Route path="/nuevo-servicio" element={<NuevoServicio />} />
           <Route path="/disponibilidad/:servicioId" element={<DisponibilidadServicio />} />
+          <Route path="/disponibilidad" element={<DisponibilidadServicio />} />
           <Route path="/editar-mis-servicios" element={<EditarMisServicios />} />
           <Route path="/editar-servicio/:servicioId" element={<EditarServicio />} />
         </Routes>
