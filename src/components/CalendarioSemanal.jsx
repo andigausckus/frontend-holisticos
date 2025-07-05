@@ -65,7 +65,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar }) =
   }
 
   return (
-    <div className="mt-8">
+    <div className="mt-8 px-4">
       {/* 🔁 Botones para cambiar semana */}
       <div className="flex justify-center gap-4 mb-4 flex-wrap">
         {!mostrarSiguiente && (
@@ -106,7 +106,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar }) =
         })}
       </h3>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-7 gap-4 w-full">
         {dias.map((dia, index) => {
           const fechaISO = dia.toISOString().split("T")[0];
           const rangos = obtenerRangos(dia);
@@ -114,7 +114,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar }) =
           return (
             <div
               key={index}
-              className="bg-white p-3 rounded-2xl shadow border"
+              className="bg-white mb-4 p-3 rounded-2xl shadow border w-full"
             >
               <p className="text-sm font-semibold text-center text-[#333] capitalize">
                 {formatearDiaCorto(dia)}

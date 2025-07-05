@@ -24,6 +24,11 @@ import DisponibilidadServicio from "./components/DisponibilidadServicio";
 import EditarMisServicios from "./components/EditarMisServicios";
 import EditarServicio from "./components/EditarServicio";
 import MisionValores from "./components/MisionValores";
+import AdminReservas from './pages/AdminReservas';
+import AdminTerapeutas from './pages/AdminTerapeutas';
+import AdminComunicado from "./pages/AdminComunicado";
+import ReservaDetalle from "./pages/ReservaDetalle";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 
 // Páginas de blog
@@ -48,6 +53,11 @@ export default function App() {
           <Route path="/terapeuta/:id" element={<PerfilTerapeuta />} />
           <Route path="/servicios/:id" element={<ServicioDetalle />} />
           <Route path="/pago" element={<PaginaPagoSimple />} />
+          <Route path="/admin/reservas" element={<AdminReservas />} />
+          <Route path="/admin/terapeutas" element={<AdminTerapeutas />} />
+          <Route path="/admin/comunicado" element={<AdminComunicado />} />
+          <Route path="/reserva/:id" element={<ReservaDetalle />} />
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
           
           {/* ✅ Agregadas rutas legales */}
           <Route path="/terminos" element={<Terminos />} />

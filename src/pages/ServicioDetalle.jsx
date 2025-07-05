@@ -83,11 +83,7 @@ function ServicioDetalle() {
     switch (nombre?.toLowerCase()) {
       case "whatsapp":
         return (
-          <FaWhatsapp
-            key={nombre}
-            className="text-2xl text-green-600"
-            title="WhatsApp"
-          />
+          <FaWhatsapp key={nombre} className="text-2xl text-green-600" title="WhatsApp" />
         );
       case "zoom":
         return (
@@ -96,11 +92,7 @@ function ServicioDetalle() {
       case "google meet":
       case "meet":
         return (
-          <FaGoogle
-            key={nombre}
-            className="text-2xl text-green-600"
-            title="Google Meet"
-          />
+          <FaGoogle key={nombre} className="text-2xl text-green-600" title="Google Meet" />
         );
       case "skype":
         return (
@@ -130,14 +122,14 @@ function ServicioDetalle() {
   }
 
   return (
-    <div className="pt-12 bg-white pb-16 px-4 max-w-2xl mx-auto">
+    <div className="pt-12 px-2 bg-white max-w-2xl mx-auto shadow-md rounded-xl overflow-hidden">
       <img
         src={servicio.imagen}
         alt={servicio.titulo}
-        className="w-full aspect-video object-cover rounded-3xl mb-6"
+        className="w-full aspect-video object-cover mb-6"
       />
 
-      <div className="bg-white text-sm  rounded-xl shadow-md pl-6 p-4 text-[#333] space-y-4">
+      <div className="bg-white shadow-md rounded-3xl text-sm pl-6 p-4 text-[#333] space-y-4">
         <h1 className="text-xl font-bold text-center">{servicio.titulo}</h1>
         <div className="flex justify-center gap-1 text-gray-400 text-sm -mt-1">
           <span>☆☆☆☆☆</span>
@@ -161,53 +153,49 @@ function ServicioDetalle() {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 text-gray-600">
-          <FaClock className="text-pink-500" />
-          <span>{servicio.duracionFormateada}</span>
-        </div>
+        <div className="flex justify-center items-center gap-6 mt-4">
+          {/* Duración */}
+          <div className="flex items-center gap-1 text-gray-600">
+            <FaClock className="text-pink-500" />
+            <span>{servicio.duracionFormateada}</span>
+          </div>
 
-        <div className="flex items-center gap-2 text-gray-600">
-          <FaWifi className="text-pink-500" />
-          <span>Se brinda por</span>
-          {servicio.plataformas?.length > 0 ? (
-            servicio.plataformas.map((p, i) => (
-              <span key={i}>{obtenerIconoPlataforma(p)}</span>
-            ))
-          ) : (
-            <span className="text-gray-400 ml-1">Sin definir</span>
-          )}
+          {/* Plataforma */}
+          <div className="flex items-center gap-1 text-gray-600">
+            <FaWifi className="text-pink-500" />
+            <span>Se brinda por</span>
+            {servicio.plataformas?.length > 0 ? (
+              servicio.plataformas.map((p, i) => (
+                <span key={i}>{obtenerIconoPlataforma(p)}</span>
+              ))
+            ) : (
+              <span className="text-gray-400">Sin definir</span>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="mt-8 shadow-md rounded-xl pl-6 p-4 flex pt-4 gap-4">
+      <div className="mt-8 flex flex-row justify-center pt-4 gap-4">
         <button
           onClick={() => setMostrarDescripcion(!mostrarDescripcion)}
-          className={`flex-1 flex justify-center items-center px-4 py-3 rounded-3xl shadow-sm font-semibold gap-2
-            ${
-              mostrarDescripcion ? "bg-pink-500 text-white" : "bg-pink-400 text-white"
-            }`}
+          className={`w-48 mb-8 flex justify-center items-center px-4 py-3 font-semibold gap-2 rounded-3xl
+            ${mostrarDescripcion ? "bg-pink-500 text-white" : "bg-pink-400 text-white"}`}
         >
           Descripción
           <FiChevronDown
-            className={`transition-transform duration-300${
-              mostrarDescripcion ? "rotate-180" : ""
-            }`}
+            className={`transition-transform duration-300 ${mostrarDescripcion ? "rotate-180" : ""}`}
             size={20}
           />
         </button>
 
         <button
           onClick={() => setMostrarResenas(!mostrarResenas)}
-          className={`flex-1 flex justify-center items-center px-4 py-3 rounded-3xl shadow-sm font-semibold gap-2
-            ${
-              mostrarResenas ? "bg-pink-500 text-white" : "bg-pink-400 text-white"
-            }`}
+          className={`w-48 mb-8 flex justify-center items-center px-4 py-3 font-semibold gap-2 rounded-3xl
+            ${mostrarResenas ? "bg-pink-500 text-white" : "bg-pink-400 text-white"}`}
         >
           Reseñas
           <FiChevronDown
-            className={`transition-transform duration-300 ${
-              mostrarResenas ? "rotate-180" : ""
-            }`}
+            className={`transition-transform duration-300 ${mostrarResenas ? "rotate-180" : ""}`}
             size={20}
           />
         </button>
@@ -242,7 +230,7 @@ function ServicioDetalle() {
       {seleccion && (
         <div className="mt-4 text-center">
           <button
-            className="bg-[#009929] hover:bg-[#006414] text-white px-6 py-3 rounded-3xl shadow"
+            className="bg-[#009929] mb-48 hover:bg-[#006414] text-white px-6 py-3 rounded-3xl shadow"
             onClick={() =>
               navigate("/pago", {
                 state: {

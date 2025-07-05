@@ -83,11 +83,17 @@ function PaginaPagoSimple() {
     const payload = {
       items: [
         {
-          title: servicio?.nombre || "Sesión",
-          description: `Sesión con ${servicio?.terapeuta} el ${fecha} a las ${hora}`,
+          title: servicio?.titulo || "Sesión",
+          description: `Sesión con ${servicio?.terapeuta?.nombreCompleto} el ${fecha} a las ${hora}`,
           quantity: 1,
           currency_id: "ARS",
           unit_price: Number(servicio?.precio) || 1000,
+          servicioId: servicio?._id,
+          terapeutaId: servicio?.terapeuta?._id,
+          fechaReserva: fecha,
+          horaReserva: hora,
+          terapeutaNombre: servicio?.terapeuta?.nombreCompleto,
+          terapeutaEmail: servicio?.terapeuta?.email,
         },
       ],
       payer: {
@@ -98,7 +104,7 @@ function PaginaPagoSimple() {
         },
       },
       marketplace_fee: 500,
-      additional_info: mensaje || "Sin mensaje",
+      additional_info: "Reserva generada desde el sitio web",
     };
 
     console.log("📤 Enviando payload a backend:", payload);
@@ -116,7 +122,17 @@ function PaginaPagoSimple() {
       const data = await response.json();
 
       if (data.init_point) {
-        window.location.href = data.init_point;
+  // 🟡 Guardar info para registrar reserva si el pago es exitoso
+  localStorage.setItem("datosReserva", JSON.stringify({
+    servicioId: servicio?._id,
+    terapeutaId: servicio?.terapeuta?._id,
+    fecha,
+    hora,
+  }));
+
+  // 🔁 Redirigir a Mercado Pago
+  window.location.href = data.init_point;
+}
       } else {
         alert("Error al generar el link de pago.");
         console.error("⚠️ Respuesta inesperada:", data);
@@ -136,15 +152,15 @@ function PaginaPagoSimple() {
           {/* Columna izquierda */}
           <div className="flex flex-col justify-between h-full space-y-4 p-4 divide-y divide-gray-200">
             <p className="pt-1">
-              <span className="text-pink-500 underline underline-offset-4 decoration-[1px]">Servicio</span><br />
+              <span className="text-pink-500 underline-offset-4 decoration-[1px]">Servicio</span><br />
               {servicio?.titulo}
             </p>
             <p className="pt-4">
-              <span className="text-pink-500 underline underline-offset-4 decoration-[1px]">Modalidad</span><br />
+              <span className="text-pink-500 underline-offset-4 decoration-[1px]">Modalidad</span><br />
               {servicio?.modalidad}
             </p>
             <p className="pt-4">
-              <span className="text-pink-500 underline underline-offset-4 decoration-[1px]">Fecha</span><br />
+              <span className="text-pink-500 underline-offset-4 decoration-[1px]">Fecha</span><br />
               {fecha
                 ? new Date(fecha).toLocaleDateString("es-AR", {
                     day: "numeric",
@@ -153,7 +169,7 @@ function PaginaPagoSimple() {
                 : "-"}
             </p>
             <p className="pt-4">
-              <span className="text-pink-500 underline underline-offset-4 decoration-[1px]">Duración</span><br />
+              <span className="text-pink-500 underline-offset-4 decoration-[1px]">Duración</span><br />
               {typeof servicio?.duracion === "number"
                 ? formatearDuracion(servicio.duracion)
                 : "Duración no disponible"}
@@ -163,19 +179,19 @@ function PaginaPagoSimple() {
           {/* Columna derecha */}
           <div className="flex flex-col justify-between h-full space-y-4 p-4 divide-y divide-gray-200">
             <p className="pt-1">
-              <span className="text-pink-500 underline underline-offset-4 decoration-[1px]">Terapeuta</span><br />
+              <span className="text-pink-500 underline-offset-4 decoration-[1px]">Terapeuta</span><br />
               {servicio?.terapeuta?.nombreCompleto || "Sin definir"}
             </p>
             <p className="pt-4">
-              <span className="text-pink-500 underline underline-offset-4 decoration-[1px]">Precio</span><br />
+              <span className="text-pink-500 underline-offset-4 decoration-[1px]">Precio</span><br />
               ${servicio?.precio}
             </p>
             <p className="pt-4">
-              <span className="text-pink-500 underline underline-offset-4 decoration-[1px]">Hora</span><br />
+              <span className="text-pink-500 underline-offset-4 decoration-[1px]">Hora</span><br />
               {hora} a {calcularHoraFin(hora, servicio?.duracion)} hs
             </p>
             <div className="pt-4">
-              <span className="text-pink-500 underline underline-offset-4 decoration-[1px]">Plataforma</span><br />
+              <span className="text-pink-500 underline-offset-4 decoration-[1px]">Plataforma</span><br />
               {Array.isArray(servicio?.plataformas) && servicio.plataformas.length > 0 ? (
                 <div className="flex gap-2 mt-1 text-[22px]">
                   {servicio.plataformas.map((p, i) => (
@@ -198,6 +214,7 @@ function PaginaPagoSimple() {
           placeholder="Nombre y apellido"
           value={nombre}
           onChange={(e) => setNombre(e.target.value)}
+          required
           className="w-full p-2 mb-4 bg-white border border-[#444444] rounded-lg outline-none"
         />
         <input
@@ -205,6 +222,7 @@ function PaginaPagoSimple() {
           placeholder="Correo electrónico"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
           className="w-full p-2 mb-4 bg-white border border-[#444444] rounded-lg outline-none"
         />
         <input
