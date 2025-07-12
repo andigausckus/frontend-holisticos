@@ -131,3 +131,8 @@ dist
 
 # Replit debugger
 .breakpoints
+# Replit files
+.upm/
+
+# Archivos de build (no subir a GitHub)
+build/
