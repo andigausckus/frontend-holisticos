@@ -108,26 +108,26 @@ const { servicioId } = useParams();
         // solo incluir días que tienen al menos un rango válido
         if (rangosValidos.length === 0) return null;
 
-        return {
-  fecha: d.fecha.toISOString().split("T")[0],
-  horariosFijos: rangosValidos, // ✅ este es el campo correcto
-};
-      })
-      .filter((d) => d !== null);
+  return {
+    fecha: d.fecha.toISOString().split("T")[0],
+    horariosFijos: rangosValidos, // ✅ este es el campo correcto
+  };
+        })
+        .filter((d) => d !== null);
 
-      console.log("➡️ Enviando disponibilidad:", disponibilidadFiltrada);
-      console.log("TOKEN:", token);
+  console.log("➡️ Enviando disponibilidad:", disponibilidadFiltrada);
+  console.log("TOKEN:", token);
 
-    await axios.put(
-      `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}/horarios`,
-      { horarios: disponibilidadFiltrada },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+  await axios.put(
+    `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}/horarios`,
+    { horariosDisponibles: disponibilidadFiltrada },
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
       console.log("📤 Enviado correctamente a /api/disponibilidad/terapeutas/disponibilidad");
 
