@@ -99,35 +99,34 @@ const { servicioId } = useParams();
       .map((d) => {
         const rangosValidos = d.rangos.filter(
           (r) =>
-            r.desde &&
-            r.hasta &&
-            r.desde.length === 5 &&
-            r.hasta.length === 5
+            /^([01]\d|2[0-3]):[0-5]\d$/.test(r.desde) &&
+            /^([01]\d|2[0-3]):[0-5]\d$/.test(r.hasta)
         );
 
-        // solo incluir días que tienen al menos un rango válido
         if (rangosValidos.length === 0) return null;
 
-  return {
-    fecha: d.fecha.toISOString().split("T")[0],
-    horariosFijos: rangosValidos, // ✅ este es el campo correcto
-  };
-        })
-        .filter((d) => d !== null);
-
+        return {
+          fecha: d.fecha.toISOString().split("T")[0],
+          horariosFijos: rangosValidos,
+        };
+      })
+      .filter(Boolean);
+      
   console.log("➡️ Enviando disponibilidad:", disponibilidadFiltrada);
   console.log("TOKEN:", token);
 
-  await axios.put(
-    `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}/horarios`,
-    { horariosDisponibles: disponibilidadFiltrada },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+      console.log("🟡 Enviando disponibilidad:", JSON.stringify(disponibilidadFiltrada, null, 2));
+
+      await axios.put(
+        `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}/horarios`,
+        { horarios: disponibilidadFiltrada }, // ✅ NO `horariosDisponibles`
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       console.log("📤 Enviado correctamente a /api/disponibilidad/terapeutas/disponibilidad");
 
