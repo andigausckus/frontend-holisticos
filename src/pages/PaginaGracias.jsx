@@ -73,6 +73,8 @@ function Gracias() {
         usuarioNombre: nombre,
         usuarioEmail: localStorage.getItem("emailUsuario") || "",
         usuarioTelefono: localStorage.getItem("telefonoUsuario") || "",
+        fechaReserva: localStorage.getItem("fechaReserva") || "",
+        horaReserva: localStorage.getItem("horaReserva") || "",
       };
 
       fetch("https://servicios-holisticos-backend.onrender.com/api/reservas", {
@@ -84,6 +86,13 @@ function Gracias() {
         .then((data) => {
           setMensaje("✅ ¡Reserva confirmada!");
           setReservaConfirmada(true);
+          localStorage.removeItem("datosReserva");
+localStorage.removeItem("nombreUsuario");
+localStorage.removeItem("emailUsuario");
+localStorage.removeItem("telefonoUsuario");
+localStorage.removeItem("tituloServicio");
+localStorage.removeItem("fechaReserva");
+localStorage.removeItem("horaReserva");
         })
         .catch((err) => {
           console.error("❌ Error al guardar reserva:", err);
