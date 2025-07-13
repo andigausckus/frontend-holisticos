@@ -76,7 +76,8 @@ function Gracias() {
         fechaReserva: localStorage.getItem("fechaReserva") || "",
         horaReserva: localStorage.getItem("horaReserva") || "",
       };
-
+      
+console.log("📤 Payload enviado al backend:", payload);
       fetch("https://servicios-holisticos-backend.onrender.com/api/reservas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
