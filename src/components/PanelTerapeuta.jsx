@@ -9,23 +9,6 @@ export default function PanelTerapeuta() {
   const [cargóDisponibilidad, setCargóDisponibilidad] = useState(false);
   const navigate = useNavigate();
 
-  // 📆 Mostrar semana siguiente
-  const formatearSemanaSiguiente = () => {
-    const hoy = new Date();
-    const lunes = new Date(hoy);
-    lunes.setDate(hoy.getDate() + (1 - hoy.getDay() + 7)); // próximo lunes
-    const domingo = new Date(lunes);
-    domingo.setDate(lunes.getDate() + 6);
-    const formato = (fecha) => `${fecha.getDate()}/${fecha.getMonth() + 1}`;
-    return `${formato(lunes)} al ${formato(domingo)}`;
-  };
-
-  // 📅 Mostrar recordatorio solo los domingos entre las 8:00 y 23:59
-  const hoy = new Date();
-  const esDomingo = hoy.getDay() === 0;
-  const hora = hoy.getHours();
-  const mostrarRecordatorio = esDomingo && hora >= 8;
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
@@ -50,9 +33,12 @@ export default function PanelTerapeuta() {
 
     const fetchReservas = async () => {
       try {
-        const res = await fetch("https://servicios-holisticos-backend.onrender.com/api/reservas/mis-reservas", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          "https://servicios-holisticos-backend.onrender.com/api/reservas/mis-reservas",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const data = await res.json();
         setReservas(data);
       } catch (err) {
@@ -122,17 +108,6 @@ export default function PanelTerapeuta() {
         </h1>
         <p className="text-gray-600 text-base mb-10">¿Qué deseas hacer hoy?</p>
 
-        {/* 🔔 Cartel SOLO si no cargó disponibilidad */}
-        {mostrarRecordatorio && !cargóDisponibilidad && (
-          <div className="bg-pink-50 border-l-4 border-pink-400 text-[#333] p-4 mb-6 rounded-xl shadow text-left">
-            <h3 className="text-xl font-semibold mb-2">🗓️ Recordatorio semanal</h3>
-            <p className="text-sm">
-              Recordá cargar tus horarios disponibles para la semana del <strong>{formatearSemanaSiguiente()}</strong>, desde la sección <strong>“Editar mis servicios”</strong>.
-            </p>
-          </div>
-        )}
-
-        {/* BOTONES */}
         <div className="flex flex-col gap-4 mb-12">
           <button onClick={() => navigate("/nuevo-servicio")} className="w-full bg-pink-400 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-pink-500 hover:scale-105 transition-transform duration-200 ease-in-out">
             ➕ Agregar un servicio
@@ -149,7 +124,6 @@ export default function PanelTerapeuta() {
           )}
         </div>
 
-        {/* SERVICIOS */}
         <div className="text-left mb-12">
           <h2 className="text-xl font-semibold text-[#444] mb-4">🧘‍♀️ Tus servicios</h2>
           {misServicios.length === 0 ? (
@@ -166,7 +140,6 @@ export default function PanelTerapeuta() {
           )}
         </div>
 
-        {/* RESERVAS */}
         <div className="text-left">
           <h2 className="text-xl font-semibold text-[#444] mb-4">📅 Reservas recibidas</h2>
           {reservas.length === 0 ? (

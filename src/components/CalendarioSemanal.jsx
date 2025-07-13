@@ -31,22 +31,12 @@ function formatearDiaCorto(fecha) {
 const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar }) => {
   const [dias, setDias] = useState([]);
   const [seleccion, setSeleccion] = useState(null);
-  const [mostrarSiguiente, setMostrarSiguiente] = useState(false);
-  const [mostrarAnterior, setMostrarAnterior] = useState(false);
 
   useEffect(() => {
     const hoy = new Date();
-    const diaSemana = hoy.getDay();
-    const esDomingo = diaSemana === 0;
-
-    const fechaBase =
-      esDomingo || mostrarSiguiente
-        ? new Date(hoy.setDate(hoy.getDate() + (8 - diaSemana)))
-        : hoy;
-
-    const semana = obtenerSemana(fechaBase);
-    setDias(semana);
-  }, [mostrarSiguiente]);
+    const semanaActual = obtenerSemana(hoy);
+    setDias(semanaActual);
+  }, []);
 
   const obtenerHorarios = (fecha) => {
   const fechaISO = fecha.toISOString().split("T")[0];
@@ -64,30 +54,18 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar }) =
   return (
     <div className="bg-white mt-8 px-4">
       <div className="flex justify-center gap-4 mb-4 flex-wrap">
-        {!mostrarSiguiente && (
-          <button
-            className="text-violet-600 underline text-sm sm:text-base hover:text-violet-800 transition"
-            onClick={() => {
-              setMostrarSiguiente(true);
-              setMostrarAnterior(true);
-            }}
-          >
-            Semana siguiente
-          </button>
-        )}
+        
+      <div/></div>
 
-        {mostrarAnterior && (
-          <button
-            className="text-violet-600 underline text-sm sm:text-base hover:text-violet-800 transition"
-            onClick={() => {
-              setMostrarSiguiente(false);
-              setMostrarAnterior(false);
-            }}
-          >
-            Semana anterior
-          </button>
+        {dias.every((dia) => obtenerHorarios(dia).length === 0) && (
+          <div className="text-center text-sm text-gray-600 mb-4">
+            🕒 <span className="text-[#444444] font-medium">
+              El terapeuta aún no cargó horarios para esta semana.
+            </span>
+            <br />
+            Volvé en unas horas o más tarde durante el día para ver su disponibilidad.
+          </div>
         )}
-      </div>
 
       <h3 className="text-center font-medium text-[#333] mb-4">
         Semana del {fechaInicio.toLocaleDateString("es-AR", { day: "numeric", month: "long" })} al{" "}

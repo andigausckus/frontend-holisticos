@@ -4,9 +4,13 @@ import axios from "axios"; // opcional si no estás usando axios
 
 function obtenerSemanaActual() {
   const hoy = new Date();
-  const diaSemana = hoy.getDay();
+  const dia = hoy.getDay(); // 0 (domingo) a 6 (sábado)
+
+  // Si hoy es domingo, restamos 6 para ir al lunes anterior (porque comienza nueva semana)
+  // Si es cualquier otro día, vamos al lunes de esta semana
+  const diferenciaAlLunes = dia === 0 ? -6 : 1 - dia;
   const lunes = new Date(hoy);
-  lunes.setDate(hoy.getDate() - ((diaSemana + 6) % 7));
+  lunes.setDate(hoy.getDate() + diferenciaAlLunes);
   lunes.setHours(0, 0, 0, 0);
 
   const dias = [];
@@ -243,9 +247,9 @@ const { servicioId } = useParams();
       <button
         onClick={guardar}
         disabled={guardando}
-        className="mb-24 bg-violet-500 text-white px-3 py-2 rounded-full w-full"
+        className="mb-24 bg-violet-500 text-white mx-auto px-3 py-2 rounded-full w-full w-fi"
       >
-        {guardando ? "Guardando..." : "Guardar disponibilidad"}
+        {guardando ? "Guardando..." : "Guardar disponibilidad horaria"}
       </button>
     </div>
   );
