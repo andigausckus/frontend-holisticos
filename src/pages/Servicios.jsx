@@ -193,12 +193,11 @@ function Servicios() {
                   </div>
                 </div>
 
-                <Link
-                  to={`/servicios/${servicio._id}`}
-                  className="bg-pink-400 text-white px-4 py-2 rounded-full text-base hover:bg-pink-500 transition-all text-center block"
-                >
-                  Ver más
-                </Link>
+                <Link to={`/servicio/${servicio._id}`} 
+  className="bg-pink-400 text-white px-4 py-2 rounded-full text-base hover:bg-pink-500 transition-all text-center block"
+>
+  Ver más
+</Link>
               </div>
             </div>
           ))

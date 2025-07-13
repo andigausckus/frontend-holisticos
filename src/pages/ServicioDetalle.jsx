@@ -52,14 +52,14 @@ function ServicioDetalle() {
   }, [id]);
 
   useEffect(() => {
-  if (servicio?.horariosDisponibles) {
-    const formateada = servicio.horariosDisponibles.map((d) => ({
-      fecha: d.fecha,
-      horariosFijos: d.horariosFijos || [],
-    }));
-    setDisponibilidad(formateada);
-  }
-}, [servicio]);
+    if (servicio?.horariosDisponibles) {
+      const formateada = servicio.horariosDisponibles.map((d) => ({
+        fecha: d.fecha,
+        horariosFijos: d.horariosFijos || [],
+      }));
+      setDisponibilidad(formateada);
+    }
+  }, [servicio]);
 
   const obtenerIconoPlataforma = (nombre) => {
     switch (nombre?.toLowerCase()) {
@@ -184,15 +184,14 @@ function ServicioDetalle() {
 
       {/* 🗓 Calendario */}
       <div className="mt-8">
-          <CalendarioSemanal
-            servicio={servicio}
-            servicioId={servicio._id} // ✅ AGREGAR ESTA LÍNEA
-            disponibilidad={disponibilidad}
-            duracionMinutos={servicio.duracionMinutos}
-            onSeleccionar={(fecha, hora) => {
-              setSeleccion({ fecha, hora });
-            }}
-          
+        <CalendarioSemanal
+          servicio={servicio}
+          servicioId={servicio._id}
+          disponibilidad={disponibilidad}
+          duracionMinutos={servicio.duracionMinutos}
+          onSeleccionar={(fecha, hora) => {
+            setSeleccion({ fecha, hora });
+          }}
         />
       </div>
 
@@ -201,15 +200,17 @@ function ServicioDetalle() {
         <div className="mt-4 text-center">
           <button
             className="bg-[#009929] mb-24 hover:bg-[#006414] text-white px-6 py-3 rounded-3xl shadow"
-            onClick={() =>
+            onClick={() => {
+              localStorage.setItem("fechaReserva", seleccion.fecha);
+              localStorage.setItem("horaReserva", seleccion.hora);
               navigate("/pago", {
                 state: {
                   servicio,
                   fecha: seleccion.fecha,
                   hora: seleccion.hora,
                 },
-              })
-            }
+              });
+            }}
           >
             Reservar sesión
           </button>
