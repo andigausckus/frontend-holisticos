@@ -33,7 +33,9 @@ export default function Tienda() {
   ].sort((a, b) => a.label.localeCompare(b.label));
 
   const terapiasDigitales = [
+    { value: "ansiedad", label: "Ansiedad" },
     { value: "aromaterapia", label: "Aromaterapia" },
+    { value: "artesanal", label: "Artesanal" },
     { value: "ayurveda", label: "Ayurveda" },
     { value: "masaje", label: "Masaje" },
     { value: "meditacion", label: "Meditación" },
@@ -44,12 +46,11 @@ export default function Tienda() {
     { value: "tarot", label: "Tarot" },
     { value: "yoga", label: "Yoga" },
     { value: "yogaPrenatal", label: "Yoga Prenatal" },
-    { value: "masajes", label: "Masajes" },
+    
   ];
 
   const modalidades = [
     { value: "Ebook", label: "Ebook" },
-    { value: "Curso online", label: "Curso online" },
   ];
 
   const productosDigitales = [
@@ -62,8 +63,6 @@ export default function Tienda() {
       tipo: "Curso online",
       categoria: "yogaPrenatal",
       imagen: "https://i.postimg.cc/x1NRnyzs/pregnant-6189040-1280.jpg",
-      precioARS: "$ 96.145",
-      precioNumerico: 96145,
       enlace: "https://go.hotmart.com/B100719523M",
     },
     {
@@ -75,8 +74,6 @@ export default function Tienda() {
       tipo: "Ebook",
       categoria: "yoga",
       imagen: "https://i.postimg.cc/3JRZx82y/Yoga67P.png",
-      precioARS: "$ 13.737",
-      precioNumerico: 13737,
       enlace: "https://go.hotmart.com/U100730139R", 
     },
     {
@@ -88,8 +85,6 @@ export default function Tienda() {
   tipo: "Curso online",
   categoria: "masajes",
   imagen: "https://i.postimg.cc/pLBH89jG/massage-2717431-1280.jpg",
-  precioARS: "$ 41.211",
-  precioNumerico: 41211,
   enlace: "https://go.hotmart.com/M100731243R",
   descuento: "Aprovechá 50% OFF por tiempo limitado!",
 },
@@ -101,9 +96,7 @@ export default function Tienda() {
     "La medicina ayurvédica ofrece una perspectiva integral sobre la salud mental, con 50 recetas para promover el equilibrio doshico y la armonía interior. ¡Descubrí tu equilibrio interior hoy y comenzá a vivir en armonía con la naturaleza!",
   tipo: "Ebook",
   categoria: "ayurveda",
-  imagen: "https://i.postimg.cc/HkFLYGg2/zx7fqr7t5.png",
-  precioARS: "$ 5.495",
-  precioNumerico: 5495,
+  imagen: "https://i.postimg.cc/K8vL26jc/cook-2364221-640.jpg",
   enlace: "https://go.hotmart.com/X100735838H?ap=b245",
   descuento: "Aprovechá 20% OFF por tiempo limitado!",
 },
@@ -114,13 +107,33 @@ export default function Tienda() {
   descripcion:
     "¡Descubre el fascinante mundo de la numerología con este eBook completo de 193 páginas! Aprende sobre numerología pitagórica, vibraciones numéricas, personalidad, karma y más. ¡Haz clic y empezá a explorar tu destino!",
   tipo: "Ebook",
-  categoria: "Numerología",
-  imagen: "https://i.postimg.cc/Z5PVxm57/Screenshot-20250710-190631-Chrome-2.jpg",
-  precioARS: false,
-  precioNumerico: false,
+  categoria: "numerología",
+  imagen: "https://i.postimg.cc/dDcY9jyL/clock-1274699-1280.jpg",
   enlace: "https://go.hotmart.com/J100759393X",
-  descuento: false,
 },
+    {
+  id: 6,
+  titulo: "Elimina los Síntomas Físicos de la Ansiedad",
+  tipoProducto: "digital",
+  descripcion:
+    "La guía ofrece beneficios como comprender y aliviar síntomas físicos de ansiedad, técnicas prácticas para manejar crisis, autoconfianza para enfrentar desencadenantes y gestionar la ansiedad de forma autónoma y vivir una vida más tranquila. ¡Descubrelo hoy mismo!",
+  tipo: "Ebook",
+  categoria: "ansiedad",
+  imagen: "https://i.postimg.cc/PrfsdJMG/stress-2902537-640.jpg",
+  enlace: "https://go.hotmart.com/Q100799298D",
+      descuento: "Aprovechá 66% OFF por tiempo limitado!",
+    },
+        {
+    id: 7,
+  titulo: "400 recetas de jabones, velas, cosmética natural (shampoo y cremas) y Aromaterapia",
+  tipoProducto: "digital",
+  descripcion:
+          "Descubre el secreto para crear y vender productos artesanales rentables desde casa con más de 400 recetas prácticas. ¡Descárgalo ahora y comienza a generar ingresos reales! ¿Estás listo para empezar?",
+  tipo: "Ebook",
+  categoria: "artesanal",
+  imagen: "https://i.postimg.cc/PqSSHbT9/soaps-2958985-640.jpg",
+  enlace: "https://go.hotmart.com/W100800796D",
+    },
   ];
 
   const categorias = filtroTipoProducto?.value === "digital" ? terapiasDigitales : categoriasFisicas;
@@ -129,13 +142,13 @@ export default function Tienda() {
   const productosFiltrados = productosDigitales.filter((producto) => {
     try {
       const coincideTipo = !filtroTipoProducto || producto.tipoProducto === filtroTipoProducto.value;
+      
       const coincideCategoria = !filtroCategoria || producto.categoria === filtroCategoria.value;
-      const coincideModalidad =
-        !mostrarModalidad || !filtroModalidad || producto.tipo.toLowerCase() === filtroModalidad.value.toLowerCase();
-      const coincidePrecio =
-        (!filtroPrecio.min || producto.precioNumerico >= parseInt(filtroPrecio.min)) &&
-        (!filtroPrecio.max || producto.precioNumerico <= parseInt(filtroPrecio.max));
-      return coincideTipo && coincideCategoria && coincideModalidad && coincidePrecio;
+      
+      const coincideModalidad = true;
+      
+      
+      return coincideTipo && coincideCategoria && coincideModalidad;
     } catch (error) {
       console.error(error);
       return false;
@@ -173,16 +186,7 @@ export default function Tienda() {
             styles={estilosSelect}
             isClearable
           />
-          {mostrarModalidad && (
-            <Select
-              placeholder="Formato"
-              options={modalidades}
-              value={filtroModalidad}
-              onChange={setFiltroModalidad}
-              styles={estilosSelect}
-              isClearable
-            />
-          )}
+          
           <div className="flex gap-2 items-center">
             <input
               type="number"
@@ -211,7 +215,7 @@ export default function Tienda() {
               <img
                 src={producto.imagen}
                 alt={producto.titulo}
-                className="w-full h-64 object-cover"
+                className="w-full h-80 object-cover"
               />
               <div className="p-6 space-y-1 flex-grow flex flex-col justify-between">
                 <div>
@@ -220,7 +224,7 @@ export default function Tienda() {
                   </h2>
                   <div className="flex items-center gap-3 flex-wrap mb-2">
                     <span className="bg-orange-100 text-orange-600 text-sm px-3 py-1 rounded-[5px] inline-block">
-                      {producto.tipo}
+                      Ebook
                     </span>
                     {producto.descuento && (
                       <span className="text-sm text-green-600 font-medium">
