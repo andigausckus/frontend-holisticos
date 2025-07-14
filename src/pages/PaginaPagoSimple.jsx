@@ -75,7 +75,7 @@ useEffect(() => {
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
-  const [minutos, setMinutos] = useState(10);
+  const [minutos, setMinutos] = useState(1);
   const [segundos, setSegundos] = useState(0);
   const [expirado, setExpirado] = useState(false);
 
@@ -174,7 +174,6 @@ useEffect(() => {
           number: telefono,
         },
       },
-      marketplace_fee: 500,
       additional_info: "Reserva generada desde el sitio web",
     };
 

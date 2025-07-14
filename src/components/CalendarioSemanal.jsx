@@ -87,42 +87,46 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
               {horarios.length > 0 ? (
   <div className="grid gap-2">
     {horarios.map((horario, idx) => {
-      console.log("⏰ Horario recibido:", horario); 
-      const key = `${fechaISO}-${horario.desde}`;
-      const disabled = horario.estado !== "disponible";
-      const bg = disabled
-        ? "bg-gray-200 text-gray-500"
-        : "bg-green-100 hover:bg-green-200 text-green-800";
-      const label =
-        horario.estado === "reservado"
-          ? "Reservado"
-          : horario.estado === "no_disponible"
-          ? "No disponible"
-          : "";
+  const key = `${fechaISO}-${horario.desde}`;
+  const estado = horario.estado;
 
-      return (
-        <button
-          key={idx}
-          className={`text-sm px-2 py-2 rounded-xl font-medium text-center transition ${bg}`}
-          disabled={disabled}
-          onClick={() => {
-            if (!horario?.desde || horario.desde === "--:--") {
-              alert("⚠️ Este horario no tiene una hora válida.");
-              return;
-            }
-            setSeleccion(key);
-            onSeleccionar(fechaISO, horario.desde);
-          }}
-        >
-          {horario?.desde && horario?.hasta
-            ? `${formatearHora(horario.desde)} - ${formatearHora(horario.hasta)}`
-            : "⏳ Hora inválida"}
-          {label && (
-            <span className="block text-xs mt-1 font-normal">{label}</span>
-          )}
-        </button>
-      );
-    })}
+  let bg = "bg-gray-200 text-gray-500";
+  let label = "";
+
+  if (estado === "disponible") {
+    bg = "bg-green-100 hover:bg-green-200 text-green-800";
+  } else if (estado === "reservado") {
+    label = "Reservado";
+  } else if (estado === "en_proceso") {
+    bg = "bg-yellow-100 text-yellow-800";
+    label = "En proceso de reserva";
+  }
+
+  const disabled = estado !== "disponible";
+
+  return (
+    <button
+      key={idx}
+      className={`text-sm px-2 py-2 rounded-xl font-medium text-center transition ${bg}`}
+      disabled={disabled}
+      onClick={() => {
+        if (!horario?.desde || horario.desde === "--:--") {
+          alert("⚠️ Este horario no tiene una hora válida.");
+          return;
+        }
+        setSeleccion(key);
+        onSeleccionar(fechaISO, horario.desde);
+      }}
+    >
+      {horario?.desde && horario?.hasta
+        ? `${formatearHora(horario.desde)} - ${formatearHora(horario.hasta)}`
+        : "⏳ Hora inválida"}
+      {label && (
+        <span className="block text-xs mt-1 font-normal">{label}</span>
+      )}
+    </button>
+  );
+})}
   </div>
 ) : (
   <div className="mt-2 px-2 py-2 bg-red-100 text-red-800 rounded-xl text-xs text-center font-semibold">
