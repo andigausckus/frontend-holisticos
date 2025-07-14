@@ -87,22 +87,40 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
               {horarios.length > 0 ? (
   <div className="grid gap-2">
     {horarios.map((horario, idx) => {
-  const key = `${fechaISO}-${horario.desde}`;
-  const estado = horario.estado;
+      const key = `${fechaISO}-${horario.desde}`;
+      const estado = horario.estado;
 
-  let bg = "bg-gray-200 text-gray-500";
-  let label = "";
+      let bg = "";
+      let label = "";
+      let disabled = false;
 
-  if (estado === "disponible") {
-    bg = "bg-green-100 hover:bg-green-200 text-green-800";
-  } else if (estado === "reservado") {
-    label = "Reservado";
-  } else if (estado === "en_proceso") {
-    bg = "bg-yellow-100 text-yellow-800";
-    label = "En proceso de reserva";
-  }
+      switch (estado) {
+        case "disponible":
+          bg = "bg-green-100 hover:bg-green-200 text-green-800";
+          label = "Disponible";
+          break;
 
-  const disabled = estado !== "disponible";
+        case "en_proceso":
+          bg = "bg-yellow-100 text-yellow-800";
+          label = "En proceso de reserva. Volvé en unos minutos";
+          disabled = true;
+          break;
+
+        case "reservado":
+          bg = "bg-gray-200 text-gray-500";
+          label = "Reservado";
+          disabled = true;
+          break;
+
+        case "no_disponible":
+          bg = "bg-gray-200 text-gray-500";
+          disabled = true;
+          break;
+
+        default:
+          bg = "bg-gray-100 text-gray-500";
+          disabled = true;
+      }
 
   return (
     <button
