@@ -66,18 +66,39 @@ useEffect(() => {
   if (servicio && fecha && hora) {
     verificarBloqueo();
   }
-}, [servicio, fecha, hora]); 
-    
-    useState(false);
+  }, [servicio, fecha, hora]); 
+
+  const [expirado, setExpirado] = useState(false);
   servicio.duracion = parseInt(servicio.duracion || servicio.duracionMinutos || 0);
 
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [aceptaTerminos, setAceptaTerminos] = useState(false);
-  const [minutos, setMinutos] = useState(2);
-  const [segundos, setSegundos] = useState(0);
-  const [expirado, setExpirado] = useState(false);
+  const [minutos, setMinutos] = useState(0);
+const [segundos, setSegundos] = useState(0);
+
+  useEffect(() => {
+    const reservaPendiente = JSON.parse(localStorage.getItem("reservaPendiente"));
+    const ahora = Date.now();
+
+    if (reservaPendiente?.expiracion) {
+      const diferencia = reservaPendiente.expiracion - ahora;
+
+      if (diferencia <= 0) {
+        setExpirado(true);
+      } else {
+        const totalSegundos = Math.floor(diferencia / 1000);
+        setMinutos(Math.floor(totalSegundos / 60));
+        setSegundos(totalSegundos % 60);
+      }
+    } else {
+      // No había reserva → marcar como expirada
+      setExpirado(true);
+    }
+  }, []);
+  
+    useState(false);
 
   function calcularHoraFin(horaInicio, duracionMinutos) {
     if (!horaInicio || typeof horaInicio !== "string" || !horaInicio.includes(":")) {

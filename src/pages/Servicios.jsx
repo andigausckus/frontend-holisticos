@@ -1,12 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Select from "react-select";
-import {
-  FaMapMarkerAlt,
-  FaDollarSign,
-  FaLaptop,
-  FaUser,
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaDollarSign, FaLaptop, FaUser } from "react-icons/fa";
 
 const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 
@@ -105,51 +100,49 @@ function Servicios() {
       </div>
 
       {/* Filtros */}
-<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
-  {/* Filtro de Categoría */}
-  <Select
-    options={opcionesSinIcono(categorias)}
-    placeholder="Seleccioná una categoría"
-    value={categoriaSeleccionada}
-    onChange={setCategoriaSeleccionada}
-    styles={customStyles}
-    isClearable
-    noOptionsMessage={() => "No hay servicios para esta categoría. ¡Muy pronto habrá!"}
-  />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
+        {/* Categoría */}
+        <Select
+          options={opcionesSinIcono(categorias)}
+          placeholder="Seleccioná una categoría"
+          value={categoriaSeleccionada}
+          onChange={setCategoriaSeleccionada}
+          styles={customStyles}
+          isClearable
+          noOptionsMessage={() => "No hay servicios para esta categoría. ¡Muy pronto habrá!"}
+        />
 
-  {/* Filtro de Duración */}
-  <Select
-    options={duraciones}
-    placeholder="Seleccioná una duración"
-    value={duracionSeleccionada}
-    onChange={setDuracionSeleccionada}
-    styles={customStyles}
-    isClearable
-  />
+        {/* Duración */}
+        <Select
+          options={duraciones}
+          placeholder="Seleccioná una duración"
+          value={duracionSeleccionada}
+          onChange={setDuracionSeleccionada}
+          styles={customStyles}
+          isClearable
+        />
 
-  {/* Filtro de Precio */}
-<div
-  className="flex gap-2 focus-within:border-[2px] items-center border border-gray-300 rounded-[1rem] px-3 py-2 focus-within:border-violet-600 hover:border-violet-500 transition duration-200"
->
-  <input
-    type="number"
-    placeholder="Mínimo ($)"
-    className="w-full border-none focus:outline-none text-sm"
-    value={precioMinimo}
-    onChange={(e) => setPrecioMinimo(e.target.value)}
-  />
-  <span>-</span>
-  <input
-    type="number"
-    placeholder="Máximo ($)"
-    className="w-full border-none focus:outline-none text-sm"
-    value={precioMaximo}
-    onChange={(e) => setPrecioMaximo(e.target.value)}
-  />
-</div>
-</div>
+        {/* Precio */}
+        <div className="flex gap-2 focus-within:border-[2px] items-center border border-gray-300 rounded-[1rem] px-3 py-2 focus-within:border-violet-600 hover:border-violet-500 transition duration-200">
+          <input
+            type="number"
+            placeholder="Mínimo ($)"
+            className="w-full border-none focus:outline-none text-sm"
+            value={precioMinimo}
+            onChange={(e) => setPrecioMinimo(e.target.value)}
+          />
+          <span>-</span>
+          <input
+            type="number"
+            placeholder="Máximo ($)"
+            className="w-full border-none focus:outline-none text-sm"
+            value={precioMaximo}
+            onChange={(e) => setPrecioMaximo(e.target.value)}
+          />
+        </div>
+      </div>
 
-      {/* Resultados */}
+      {/* Servicios */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {serviciosFiltrados.length === 0 ? (
           <p className="text-center text-[#333] mt-8">
@@ -193,11 +186,12 @@ function Servicios() {
                   </div>
                 </div>
 
-                <Link to={`/servicios/${servicio._id}`} 
-  className="bg-pink-400 text-white px-4 py-2 rounded-full text-base hover:bg-pink-500 transition-all text-center block"
->
-  Ver más
-</Link>
+                <Link
+                  to={`/servicios/${servicio._id}`}
+                  className="bg-pink-400 text-white px-4 py-2 rounded-full text-base hover:bg-pink-500 transition-all text-center block"
+                >
+                  Ver más
+                </Link>
               </div>
             </div>
           ))

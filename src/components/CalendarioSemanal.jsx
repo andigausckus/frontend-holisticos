@@ -31,11 +31,38 @@ function formatearDiaCorto(fecha) {
 const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, servicio }) => {
   const [dias, setDias] = useState([]);
   const [seleccion, setSeleccion] = useState(null);
+  const [tiemposRestantes, setTiemposRestantes] = useState({});
 
   useEffect(() => {
     const hoy = new Date();
     const semanaActual = obtenerSemana(hoy);
     setDias(semanaActual);
+  }, []);
+
+  // ⏳ Temporizador por horario bloqueado
+  // ⏳ Temporizador persistente por horario bloqueado
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const ahora = Date.now();
+      const nuevosTiempos = {};
+
+      Object.keys(localStorage).forEach((clave) => {
+        if (clave.startsWith("bloqueo_")) {
+          const item = JSON.parse(localStorage.getItem(clave));
+          const diff = Math.floor((item.expiracion - ahora) / 1000);
+
+          if (diff > 0) {
+            nuevosTiempos[clave.replace("bloqueo_", "")] = diff;
+          } else {
+            localStorage.removeItem(clave);
+          }
+        }
+      });
+
+      setTiemposRestantes(nuevosTiempos);
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const obtenerHorarios = (fecha) => {
@@ -85,72 +112,113 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
               </div>
 
               {horarios.length > 0 ? (
-  <div className="grid gap-2">
-    {horarios.map((horario, idx) => {
-      const key = `${fechaISO}-${horario.desde}`;
-      const estado = horario.estado;
+                <div className="grid gap-2">
+                  {horarios.map((horario, idx) => {
+                    const key = `${fechaISO}-${horario.desde}`;
+                    const estado = horario.estado;
 
-      let bg = "";
-      let label = "";
-      let disabled = false;
+                    let bg = "";
+                    let label = "";
+                    let disabled = false;
 
-      switch (estado) {
-        case "disponible":
-          bg = "bg-green-100 hover:bg-green-200 text-green-800";
-          label = "Disponible";
-          break;
+                    switch (estado) {
+                      case "disponible":
+                        bg = "bg-green-100 hover:bg-green-200 text-green-800";
+                        label = "Disponible";
+                        break;
+                        case "en_proceso":
+                        bg = "bg-yellow-100 text-yellow-800";
+                        label = "En proceso de reserva";
+                        disabled = true;
 
-        case "en_proceso":
-          bg = "bg-yellow-100 text-yellow-800";
-          label = "En proceso de reserva. Volvé en unos minutos";
-          disabled = true;
-          break;
+                        const claveLocal = `bloqueo_${key}`;
+                        const ahora = Date.now();
+                        const existente = localStorage.getItem(claveLocal);
 
-        case "reservado":
-          bg = "bg-gray-200 text-gray-500";
-          label = "Reservado";
-          disabled = true;
-          break;
+                        if (existente) {
+                          const data = JSON.parse(existente);
+                          if (data.expiracion < ahora) {
+                            // ❌ Tiempo expirado → eliminar bloqueo
+                            localStorage.removeItem(claveLocal);
+                            // 👇 Importante: actualizar el estado a "disponible"
+                            horario.estado = "disponible";
+                            bg = "bg-green-100 hover:bg-green-200 text-green-800";
+                            label = "Disponible";
+                            disabled = false;
+                          } else {
+                            const diferencia = Math.floor((data.expiracion - ahora) / 1000);
+                            if (!tiemposRestantes[key]) {
+                              setTiemposRestantes((prev) => ({
+                                ...prev,
+                                [key]: diferencia,
+                              }));
+                            }
+                          }
+                        } else {
+                          // Si no hay nada en localStorage, se venció o nunca fue reservado
+                          horario.estado = "disponible";
+                          bg = "bg-green-100 hover:bg-green-200 text-green-800";
+                          label = "Disponible";
+                          disabled = false;
+                        }
+                        break;
+                      case "reservado":
+                        bg = "bg-gray-200 text-gray-500";
+                        label = "Reservado";
+                        disabled = true;
+                        break;
+                      case "no_disponible":
+                      default:
+                        bg = "bg-gray-200 text-gray-500";
+                        disabled = true;
+                        break;
+                    }
 
-        case "no_disponible":
-          bg = "bg-gray-200 text-gray-500";
-          disabled = true;
-          break;
+                    return (
+                      <button
+                        key={idx}
+                        className={`text-sm px-2 py-2 rounded-xl font-medium text-center transition ${bg}`}
+                        disabled={disabled}
+                        onClick={() => {
+                          if (!horario?.desde || horario.desde === "--:--") {
+                            alert("⚠️ Este horario no tiene una hora válida.");
+                            return;
+                          }
 
-        default:
-          bg = "bg-gray-100 text-gray-500";
-          disabled = true;
-      }
+                          // ✅ Guardamos la expiración para usar en la página de pago
+                          const expiracionGlobal = Date.now() + 2 * 60 * 1000; // 2 minutos
+                          localStorage.setItem("reservaPendiente", JSON.stringify({ expiracion: expiracionGlobal }));
 
-  return (
-    <button
-      key={idx}
-      className={`text-sm px-2 py-2 rounded-xl font-medium text-center transition ${bg}`}
-      disabled={disabled}
-      onClick={() => {
-        if (!horario?.desde || horario.desde === "--:--") {
-          alert("⚠️ Este horario no tiene una hora válida.");
-          return;
-        }
-        setSeleccion(key);
-        onSeleccionar(fechaISO, horario.desde);
-      }}
-    >
-      {horario?.desde && horario?.hasta
-        ? `${formatearHora(horario.desde)} - ${formatearHora(horario.hasta)}`
-        : "⏳ Hora inválida"}
-      {label && (
-        <span className="block text-xs mt-1 font-normal">{label}</span>
-      )}
-    </button>
-  );
-})}
-  </div>
-) : (
-  <div className="mt-2 px-2 py-2 bg-red-100 text-red-800 rounded-xl text-xs text-center font-semibold">
-    No atiende
-  </div>
-)}
+                          setSeleccion(key);
+                          onSeleccionar(fechaISO, horario.desde);
+                        }}
+                      >
+                        {horario?.desde && horario?.hasta
+                          ? `${formatearHora(horario.desde)} - ${formatearHora(horario.hasta)}`
+                          : "⏳ Hora inválida"}
+
+                        {estado === "en_proceso" && (
+                          <div className="flex items-center justify-center mt-1 gap-2 text-xs">
+                            <div className="w-5 h-5 rounded-full border border-yellow-600 flex items-center justify-center font-mono text-[11px]">
+                              {Math.floor((tiemposRestantes[key] || 0) / 60)}:
+                              {(tiemposRestantes[key] % 60 || 0).toString().padStart(2, "0")}
+                            </div>
+                            <span className="text-yellow-700">Volvé en ese tiempo para comprobar disponibilidad</span>
+                          </div>
+                        )}
+
+                        {estado === "disponible" && label && (
+                          <span className="block text-xs mt-1 font-normal">{label}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="mt-2 px-2 py-2 bg-red-100 text-red-800 rounded-xl text-xs text-center font-semibold">
+                  No atiende
+                </div>
+              )}
             </div>
           );
         })}
