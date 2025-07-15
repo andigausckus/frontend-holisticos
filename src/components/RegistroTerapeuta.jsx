@@ -124,7 +124,7 @@ export default function RegistroTerapeuta() {
           name="whatsapp"
           value={formData.whatsapp}
           onChange={handleChange}
-          placeholder="WhatsApp (sin el 15)"
+          placeholder="Teléfono (sin el 15)"
           className="w-full p-2 border border-[#444444] rounded-lg outline-none mt-4"
           required
           maxLength={10}
@@ -146,7 +146,7 @@ export default function RegistroTerapeuta() {
             💸 Datos para transferirte tu dinero
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            Te enviamos el <strong>90%</strong> del valor de cada sesión. El <strong>10%</strong> es comisión por usar nuestra plataforma.
+            Te enviamos el <strong>85%</strong> del valor de cada sesión. El <strong>15%</strong> es comisión por nuestro servicio. 
           </p>
 
           <input

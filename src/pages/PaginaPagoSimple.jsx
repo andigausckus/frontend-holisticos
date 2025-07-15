@@ -104,6 +104,7 @@ useEffect(() => {
       } else {
         clearInterval(intervalo);
         setExpirado(true);
+        window.scrollTo({ top: 0, behavior: "smooth" });
 
         // Liberar automáticamente la reserva desde el backend
         if (servicio?._id && fecha && hora) {

@@ -27,7 +27,7 @@ import DisponibilidadServicio from "./components/DisponibilidadServicio";
 import EditarMisServicios from "./components/EditarMisServicios";
 import EditarServicio from "./components/EditarServicio";
 import MisionValores from "./components/MisionValores";
-import AdminReservas from './pages/AdminReservas';
+import AdminReservas from './components/AdminReservas';
 import AdminTerapeutas from './pages/AdminTerapeutas';
 import AdminComunicado from "./pages/AdminComunicado";
 import AdminDashboard from "./pages/AdminDashboard";

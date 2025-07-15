@@ -88,7 +88,7 @@ export default function Navbar() {
                 to="/registro"
                 className="bg-[#5e4b8b] text-white px-4 py-1 rounded-3xl text-sm hover:opacity-90 transition"
               >
-                Regístrate
+                Registrarme 
               </Link>
             </>
           )}
@@ -208,7 +208,7 @@ export default function Navbar() {
                     onClick={toggleMenu}
                     className="block py-2 px-4 rounded-3xl bg-[#f1ecfc]"
                   >
-                    Regístrate
+                    Registrarme
                   </Link>
                 </li>
               </>
