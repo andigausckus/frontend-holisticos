@@ -47,48 +47,51 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
     const desde = dias[0].toISOString().split("T")[0];
     const hasta = dias[6].toISOString().split("T")[0];
 
+    // Obtener reservas confirmadas
     fetch(`${process.env.REACT_APP_BACKEND_URL}/bloqueos/todos?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
       .then(response => response.json())
       .then(data => {
-        const bloqueados = {};
         const confirmados = {};
-
-        data.bloqueos.forEach((b) => {
-          bloqueados[`${b.fecha}-${b.hora}`] = true;
-        });
         data.reservas.forEach((r) => {
           confirmados[`${r.fecha}-${r.hora}`] = true;
         });
-
-        setBloqueos(bloqueados);
         setReservas(confirmados);
       })
-      .catch((err) => console.error("Error al obtener bloqueos:", err));
+      .catch((err) => console.error("Error al obtener reservas:", err));
   }, [servicio, dias]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const ahora = Date.now();
-      const nuevosTiempos = {};
+    const actualizarBloqueos = () => {
+      if (!servicio?._id || dias.length === 0) return;
 
-      Object.keys(localStorage).forEach((clave) => {
-        if (clave.startsWith("bloqueo_")) {
-          const item = JSON.parse(localStorage.getItem(clave));
-          const diff = Math.floor((item.expiracion - ahora) / 1000);
+      const desde = dias[0].toISOString().split("T")[0];
+      const hasta = dias[6].toISOString().split("T")[0];
 
-          if (diff > 0) {
-            nuevosTiempos[clave.replace("bloqueo_", "")] = diff;
-          } else {
-            localStorage.removeItem(clave);
-          }
-        }
-      });
+      fetch(`${process.env.REACT_APP_BACKEND_URL}/bloqueos/temporales?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
+        .then(res => res.json())
+        .then(data => {
+          const nuevosBloqueos = {};
+          const nuevosTiempos = {};
+          const ahora = new Date();
 
-      setTiemposRestantes(nuevosTiempos);
-    }, 1000);
+          data.bloqueos.forEach((b) => {
+            const key = `${b.fecha}-${b.hora}`;
+            nuevosBloqueos[key] = true;
 
-    return () => clearInterval(interval);
-  }, []);
+            const expiracion = new Date(b.expiracion).getTime();
+            const segundosRestantes = Math.floor((expiracion - ahora.getTime()) / 1000);
+            nuevosTiempos[key] = segundosRestantes;
+          });
+
+          setBloqueos(nuevosBloqueos);
+          setTiemposRestantes(nuevosTiempos);
+        });
+    };
+
+    actualizarBloqueos();
+    const intervalo = setInterval(actualizarBloqueos, 10000); // cada 10s
+    return () => clearInterval(intervalo);
+  }, [servicio, dias]);
 
   const obtenerHorarios = (fecha) => {
     const fechaISO = fecha.toISOString().split("T")[0];
@@ -145,21 +148,9 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                     let bg = "";
                     let label = "";
 
-                    const claveLocal = `bloqueo_${key}`;
-                    const ahora = Date.now();
-                    const enLocal = localStorage.getItem(claveLocal);
-
                     if (reservas[key]) {
                       estado = "reservado";
                       disabled = true;
-                    } else if (enLocal) {
-                      const data = JSON.parse(enLocal);
-                      if (data.expiracion > ahora) {
-                        estado = "en_proceso";
-                        disabled = true;
-                      } else {
-                        localStorage.removeItem(claveLocal);
-                      }
                     } else if (bloqueos[key]) {
                       estado = "en_proceso";
                       disabled = true;
@@ -170,91 +161,79 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                         bg = "bg-green-100 hover:bg-green-200 text-green-800";
                         label = "Disponible";
                         break;
-                        case "en_proceso":
+                      case "en_proceso":
                         bg = "bg-yellow-100 text-yellow-800";
                         label = "En proceso de reserva";
                         disabled = true;
-
-                        const existente = localStorage.getItem(claveLocal);
-
-                        if (existente) {
-                          const data = JSON.parse(existente);
-                          if (data.expiracion < ahora) {
-                            localStorage.removeItem(claveLocal);
-                            horario.estado = "disponible";
-                            estado = "disponible"; // ✅ fuerza el estado real
-                            bg = "bg-green-100 hover:bg-green-200 text-green-800";
-                            label = "Disponible";
-                            disabled = false;
-                          } else {
-                            const diferencia = Math.floor((data.expiracion - ahora) / 1000);
-                            if (!tiemposRestantes[`bloqueo_${key}`]) {
-                              setTiemposRestantes((prev) => ({
-                                ...prev,
-                                [`bloqueo_${key}`]: diferencia,
-                              }));
-                            }
-                          }
-                        } else {
-                          horario.estado = "disponible";
-                          estado = "disponible"; // ✅ también acá
-                          bg = "bg-green-100 hover:bg-green-200 text-green-800";
-                          label = "Disponible";
-                          disabled = false;
-                        }
                         break;
                       case "reservado":
                         bg = "bg-gray-200 text-gray-500";
                         label = "Reservado";
                         disabled = true;
                         break;
-                      case "no_disponible":
                       default:
                         bg = "bg-gray-200 text-gray-500";
                         disabled = true;
-                        label = "No disponible"; 
+                        label = "No disponible";
                         break;
                     }
 
                     return (
                       <button
-  key={idx}
-  className={`text-sm px-2 py-2 rounded-xl font-medium text-center transition ${bg}`}
-  disabled={disabled}
+                        key={idx}
+                        className={`text-sm px-2 py-2 rounded-xl font-medium text-center transition ${bg}`}
+                        disabled={disabled}
                         onClick={() => {
                           if (disabled) return;
-
                           if (!horario?.desde || horario.desde === "--:--") {
                             alert("⚠️ Este horario no tiene una hora válida.");
                             return;
                           }
 
-                          setSeleccion(key);
-                          onSeleccionar(fechaISO, horario.desde); // esto sigue igual
+                          fetch(`${process.env.REACT_APP_BACKEND_URL}/bloqueos/temporales`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              servicioId: servicio._id,
+                              fecha: fechaISO,
+                              hora: horario.desde,
+                            }),
+                          })
+                            .then((res) => res.json())
+                            .then((data) => {
+                              if (data.ok) {
+                                setSeleccion(key);
+                                onSeleccionar(fechaISO, horario.desde);
+                              } else {
+                                alert("❌ No se pudo bloquear el horario, tal vez ya está en proceso.");
+                              }
+                            })
+                            .catch((err) => {
+                              console.error("❌ Error al bloquear horario:", err);
+                              alert("Error al intentar reservar el horario.");
+                            });
                         }}
->
-  {horario?.desde && horario?.hasta
-    ? `${formatearHora(horario.desde)} - ${formatearHora(horario.hasta)}`
-    : "⏳ Hora inválida"}
+                      >
+                        {horario?.desde && horario?.hasta
+                          ? `${formatearHora(horario.desde)} - ${formatearHora(horario.hasta)}`
+                          : "⏳ Hora inválida"}
 
-  {estado === "en_proceso" && tiemposRestantes[`bloqueo_${key}`] > 0 && (
-    <div className="flex items-center justify-center mt-1 gap-2 text-xs">
-      <div className="w-5 h-5 rounded-full border border-yellow-600 flex items-center justify-center font-mono text-[11px]">
-        {Math.floor((tiemposRestantes[`bloqueo_${key}`] || 0) / 60)}:
-        {(tiemposRestantes[`bloqueo_${key}`] % 60 || 0).toString().padStart(2, "0")}
-      </div>
-      <span className="text-yellow-700">Volvé en ese tiempo para comprobar disponibilidad</span>
-    </div>
-  )}
+                        {estado === "en_proceso" && tiemposRestantes[key] > 0 && (
+                          <div className="flex items-center justify-center mt-1 gap-2 text-xs">
+                            <div className="w-5 h-5 rounded-full border border-yellow-600 flex items-center justify-center font-mono text-[11px]">
+                              {Math.floor((tiemposRestantes[key] || 0) / 60)}:
+                              {(tiemposRestantes[key] % 60 || 0).toString().padStart(2, "0")}
+                            </div>
+                            <span className="text-yellow-700">
+                              Volvé en ese tiempo para comprobar disponibilidad
+                            </span>
+                          </div>
+                        )}
 
-  {estado === "disponible" && (
-    <span className="block text-xs mt-1 font-normal">{label}</span>
-  )}
-
-  {estado === "reservado" && (
-    <span className="block text-xs mt-1 font-normal">{label}</span>
-  )}
-</button>
+                        {estado !== "en_proceso" && (
+                          <span className="block text-xs mt-1 font-normal">{label}</span>
+                        )}
+                      </button>
                     );
                   })}
                 </div>
