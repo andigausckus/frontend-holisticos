@@ -199,18 +199,22 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                               hora: horario.desde,
                             }),
                           })
-                            .then((res) => res.json())
-                            .then((data) => {
-                              if (data.ok) {
+                            .then(async (res) => {
+                              const data = await res.json();
+
+                              if (res.status === 201 && data.ok) {
                                 setSeleccion(key);
                                 onSeleccionar(fechaISO, horario.desde);
+                              } else if (res.status === 409) {
+                                alert("⚠️ Ese horario ya está siendo reservado por otro usuario. Elegí otro.");
                               } else {
-                                alert("❌ No se pudo bloquear el horario, tal vez ya está en proceso.");
+                                console.error("⚠️ Error inesperado:", data);
+                                alert("❌ Error al bloquear el horario. Intentá más tarde.");
                               }
                             })
                             .catch((err) => {
-                              console.error("❌ Error al bloquear horario:", err);
-                              alert("Error al intentar reservar el horario.");
+                              console.error("❌ Error de red o servidor:", err);
+                              alert("❌ No se pudo conectar con el servidor.");
                             });
                         }}
                       >
