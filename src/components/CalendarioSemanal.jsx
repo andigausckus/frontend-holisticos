@@ -48,7 +48,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
     const hasta = dias[6].toISOString().split("T")[0];
 
     // Obtener reservas confirmadas
-    fetch(`${process.env.REACT_APP_BACKEND_URL}/bloqueos/todos?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
+    fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/todos?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
       .then(response => response.json())
       .then(data => {
         const confirmados = {};
@@ -67,7 +67,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
     const desde = dias[0].toISOString().split("T")[0];
     const hasta = dias[6].toISOString().split("T")[0];
 
-    const url = `${process.env.REACT_APP_BACKEND_URL}/bloqueos/temporales?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`;
+    const url = `https://servicios-holisticos-backend.onrender.com/api/bloqueos/temporales?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`;
 
     fetch(url)
       .then(res => res.json())
@@ -192,15 +192,15 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                             return;
                           }
 
-                          fetch(`${process.env.REACT_APP_BACKEND_URL}/bloqueos/temporales`, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                              servicioId: servicio._id,
-                              fecha: fechaISO,
-                              hora: horario.desde,
-                            }),
-                          })
+                            fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/temporales`, {
+                              method: "POST",
+                              headers: { "Content-Type": "application/json" },
+                              body: JSON.stringify({
+                                servicioId: servicio._id,
+                                fecha: fechaISO,
+                                hora: horario.desde,
+                              }),
+                            })
                             .then(async (res) => {
                               const data = await res.json();
 
