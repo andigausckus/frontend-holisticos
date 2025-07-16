@@ -200,24 +200,47 @@ function ServicioDetalle() {
         <div className="mt-4 text-center">
           <button
             className="bg-[#009929] mb-24 hover:bg-[#006414] text-white px-6 py-3 rounded-3xl shadow"
-            onClick={() => {
-              const clave = `bloqueo_${seleccion.fecha}-${seleccion.hora}`;
-              const expiracionGlobal = Date.now() + 2 * 60 * 1000;
+            onClick={async () => {
+              try {
+                const res = await fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/temporales`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    servicioId: servicio._id,
+                    fecha: seleccion.fecha,
+                    hora: seleccion.hora,
+                  }),
+                });
 
-              // Ahora sí: bloqueamos el horario recién acá
-              localStorage.setItem(clave, JSON.stringify({ expiracion: expiracionGlobal }));
-              localStorage.setItem("reservaPendiente", JSON.stringify({ expiracion: expiracionGlobal }));
+                const data = await res.json();
 
-              localStorage.setItem("fechaReserva", seleccion.fecha);
-              localStorage.setItem("horaReserva", seleccion.hora);
+                if (res.status === 201 && data.ok) {
+                  const clave = `bloqueo_${seleccion.fecha}-${seleccion.hora}`;
+                  const expiracion = new Date(data.expiracion).getTime();
 
-              navigate("/pago", {
-                state: {
-                  servicio,
-                  fecha: seleccion.fecha,
-                  hora: seleccion.hora,
-                },
-              });
+                  localStorage.setItem(clave, JSON.stringify({ expiracion }));
+                  localStorage.setItem("reservaPendiente", JSON.stringify({ expiracion }));
+
+                  localStorage.setItem("fechaReserva", seleccion.fecha);
+                  localStorage.setItem("horaReserva", seleccion.hora);
+
+                  navigate("/pago", {
+                    state: {
+                      servicio,
+                      fecha: seleccion.fecha,
+                      hora: seleccion.hora,
+                    },
+                  });
+                } else if (res.status === 409) {
+                  alert("⚠️ Ese horario acaba de ser reservado por otra persona. Elegí otro.");
+                } else {
+                  console.error("Error al bloquear:", data);
+                  alert("❌ No se pudo reservar el horario. Intentá más tarde.");
+                }
+              } catch (err) {
+                console.error("❌ Error de red:", err);
+                alert("❌ No se pudo conectar con el servidor.");
+              }
             }}
           >
             Reservar sesión

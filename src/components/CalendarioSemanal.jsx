@@ -91,7 +91,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
       .catch((err) => {
         console.error("❌ Error al obtener bloqueos temporales:", err);
       });
-  }, 10000); // cada 10 segundos
+  }, 1000); // cada 10 segundos
 
   return () => clearInterval(intervalo);
 }, [servicio, dias]);
@@ -150,13 +150,21 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                     let bg = "";
                     let label = "";
 
-                    if (reservas[key]) {
-                      estado = "reservado";
-                      disabled = true;
-                    } else if (bloqueos[key]) {
-                      estado = "en_proceso";
-                      disabled = true;
+                  if (reservas[key]) {
+                    estado = "reservado";
+                    disabled = true;
+                  } else if (bloqueos[key]) {
+                    estado = "en_proceso";
+                    disabled = true;
+
+                    // Forzamos el temporizador visible
+                    if (tiemposRestantes[key] && !tiemposRestantes[`bloqueo_${key}`]) {
+                      setTiemposRestantes((prev) => ({
+                        ...prev,
+                        [`bloqueo_${key}`]: tiemposRestantes[key],
+                      }));
                     }
+                  }
 
                     switch (estado) {
                       case "disponible":
@@ -192,32 +200,8 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                             return;
                           }
 
-                            fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/temporales`, {
-                              method: "POST",
-                              headers: { "Content-Type": "application/json" },
-                              body: JSON.stringify({
-                                servicioId: servicio._id,
-                                fecha: fechaISO,
-                                hora: horario.desde,
-                              }),
-                            })
-                            .then(async (res) => {
-                              const data = await res.json();
-
-                              if (res.status === 201 && data.ok) {
-                                setSeleccion(key);
-                                onSeleccionar(fechaISO, horario.desde);
-                              } else if (res.status === 409) {
-                                
-                              } else {
-                                console.error("⚠️ Error inesperado:", data);
-                                alert("❌ Error al bloquear el horario. Intentá más tarde.");
-                              }
-                            })
-                            .catch((err) => {
-                              console.error("❌ Error de red o servidor:", err);
-                              alert("❌ No se pudo conectar con el servidor.");
-                            });
+                          setSeleccion(key);
+                          onSeleccionar(fechaISO, horario.desde);
                         }}
                       >
                         {horario?.desde && horario?.hasta

@@ -114,39 +114,43 @@ const [segundos, setSegundos] = useState(0);
   // ⏳ Temporizador
   useEffect(() => {
     const intervalo = setInterval(() => {
-      if (segundos > 0) {
-        setSegundos((s) => s - 1);
-      } else if (minutos > 0) {
-        setMinutos((m) => m - 1);
-        setSegundos(59);
-      } else {
-        clearInterval(intervalo);
-        setExpirado(true);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+      const reservaPendiente = JSON.parse(localStorage.getItem("reservaPendiente"));
+      const ahora = Date.now();
 
-        // Liberar automáticamente la reserva desde el backend
-        if (servicio?._id && fecha && hora) {
-          fetch("https://servicios-holisticos-backend.onrender.com/api/reservas/liberar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              servicioId: servicio._id,
-              fecha,
-              hora,
-            }),
-          }).then(() => {
-            console.log("⛔ Reserva liberada por tiempo expirado");
-          });
+      if (reservaPendiente?.expiracion) {
+        const diferencia = reservaPendiente.expiracion - ahora;
+
+        if (diferencia <= 0) {
+          setExpirado(true);
+          window.scrollTo({ top: 0, behavior: "smooth" });
+
+          // Liberar turno desde el backend
+          if (servicio?._id && fecha && hora) {
+            fetch("https://servicios-holisticos-backend.onrender.com/api/reservas/liberar", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ servicioId: servicio._id, fecha, hora }),
+            }).then(() => {
+              console.log("⛔ Reserva liberada por tiempo expirado");
+            });
+          }
+
+          // Redirigir a los servicios después de 10 segundos
+          setTimeout(() => {
+            navigate("/servicios");
+          }, 10000);
+        } else {
+          const totalSegundos = Math.floor(diferencia / 1000);
+          setMinutos(Math.floor(totalSegundos / 60));
+          setSegundos(totalSegundos % 60);
         }
-
-        // Redirigir luego de 10 segundos
-        setTimeout(() => {
-          navigate("/servicios");
-        }, 10000);
+      } else {
+        setExpirado(true);
       }
     }, 1000);
+
     return () => clearInterval(intervalo);
-  }, [minutos, segundos]);
+  }, [servicio, fecha, hora]);
 
   const iniciarPago = async () => {
     if (!aceptaTerminos) {
