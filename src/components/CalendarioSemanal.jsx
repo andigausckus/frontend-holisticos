@@ -208,7 +208,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                                 setSeleccion(key);
                                 onSeleccionar(fechaISO, horario.desde);
                               } else if (res.status === 409) {
-                                alert("⚠️ Ese horario ya está siendo reservado por otro usuario. Elegí otro.");
+                                
                               } else {
                                 console.error("⚠️ Error inesperado:", data);
                                 alert("❌ Error al bloquear el horario. Intentá más tarde.");
