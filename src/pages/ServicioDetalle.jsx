@@ -201,8 +201,16 @@ function ServicioDetalle() {
           <button
             className="bg-[#009929] mb-24 hover:bg-[#006414] text-white px-6 py-3 rounded-3xl shadow"
             onClick={() => {
+              const clave = `bloqueo_${seleccion.fecha}-${seleccion.hora}`;
+              const expiracionGlobal = Date.now() + 2 * 60 * 1000;
+
+              // Ahora sí: bloqueamos el horario recién acá
+              localStorage.setItem(clave, JSON.stringify({ expiracion: expiracionGlobal }));
+              localStorage.setItem("reservaPendiente", JSON.stringify({ expiracion: expiracionGlobal }));
+
               localStorage.setItem("fechaReserva", seleccion.fecha);
               localStorage.setItem("horaReserva", seleccion.hora);
+
               navigate("/pago", {
                 state: {
                   servicio,

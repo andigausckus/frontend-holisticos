@@ -44,8 +44,7 @@ useEffect(() => {
       const data = await res.json();
 
       if (!data.libre) {
-        setBloqueado(true);
-        setMensajeBloqueo("Este horario está siendo reservado por otro usuario. Volvé en unos minutos.");
+        
       } else {
         // Creamos el bloqueo temporal de 10 minutos
         await fetch("https://servicios-holisticos-backend.onrender.com/api/bloqueos", {
@@ -97,8 +96,6 @@ const [segundos, setSegundos] = useState(0);
       setExpirado(true);
     }
   }, []);
-  
-    useState(false);
 
   function calcularHoraFin(horaInicio, duracionMinutos) {
     if (!horaInicio || typeof horaInicio !== "string" || !horaInicio.includes(":")) {
@@ -267,11 +264,7 @@ return (
           <p className="pt-1"><span className="text-pink-500">Terapeuta</span><br />{servicio?.terapeuta?.nombreCompleto || "Sin definir"}</p>
           <p className="pt-4"><span className="text-pink-500">Precio</span><br />${servicio?.precio}</p>
           <p className="pt-4"><span className="text-pink-500">Hora</span><br />{hora} a {calcularHoraFin(hora, servicio?.duracion)} hs</p>
-          {bloqueado && (
-  <p className="text-sm text-red-600 mt-2">
-    {mensajeBloqueo}
-  </p>
-)}
+          
           <div className="pt-4">
             <span className="text-pink-500">Plataforma</span><br />
             {Array.isArray(servicio?.plataformas) && servicio.plataformas.length > 0 ? (
