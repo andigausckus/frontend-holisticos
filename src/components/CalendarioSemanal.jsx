@@ -61,38 +61,40 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
   }, [servicio, dias]);
 
   useEffect(() => {
-    const actualizarBloqueos = () => {
-      if (!servicio?._id || dias.length === 0) return;
+  const intervalo = setInterval(() => {
+    if (!servicio?._id || dias.length === 0) return;
 
-      const desde = dias[0].toISOString().split("T")[0];
-      const hasta = dias[6].toISOString().split("T")[0];
+    const desde = dias[0].toISOString().split("T")[0];
+    const hasta = dias[6].toISOString().split("T")[0];
 
-      fetch(`${process.env.REACT_APP_BACKEND_URL}/bloqueos/temporales?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
-        .then(res => res.json())
-        .then(data => {
-          const nuevosBloqueos = {};
-          const nuevosTiempos = {};
-          const ahora = new Date();
+    const url = `${process.env.REACT_APP_BACKEND_URL}/bloqueos/temporales?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`;
 
-          data.bloqueos.forEach((b) => {
-            const key = `${b.fecha}-${b.hora}`;
-            nuevosBloqueos[key] = true;
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        const nuevosBloqueos = {};
+        const nuevosTiempos = {};
+        const ahora = new Date();
 
-            const expiracion = new Date(b.expiracion).getTime();
-            const segundosRestantes = Math.floor((expiracion - ahora.getTime()) / 1000);
-            nuevosTiempos[key] = segundosRestantes;
-          });
+        data.bloqueos.forEach((b) => {
+          const key = `${b.fecha}-${b.hora}`;
+          nuevosBloqueos[key] = true;
 
-          setBloqueos(nuevosBloqueos);
-          setTiemposRestantes(nuevosTiempos);
+          const expiracion = new Date(b.expiracion).getTime();
+          const segundosRestantes = Math.floor((expiracion - ahora.getTime()) / 1000);
+          nuevosTiempos[key] = segundosRestantes;
         });
-    };
 
-    actualizarBloqueos();
-    const intervalo = setInterval(actualizarBloqueos, 10000); // cada 10s
-    return () => clearInterval(intervalo);
-  }, [servicio, dias]);
+        setBloqueos(nuevosBloqueos);
+        setTiemposRestantes(nuevosTiempos);
+      })
+      .catch((err) => {
+        console.error("❌ Error al obtener bloqueos temporales:", err);
+      });
+  }, 10000); // cada 10 segundos
 
+  return () => clearInterval(intervalo);
+}, [servicio, dias]);
   const obtenerHorarios = (fecha) => {
     const fechaISO = fecha.toISOString().split("T")[0];
     const dia = disponibilidad.find((d) => d.fecha === fechaISO);
