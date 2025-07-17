@@ -52,10 +52,18 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
       .then(response => response.json())
       .then(data => {
         const confirmados = {};
+        const temporales = {};
+
         (data.reservas || []).forEach((r) => {
           confirmados[`${r.fecha}-${r.hora}`] = true;
         });
+
+        (data.bloqueos || []).forEach((r) => {
+          temporales[`${r.fecha}-${r.hora}`] = true;
+        });
+
         setReservas(confirmados);
+        setBloqueos(temporales);
       })
       
       .catch((err) => console.error("Error al obtener reservas:", err));
