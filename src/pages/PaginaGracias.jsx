@@ -102,6 +102,44 @@ localStorage.removeItem("horaReserva");
     }
   }, [location.search]);
 
+  useEffect(() => {
+  const query = new URLSearchParams(location.search);
+  const paymentId = query.get("payment_id");
+
+  if (!paymentId) return;
+
+  const intervalId = setInterval(() => {
+    console.log("🔄 Buscando reserva con payment_id:", paymentId);
+    fetch(`https://servicios-holisticos-backend.onrender.com/api/reservas/reciente?payment_id=${paymentId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data && data._id) {
+          console.log("✅ Reserva encontrada en backend:", data);
+          setMensaje("✅ ¡Reserva confirmada!");
+          setReservaConfirmada(true);
+
+          localStorage.removeItem("datosReserva");
+          localStorage.removeItem("nombreUsuario");
+          localStorage.removeItem("emailUsuario");
+          localStorage.removeItem("telefonoUsuario");
+          localStorage.removeItem("tituloServicio");
+          localStorage.removeItem("fechaReserva");
+          localStorage.removeItem("horaReserva");
+
+          console.log("🎉 Reserva confirmada por búsqueda activa del frontend");
+          clearInterval(intervalId);
+        }
+      })
+      .catch((err) => {
+        console.error("❌ Error al consultar reserva reciente:", err);
+      });
+  }, 10000); // cada 10 segundos
+
+  return () => clearInterval(intervalId);
+
+    
+}, [location.search]);
+
   const nombreTerapeuta =
     servicio?.terapeutaCompleto?.nombreCompleto?.split(" ")[0] || "terapeuta";
 
