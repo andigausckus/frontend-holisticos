@@ -28,7 +28,7 @@ function formatearDiaCorto(fecha) {
   return fecha.toLocaleDateString("es-AR", { weekday: "short" }).toUpperCase();
 }
 
-const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, servicio }) => {
+const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, servicio, userId }) => { 
   const [dias, setDias] = useState([]);
   const [seleccion, setSeleccion] = useState(null);
   const [tiemposRestantes, setTiemposRestantes] = useState({});
@@ -47,7 +47,6 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
     const desde = dias[0].toISOString().split("T")[0];
     const hasta = dias[6].toISOString().split("T")[0];
 
-    // Obtener reservas confirmadas
     fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/todos?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
       .then(response => response.json())
       .then(data => {
@@ -65,45 +64,54 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
         setReservas(confirmados);
         setBloqueos(temporales);
       })
-      
       .catch((err) => console.error("Error al obtener reservas:", err));
   }, [servicio, dias]);
 
   useEffect(() => {
-  const intervalo = setInterval(() => {
-    if (!servicio?._id || dias.length === 0) return;
+    const intervalo = setInterval(() => {
+      if (!servicio?._id || dias.length === 0) return;
 
-    const desde = dias[0].toISOString().split("T")[0];
-    const hasta = dias[6].toISOString().split("T")[0];
+      const desde = dias[0].toISOString().split("T")[0];
+      const hasta = dias[6].toISOString().split("T")[0];
 
-    const url = `https://servicios-holisticos-backend.onrender.com/api/bloqueos/temporales?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`;
+      fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/todos?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
+        .then(res => res.json())
+        .then(data => {
+          const nuevosBloqueos = {};
+          const nuevosTiempos = {};
+          const nuevosReservas = {};
+          const ahora = new Date();
 
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        const nuevosBloqueos = {};
-        const nuevosTiempos = {};
-        const ahora = new Date();
+          (data.reservas || []).forEach((r) => {
+            nuevosReservas[`${r.fecha}-${r.hora}`] = {
+              userId: r.userId,
+              estado: 'reservado'
+            };
+          });
 
-        data.bloqueos.forEach((b) => {
-          const key = `${b.fecha}-${b.hora}`;
-          nuevosBloqueos[key] = true;
+          (data.bloqueos || []).forEach((b) => {
+            const key = `${b.fecha}-${b.hora}`;
+            nuevosBloqueos[key] = true;
 
-          const expiracion = new Date(b.expiracion).getTime();
-          const segundosRestantes = Math.floor((expiracion - ahora.getTime()) / 1000);
-          nuevosTiempos[key] = segundosRestantes;
+            const expiracion = new Date(b.expiracion).getTime();
+            const segundosRestantes = Math.floor((expiracion - ahora.getTime()) / 1000);
+            nuevosTiempos[key] = segundosRestantes;
+          });
+
+          setBloqueos(nuevosBloqueos);
+          setTiemposRestantes(nuevosTiempos);
+          setReservas(nuevosReservas);
+        })
+        .catch((err) => {
+          console.error("❌ Error al obtener bloqueos + reservas:", err);
         });
+    }, 1000);
 
-        setBloqueos(nuevosBloqueos);
-        setTiemposRestantes(nuevosTiempos);
-      })
-      .catch((err) => {
-        console.error("❌ Error al obtener bloqueos temporales:", err);
-      });
-  }, 1000); // cada 10 segundos
+    return () => {
+      clearInterval(intervalo);
+    };
+  }, [servicio, dias]);
 
-  return () => clearInterval(intervalo);
-}, [servicio, dias]);
   const obtenerHorarios = (fecha) => {
     const fechaISO = fecha.toISOString().split("T")[0];
     const dia = disponibilidad.find((d) => d.fecha === fechaISO);
@@ -160,41 +168,39 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                     let label = "";
 
                   if (reservas[key]) {
-                    estado = "reservado";
+                    if (reservas[key].userId === userId) {
+                      estado = "reservado_usuario_actual";
+                    } else {
+                      estado = "reservado";
+                    }
                     disabled = true;
                   } else if (bloqueos[key]) {
                     estado = "en_proceso";
                     disabled = true;
-
-                    // Forzamos el temporizador visible
-                    if (tiemposRestantes[key] && !tiemposRestantes[`bloqueo_${key}`]) {
-                      setTiemposRestantes((prev) => ({
-                        ...prev,
-                        [`bloqueo_${key}`]: tiemposRestantes[key],
-                      }));
-                    }
                   }
 
-                    switch (estado) {
-                      case "disponible":
-                        bg = "bg-green-100 hover:bg-green-200 text-green-800";
-                        label = "Disponible";
-                        break;
-                      case "en_proceso":
-                        bg = "bg-yellow-100 text-yellow-800";
-                        label = "En proceso de reserva";
-                        disabled = true;
-                        break;
-                      case "reservado":
-                        bg = "bg-gray-200 text-gray-500";
-                        label = "Reservado";
-                        disabled = true;
-                        break;
-                      default:
-                        bg = "bg-gray-200 text-gray-500";
-                        disabled = true;
-                        label = "No disponible";
-                        break;
+                  switch (estado) {
+  case "disponible":
+    bg = "bg-green-100 hover:bg-green-200 text-green-800";
+    label = "Disponible";
+    break;
+  case "en_proceso":
+    bg = "bg-yellow-100 text-yellow-800";
+    label = "En proceso de reserva";
+    break;
+  case "reservado_usuario_actual":
+    bg = "bg-gray-200 text-gray-500";
+    label = "Reservado por vos";
+    break;
+  case "reservado":
+    bg = "bg-gray-200 text-gray-500";
+    label = "Reservado";
+    break;
+  default:
+    bg = "bg-gray-200 text-gray-500";
+    label = "No disponible";
+    break;
+                  
                     }
 
                     return (
@@ -217,7 +223,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                           ? `${formatearHora(horario.desde)} - ${formatearHora(horario.hasta)}`
                           : "⏳ Hora inválida"}
 
-                        {estado === "en_proceso" && tiemposRestantes[key] > 0 && (
+                        {estado === "en_proceso" && tiemposRestantes[key] > 0 && reservas[key]?.userId !== userId && (
                           <div className="flex items-center justify-center mt-1 gap-2 text-xs">
                             <div className="w-5 h-5 rounded-full border border-yellow-600 flex items-center justify-center font-mono text-[11px]">
                               {Math.floor((tiemposRestantes[key] || 0) / 60)}:
