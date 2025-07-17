@@ -51,12 +51,12 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
     fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/todos?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
       .then(response => response.json())
       .then(data => {
-  const confirmados = {};
-  (data.bloqueos || []).forEach((r) => {
-    confirmados[`${r.fecha}-${r.hora}`] = true;
-  });
-  setReservas(confirmados);
-})
+        const confirmados = {};
+        (data.reservas || []).forEach((r) => {
+          confirmados[`${r.fecha}-${r.hora}`] = true;
+        });
+        setReservas(confirmados);
+      })
       
       .catch((err) => console.error("Error al obtener reservas:", err));
   }, [servicio, dias]);
