@@ -40,7 +40,7 @@ export default function Tienda() {
     { value: "masaje", label: "Masaje" },
     { value: "meditacion", label: "Meditación" },
     { value: "mindfulness", label: "Mindfulness" },
-    { value: "numerologia", label: "Numerología" },
+    { value: "numerología", label: "Numerología" },
     { value: "reiki", label: "Reiki" },
     { value: "sanacion", label: "Sanación" },
     { value: "tarot", label: "Tarot" },

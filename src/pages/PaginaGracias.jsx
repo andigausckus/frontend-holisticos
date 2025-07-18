@@ -86,7 +86,37 @@ console.log("📤 Payload enviado al backend:", payload);
         .then((res) => res.json())
         .then((data) => {
           setMensaje("✅ ¡Reserva confirmada!");
-          setReservaConfirmada(true);
+setReservaConfirmada(true);
+
+// ✅ Enviar email de comprobante
+const emailPayload = {
+  nombreCliente: payload.usuarioNombre,
+  emailCliente: payload.usuarioEmail,
+  nombreTerapeuta: servicioGuardado.terapeutaNombre,
+  emailTerapeuta: servicioGuardado.terapeutaEmail,
+  nombreServicio: servicioGuardado.servicioNombre,
+  fecha: payload.fechaReserva,
+  hora: payload.horaReserva,
+  duracion: servicioGuardado.duracion,
+  precio: servicioGuardado.precio,
+};
+
+console.log("📧 Enviando email con payload:", emailPayload);
+
+fetch("https://servicios-holisticos-backend.onrender.com/api/enviar-comprobante", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(emailPayload),
+})
+  .then((res) => res.json())
+  .then((data) => {
+    console.log("📨 Email de comprobante enviado:", data);
+  })
+  .catch((err) => {
+    console.error("❌ Error al enviar email de comprobante:", err);
+  });
           localStorage.removeItem("datosReserva");
 localStorage.removeItem("nombreUsuario");
 localStorage.removeItem("emailUsuario");
