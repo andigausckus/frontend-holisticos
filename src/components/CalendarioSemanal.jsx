@@ -68,49 +68,51 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
   }, [servicio, dias]);
 
   useEffect(() => {
-    const intervalo = setInterval(() => {
-      if (!servicio?._id || dias.length === 0) return;
+  const intervalo = setInterval(() => {
+    if (!servicio?._id || dias.length === 0) return;
 
-      const desde = dias[0].toISOString().split("T")[0];
-      const hasta = dias[6].toISOString().split("T")[0];
+    const desde = dias[0].toISOString().split("T")[0];
+    const hasta = dias[6].toISOString().split("T")[0];
 
-      fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/todos?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
-        .then(res => res.json())
-        .then(data => {
-          const nuevosBloqueos = {};
-          const nuevosTiempos = {};
-          const nuevosReservas = {};
-          const ahora = new Date();
+    fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/todos?servicioId=${servicio._id}&desde=${desde}&hasta=${hasta}`)
+      .then(res => res.json())
+      .then(data => {
+        const nuevosBloqueos = {};
+        const nuevosTiempos = {};
+        const nuevosReservas = {};
+        const ahora = new Date();
 
-          (data.reservas || []).forEach((r) => {
-            nuevosReservas[`${r.fecha}-${r.hora}`] = {
-              userId: r.userId,
-              estado: 'reservado'
-            };
-          });
-
-          (data.bloqueos || []).forEach((b) => {
-            const key = `${b.fecha}-${b.hora}`;
-            nuevosBloqueos[key] = true;
-
-            const expiracion = new Date(b.expiracion).getTime();
-            const segundosRestantes = Math.floor((expiracion - ahora.getTime()) / 1000);
-            nuevosTiempos[key] = segundosRestantes;
-          });
-
-          setBloqueos(nuevosBloqueos);
-          setTiemposRestantes(nuevosTiempos);
-          setReservas(nuevosReservas);
-        })
-        .catch((err) => {
-          console.error("❌ Error al obtener bloqueos + reservas:", err);
+        (data.reservas || []).forEach((r) => {
+          nuevosReservas[`${r.fecha}-${r.hora}`] = {
+            userId: r.userId,
+            estado: 'reservado'
+          };
         });
-    }, 1000);
 
-    return () => {
-      clearInterval(intervalo);
-    };
-  }, [servicio, dias]);
+        (data.bloqueos || []).forEach((b) => {
+          const key = `${b.fecha}-${b.hora}`;
+          const expiracion = new Date(b.expiracion).getTime();
+          const segundosRestantes = Math.floor((expiracion - ahora.getTime()) / 1000);
+
+          if (segundosRestantes > 0) {
+            nuevosBloqueos[key] = true;
+            nuevosTiempos[key] = segundosRestantes;
+          }
+        });
+
+        setBloqueos(nuevosBloqueos);         // ✅ AHORA SÍ ACTUALIZA VISUALMENTE
+        setTiemposRestantes(nuevosTiempos);
+        setReservas(nuevosReservas);
+      })
+      .catch((err) => {
+        console.error("❌ Error al obtener bloqueos + reservas:", err);
+      });
+  }, 1000);
+
+  return () => {
+    clearInterval(intervalo);
+  };
+}, [servicio, dias]);
 
   const obtenerHorarios = (fecha) => {
     const fechaISO = fecha.toISOString().split("T")[0];
@@ -186,11 +188,11 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
     break;
   case "en_proceso":
     bg = "bg-yellow-100 text-yellow-800";
-    label = "En proceso de reserva";
+    label = "En proceso de reserva. Volvé en unos minutos.";
     break;
   case "reservado_usuario_actual":
     bg = "bg-gray-200 text-gray-500";
-    label = "Reservado por vos";
+    label = "Reservado";
     break;
   case "reservado":
     bg = "bg-gray-200 text-gray-500";
@@ -223,19 +225,11 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                           ? `${formatearHora(horario.desde)} - ${formatearHora(horario.hasta)}`
                           : "⏳ Hora inválida"}
 
-                        {estado === "en_proceso" && tiemposRestantes[key] > 0 && reservas[key]?.userId !== userId && (
-                          <div className="flex items-center justify-center mt-1 gap-2 text-xs">
-                            <div className="w-5 h-5 rounded-full border border-yellow-600 flex items-center justify-center font-mono text-[11px]">
-                              {Math.floor((tiemposRestantes[key] || 0) / 60)}:
-                              {(tiemposRestantes[key] % 60 || 0).toString().padStart(2, "0")}
-                            </div>
-                            <span className="text-yellow-700">
-                              Volvé en ese tiempo para comprobar disponibilidad
-                            </span>
+                        {estado === "en_proceso" && reservas[key]?.userId !== userId ? (
+                          <div className="text-xs mt-1 font-medium text-yellow-800 text-center">
+                            Volvé en unos minutos para consultar disponibilidad
                           </div>
-                        )}
-
-                        {estado !== "en_proceso" && (
+                        ) : (
                           <span className="block text-xs mt-1 font-normal">{label}</span>
                         )}
                       </button>

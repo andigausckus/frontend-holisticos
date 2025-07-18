@@ -47,6 +47,8 @@ useEffect(() => {
         
       } else {
         // Creamos el bloqueo temporal de 10 minutos
+        const emailGuardado = localStorage.getItem("emailUsuario") || email || "email_desconocido";
+
         await fetch("https://servicios-holisticos-backend.onrender.com/api/bloqueos", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -54,6 +56,8 @@ useEffect(() => {
             servicioId: servicio._id,
             fecha,
             hora,
+            usuarioEmail: email || "email_desconocido",
+            estado: "en_proceso",
           }),
         });
       }
