@@ -18,6 +18,9 @@ function Servicios() {
       try {
         const res = await fetch("https://servicios-holisticos-backend.onrender.com/api/servicios");
         const data = await res.json();
+
+        console.log("👉 DATA:", data); // <-- AGREGÁ ESTO
+
         setServicios(data);
       } catch (error) {
         console.error("Error al cargar servicios:", error);
