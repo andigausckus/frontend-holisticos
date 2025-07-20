@@ -77,7 +77,8 @@ function Gracias() {
         horaReserva: localStorage.getItem("horaReserva") || "",
       };
       
-console.log("📤 Payload enviado al backend:", payload);
+      console.log("📤 Payload enviado al backend:", payload);
+
       fetch("https://servicios-holisticos-backend.onrender.com/api/reservas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -85,45 +86,18 @@ console.log("📤 Payload enviado al backend:", payload);
       })
         .then((res) => res.json())
         .then((data) => {
+          console.log("✅ Reserva guardada correctamente:", data);
           setMensaje("✅ ¡Reserva confirmada!");
-setReservaConfirmada(true);
+          setReservaConfirmada(true);
 
-// ✅ Enviar email de comprobante
-const emailPayload = {
-  nombreCliente: payload.usuarioNombre,
-  emailCliente: payload.usuarioEmail,
-  nombreTerapeuta: servicioGuardado.terapeutaNombre,
-  emailTerapeuta: servicioGuardado.terapeutaEmail,
-  nombreServicio: servicioGuardado.servicioNombre,
-  fecha: payload.fechaReserva,
-  hora: payload.horaReserva,
-  duracion: servicioGuardado.duracion,
-  precio: servicioGuardado.precio,
-};
-
-console.log("📧 Enviando email con payload:", emailPayload);
-
-fetch("https://servicios-holisticos-backend.onrender.com/api/enviar-comprobante", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(emailPayload),
-})
-  .then((res) => res.json())
-  .then((data) => {
-    console.log("📨 Email de comprobante enviado:", data);
-  })
-  .catch((err) => {
-    console.error("❌ Error al enviar email de comprobante:", err);
-  });
+          // ✅ Limpiar almacenamiento local
           localStorage.removeItem("datosReserva");
-localStorage.removeItem("nombreUsuario");
-localStorage.removeItem("emailUsuario");
-localStorage.removeItem("telefonoUsuario");
-localStorage.removeItem("tituloServicio");
-localStorage.removeItem("fechaReserva");
-localStorage.removeItem("horaReserva");
+          localStorage.removeItem("nombreUsuario");
+          localStorage.removeItem("emailUsuario");
+          localStorage.removeItem("telefonoUsuario");
+          localStorage.removeItem("tituloServicio");
+          localStorage.removeItem("fechaReserva");
+          localStorage.removeItem("horaReserva");
         })
         .catch((err) => {
           console.error("❌ Error al guardar reserva:", err);
@@ -145,7 +119,7 @@ localStorage.removeItem("horaReserva");
       .then((data) => {
         if (data && data._id) {
           console.log("✅ Reserva encontrada en backend:", data);
-          setMensaje("✅ ¡Reserva confirmada!");
+          setMensaje("¡Reserva confirmada! 🎉");
           setReservaConfirmada(true);
 
           localStorage.removeItem("datosReserva");

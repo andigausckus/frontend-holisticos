@@ -184,7 +184,7 @@ function Servicios() {
                     </div>
                     <div className="flex items-center gap-1 font-semibold text-[17px]">
                       <FaDollarSign className="text-pink-500 w-4 h-4" />
-                      <span>${servicio.precio}</span>
+                      <span>{servicio.precio}</span>
                     </div>
                   </div>
                 </div>

@@ -116,7 +116,7 @@ function ServicioDetalle() {
 
           <div className="flex items-center gap-1 text-gray-600">
             <FaDollarSign className="text-pink-500" />
-            <span>${servicio.precio}</span>
+            <span>{servicio.precio}</span>
           </div>
         </div>
 
@@ -126,7 +126,7 @@ function ServicioDetalle() {
             <span>{servicio.duracionFormateada}</span>
           </div>
 
-          <div className="flex items-center gap-1 text-gray-600">
+          <div className="flex items-center gap-2 text-gray-600">
             <FaWifi className="text-pink-500" />
             <span>Se brinda por</span>
             {servicio.plataformas?.length > 0 ? (
