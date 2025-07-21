@@ -192,6 +192,7 @@ const [segundos, setSegundos] = useState(0);
           horaReserva: hora,
           terapeutaNombre: servicio?.terapeuta?.nombreCompleto,
           terapeutaEmail: servicio?.terapeuta?.email,
+          plataforma: servicio?.plataforma || "", // ✅ Se agrega esto
         },
       ],
       payer: {
@@ -201,6 +202,9 @@ const [segundos, setSegundos] = useState(0);
           number: telefono,
         },
       },
+      // 👇 ESTA ES LA CLAVE
+      usuarioNombre: nombre,
+      usuarioEmail: email,
       additional_info: "Reserva generada desde el sitio web",
     };
 

@@ -146,7 +146,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
         {fechaFin.toLocaleDateString("es-AR", { day: "numeric", month: "long" })}
       </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-7 gap-4 w-full">
+      <div className="grid grid-cols-2 md:grid-cols-7 gap-4 w-full">
         {dias.map((dia, index) => {
           const fechaISO = dia.toISOString().split("T")[0];
           const horarios = obtenerHorarios(dia);
