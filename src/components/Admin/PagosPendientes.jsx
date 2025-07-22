@@ -1,4 +1,3 @@
-// src/components/Admin/PagosPendientes.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -8,20 +7,28 @@ const PagosPendientes = () => {
 
   const obtenerReservas = async () => {
     try {
-      const res = await axios.get("https://servicios-holisticos-backend.onrender.com/api/admin/reservas-pendientes");
+      const res = await axios.get(
+        "https://servicios-holisticos-backend.onrender.com/api/admin/reservas-pendientes"
+      );
       setReservas(res.data);
+      setLoading(false);
     } catch (error) {
       console.error("❌ Error al obtener reservas pendientes:", error);
-    } finally {
       setLoading(false);
     }
   };
 
   const actualizarEstado = async (id, nuevoEstado) => {
     try {
-      await axios.put(`https://servicios-holisticos-backend.onrender.com/admin/reserva/${id}`, { estado: nuevoEstado });
-      
-      setReservas(reservas.filter((r) => r._id !== id)); // Quita la reserva aprobada o rechazada
+      await axios.put(
+        `https://servicios-holisticos-backend.onrender.com/api/admin/reserva/${id}`,
+        {
+          estado: nuevoEstado,
+        }
+      );
+
+      // Eliminamos la reserva aprobada/rechazada del estado local
+      setReservas(reservas.filter((r) => r._id !== id));
     } catch (error) {
       console.error("❌ Error al actualizar reserva:", error);
     }
