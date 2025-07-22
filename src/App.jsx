@@ -13,6 +13,7 @@ import PerfilTerapeuta from "./components/PerfilTerapeuta";
 import ServicioDetalle from "./pages/ServicioDetalle";
 import PaginaPagoSimple from "./pages/PaginaPagoSimple";
 import Contacto from "./components/Contacto";
+import PagosPendientes from "./components/Admin/PagosPendientes";
 
 // Páginas legales
 import Terminos from "./pages/Terminos";
@@ -71,6 +72,7 @@ export default function App() {
           <Route path="nuevo-servicio" element={<NuevoServicio />} />
           <Route path="disponibilidad/:servicioId" element={<DisponibilidadServicio />} />
           <Route path="editar-mis-servicios" element={<EditarMisServicios />} />
+          <Route path="/admin/pagos" element={<PagosPendientes />} />
           <Route path="editar-servicio/:servicioId" element={<EditarServicio />} />
           <Route path="mision-valores" element={<MisionValores />} />
         </Route>

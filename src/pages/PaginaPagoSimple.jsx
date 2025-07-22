@@ -1,357 +1,227 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { FaWhatsapp, FaVideo, FaGoogle, FaSkype } from "react-icons/fa";
-
-const obtenerIconoPlataforma = (nombre) => {
-  if (!nombre) return null;
-  switch (nombre.toLowerCase()) {
-    case "whatsapp":
-      return <FaWhatsapp className="inline-block text-2xl text-green-600 ml-1" title="WhatsApp" />;
-    case "zoom":
-      return <FaVideo className="inline-block text-2xl text-blue-500 ml-1" title="Zoom" />;
-    case "meet":
-      return <FaGoogle className="inline-block text-2xl text-red-500 ml-1" title="Google Meet" />;
-    case "skype":
-      return <FaSkype className="inline-block text-2xl text-sky-600 ml-1" title="Skype" />;
-    default:
-      return (
-        <span className="inline-block text-gray-500 ml-1" title={nombre}>
-          {nombre}
-        </span>
-      );
-  }
-};
-
-function formatearDuracion(minutos) {
-  const h = Math.floor(minutos / 60);
-  const m = minutos % 60;
-  if (h > 0 && m > 0) return `${h} h ${m} min`;
-  if (h > 0) return `${h} h`;
-  return `${m} min`;
-}
 
 function PaginaPagoSimple() {
   const location = useLocation();
   const navigate = useNavigate();
+  const intervaloCuentaRegresiva = useRef(null);
   const { servicio, fecha, hora } = location.state || {};
-  const [bloqueado, setBloqueado] = useState(false);
-const [mensajeBloqueo, setMensajeBloqueo] = useState("");
-
-useEffect(() => {
-  const verificarBloqueo = async () => {
-    try {
-      const res = await fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/verificar?servicioId=${servicio._id}&fecha=${fecha}&hora=${hora}`);
-      const data = await res.json();
-
-      if (!data.libre) {
-        
-      } else {
-        // Creamos el bloqueo temporal de 10 minutos
-        const emailGuardado = localStorage.getItem("emailUsuario") || email || "email_desconocido";
-
-        await fetch("https://servicios-holisticos-backend.onrender.com/api/bloqueos", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            servicioId: servicio._id,
-            fecha,
-            hora,
-            usuarioEmail: email || "email_desconocido",
-            estado: "en_proceso",
-          }),
-        });
-      }
-    } catch (error) {
-      console.error("❌ Error al verificar o crear bloqueo:", error);
-    }
-  };
-
-  if (servicio && fecha && hora) {
-    verificarBloqueo();
-  }
-  }, [servicio, fecha, hora]); 
-
-  const [expirado, setExpirado] = useState(false);
-  servicio.duracion = parseInt(servicio.duracion || servicio.duracionMinutos || 0);
 
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [aceptaTerminos, setAceptaTerminos] = useState(false);
-  const [minutos, setMinutos] = useState(0);
-const [segundos, setSegundos] = useState(0);
+  const [comprobanteURL, setComprobanteURL] = useState("");
+  const [subiendo, setSubiendo] = useState(false);
+  const [enviado, setEnviado] = useState(false);
+  const [expirado, setExpirado] = useState(false);
+  const [minutos, setMinutos] = useState(1);
+  const [segundos, setSegundos] = useState(0);
+  const [error, setError] = useState("");
 
+  // Guardar reserva temporal con expiración a 1 minuto
   useEffect(() => {
-    const reservaPendiente = JSON.parse(localStorage.getItem("reservaPendiente"));
     const ahora = Date.now();
+    const expiracion = ahora + 1 * 60 * 1000; // ⏱️ 1 minuto para pruebas
+    const reservaTemporal = {
+      servicioId: servicio?._id,
+      fecha,
+      hora,
+      expiracion,
+    };
+    localStorage.setItem("reservaTemporal", JSON.stringify(reservaTemporal));
+  }, [servicio, fecha, hora]);
 
-    if (reservaPendiente?.expiracion) {
-      const diferencia = reservaPendiente.expiracion - ahora;
-
-      if (diferencia <= 0) {
-        setExpirado(true);
-      } else {
-        const totalSegundos = Math.floor(diferencia / 1000);
-        setMinutos(Math.floor(totalSegundos / 60));
-        setSegundos(totalSegundos % 60);
-      }
-    } else {
-      // No había reserva → marcar como expirada
-      setExpirado(true);
-    }
-  }, []);
-
-  function calcularHoraFin(horaInicio, duracionMinutos) {
-    if (!horaInicio || typeof horaInicio !== "string" || !horaInicio.includes(":")) {
-      return "--:--";
-    }
-
-    const [h, m] = horaInicio.split(":").map(Number);
-    const inicio = new Date();
-    inicio.setHours(h, m);
-    const fin = new Date(inicio.getTime() + duracionMinutos * 60000);
-    const hora = fin.getHours().toString().padStart(2, "0");
-    const minutos = fin.getMinutes().toString().padStart(2, "0");
-    return `${hora}:${minutos}`;
-  }
-
-  // ⏳ Temporizador
+  // Manejar temporizador y redirección si expira
   useEffect(() => {
-    const intervalo = setInterval(() => {
-      const reservaPendiente = JSON.parse(localStorage.getItem("reservaPendiente"));
+    intervaloCuentaRegresiva.current = setInterval(() => {
+      const reserva = JSON.parse(localStorage.getItem("reservaTemporal"));
       const ahora = Date.now();
 
-      if (reservaPendiente?.expiracion) {
-        const diferencia = reservaPendiente.expiracion - ahora;
-
-        if (diferencia <= 0) {
-          setExpirado(true);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-
-          // Liberar turno desde el backend
-          if (servicio?._id && fecha && hora) {
-            fetch("https://servicios-holisticos-backend.onrender.com/api/reservas/liberar", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ servicioId: servicio._id, fecha, hora }),
-            }).then(() => {
-              console.log("⛔ Reserva liberada por tiempo expirado");
-            });
-          }
-
-          // Redirigir a los servicios después de 10 segundos
-          setTimeout(() => {
-            navigate("/servicios");
-          }, 10000);
-        } else {
-          const totalSegundos = Math.floor(diferencia / 1000);
-          setMinutos(Math.floor(totalSegundos / 60));
-          setSegundos(totalSegundos % 60);
-        }
-      } else {
+      if (!reserva || reserva.expiracion < ahora) {
         setExpirado(true);
+        clearInterval(intervaloCuentaRegresiva.current);
+        localStorage.removeItem("reservaTemporal");
+        setTimeout(() => navigate("/servicios"), 5000);
+      } else {
+        const diff = Math.floor((reserva.expiracion - ahora) / 1000);
+        setMinutos(Math.floor(diff / 60));
+        setSegundos(diff % 60);
       }
     }, 1000);
 
-    return () => clearInterval(intervalo);
-  }, [servicio, fecha, hora]);
+    return () => clearInterval(intervaloCuentaRegresiva.current);
+  }, [navigate]);
 
-  const iniciarPago = async () => {
-    if (!aceptaTerminos) {
-      alert("Debés aceptar la política de privacidad para continuar.");
-      return;
-    }
+  const handleComprobanteChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    if (!nombre.trim()) {
-      alert("Por favor, completá tu nombre.");
-      return;
-    }
+    setSubiendo(true);
+    setError("");
 
-    const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    if (!emailValido) {
-      alert("Por favor, ingresá un correo electrónico válido.");
-      return;
-    }
-
-    if (!/^\d{10}$/.test(telefono)) {
-      alert("Ingresá un número de teléfono válido (sin 0 ni 15).");
-      return;
-    }
-
-    const payload = {
-      items: [
-        {
-          title: servicio?.titulo || "Sesión",
-          description: `Sesión con ${servicio?.terapeuta?.nombreCompleto} el ${fecha} a las ${hora}`,
-          quantity: 1,
-          currency_id: "ARS",
-          unit_price: Number(servicio?.precio) || 1000,
-          servicioId: servicio?._id,
-          terapeutaId: servicio?.terapeuta?._id,
-          fechaReserva: fecha,
-          horaReserva: hora,
-          terapeutaNombre: servicio?.terapeuta?.nombreCompleto,
-          terapeutaEmail: servicio?.terapeuta?.email,
-          plataforma: servicio?.plataforma || "", // ✅ Se agrega esto
-        },
-      ],
-      payer: {
-        name: nombre,
-        email: email,
-        phone: {
-          number: telefono,
-        },
-      },
-      // 👇 ESTA ES LA CLAVE
-      usuarioNombre: nombre,
-      usuarioEmail: email,
-      additional_info: "Reserva generada desde el sitio web",
-    };
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "servicios_holisticos"); // Reemplazá por el tuyo
+    formData.append("cloud_name", "dbu5cfqzf"); // Reemplazá por el tuyo
 
     try {
-      const response = await fetch(
-        "https://servicios-holisticos-backend.onrender.com/api/pagos/crear-preferencia",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch("https://api.cloudinary.com/v1_1/dbu5cfqzf/image/upload", {
+        method: "POST",
+        body: formData,
+      });
 
-      const data = await response.json();
+      const data = await res.json();
 
-      if (data.init_point) {
-        localStorage.setItem("datosReserva", JSON.stringify({
-          servicioId: servicio?._id,
-          terapeutaId: servicio?.terapeuta?._id,
-          precio: Number(servicio?.precio) || 0,
-          fechaReserva: fecha,
-          horaReserva: hora,
-        }));
+      console.log("📦 Respuesta de Cloudinary:", data); // LOG 1
 
-        localStorage.setItem("nombreUsuario", nombre);
-        localStorage.setItem("emailUsuario", email);
-        localStorage.setItem("telefonoUsuario", telefono);
-
-        window.location.href = data.init_point;
+      if (data.secure_url) {
+        setComprobanteURL(data.secure_url);
       } else {
-        alert("Error al generar el link de pago.");
+        console.log("❌ Error esperado:", data); // LOG 2
+        setError("Error al subir el comprobante.");
       }
     } catch (err) {
-      console.error("❌ Error al iniciar el pago:", err);
-      alert("Ocurrió un error al iniciar el pago.");
+      console.error("❌ Error inesperado al subir a Cloudinary:", err); // LOG 3
+      setError("Error al subir el comprobante.");
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!nombre || !email || !telefono || !comprobanteURL) {
+      alert("Completá todos los campos y subí el comprobante.");
+      return;
+    }
+
+    clearInterval(intervaloCuentaRegresiva.current);
+    localStorage.removeItem("reservaTemporal");
+
+    try {
+      console.log("📤 Enviando datos al backend con:");
+      console.log({
+        nombre,
+        email,
+        telefono,
+        servicioId: servicio._id,
+        fecha,
+        hora,
+        comprobanteURL,
+      });
+
+      const res = await fetch("https://servicios-holisticos-backend.onrender.com/api/reservas/con-comprobante", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre,
+          email,
+          telefono,
+          servicioId: servicio._id,
+          fecha,
+          hora,
+          comprobanteURL,
+        }),
+      });
+
+      const data = await res.json();
+      console.log("📥 Respuesta del backend:", data);
+
+      if (res.ok) {
+        setEnviado(true);
+      } else {
+        alert("Error al enviar el comprobante.");
+      }
+    } catch (err) {
+      console.error("❌ Error al enviar:", err);
+      alert("Ocurrió un error.");
     }
   };
 
   if (expirado) {
     return (
-      <div className="bg-white pt-24 pb-24 px-6 max-w-xl mx-auto text-center text-[#333] min-h-screen">
-        <h2 className="text-2xl pt-24 font-bold text-red-600 mb-4">⏱️ Tiempo expirado</h2>
-        <p className="mb-4">La reserva fue cancelada automáticamente por falta de pago.</p>
-        <p className="mb-6">Estás siendo redirigid@ a los servicios disponibles...</p>
-        <Link to="/servicios" className="text-[#009EE3] underline">
-          Ir ahora
-        </Link>
+      <div className="p-6 pt-24 text-center text-red-600">
+        <h2 className="text-2xl font-bold mb-4">⏱️ Tiempo expirado</h2>
+        <p>La reserva fue cancelada automáticamente.</p>
+        <p className="mt-4 text-gray-600">Redirigiendo a servicios...</p>
       </div>
     );
   }
 
-return (
-  <div className="bg-white pt-24 pb-16 px-4 max-w-xl mx-auto min-h-screen text-[#333]">
-    {/* Resumen */}
-    <div className="bg-white rounded-xl p-5 mb-8 shadow-md text-sm">
-      <h3 className="text-lg font-semibold mb-4 text-center">Resumen de tu reserva 🌸</h3>
-      <div className="grid grid-cols-2 gap-4 items-start">
-        <div className="flex flex-col justify-between h-full space-y-4 p-4 divide-y">
-          <p className="pt-1"><span className="text-pink-500">Servicio</span><br />{servicio?.titulo}</p>
-          <p className="pt-4"><span className="text-pink-500">Modalidad</span><br />{servicio?.modalidad}</p>
-         <p className="pt-4">
-<span className="text-pink-500">Fecha</span><br />
-{fecha ? new Date(fecha + "T00:00:00").toLocaleDateString("es-AR", { day: "numeric", month: "long" }) : "-"}
-</p>
+  if (enviado) {
+    return (
+      <div className="p-6 pt-24 text-center text-gray-700">
+        <h2 className="text-2xl font-bold mb-4">Comprobante enviado 🎉</h2>
+        <p>Gracias por tu pago. Revisaremos el comprobante y te contactaremos pronto.</p>
+        <Link to="/" className="mt-6 inline-block text-blue-600 underline">Volver al inicio</Link>
+      </div>
+    );
+  }
 
-          <p className="pt-4"><span className="text-pink-500">Duración</span><br />{typeof servicio?.duracion === "number" ? formatearDuracion(servicio.duracion) : "Duración no disponible"}</p>
+  return (
+    <div className="bg-white pt-24 pb-16 px-4 max-w-xl mx-auto min-h-screen text-[#333]">
+      <h2 className="text-2xl font-semibold mb-6 text-center">Confirmá tu reserva</h2>
+
+      <div className="bg-gray-50 p-4 rounded-xl shadow mb-6">
+        <h3 className="font-bold text-[#009EE3] mb-2">Datos para transferencia</h3>
+        <p>CBU: <span className="font-mono">0000003100000001234567</span></p>
+        <p>Alias: <span className="font-mono">holistico.mp</span></p>
+        <p>Titular: <strong>Servicios Holísticos</strong></p>
+        <p className="mt-2 text-sm text-gray-500">* Una vez hecho el pago, subí el comprobante abajo.</p>
+      </div>
+
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
+        <input
+          type="text"
+          placeholder="Tu nombre"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="email"
+          placeholder="Tu email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+        <input
+          type="tel"
+          placeholder="Teléfono (sin 15)"
+          value={telefono}
+          onChange={(e) => setTelefono(e.target.value)}
+          className="w-full p-2 border rounded"
+        />
+
+        <div>
+          <label className="block mb-1 text-sm font-medium text-gray-700">Subí el comprobante de pago:</label>
+          <input
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={handleComprobanteChange}
+            className="w-full"
+          />
+          {subiendo && <p className="text-sm text-blue-600 mt-1">Subiendo comprobante...</p>}
+          {comprobanteURL && <p className="text-sm text-green-600 mt-1">✅ Comprobante subido</p>}
+          {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
         </div>
-        <div className="flex flex-col justify-between h-full space-y-4 p-4 divide-y">
-          <p className="pt-1"><span className="text-pink-500">Terapeuta</span><br />{servicio?.terapeuta?.nombreCompleto || "Sin definir"}</p>
-          <p className="pt-4"><span className="text-pink-500">Precio</span><br />${servicio?.precio}</p>
-          <p className="pt-4"><span className="text-pink-500">Hora</span><br />{hora} a {calcularHoraFin(hora, servicio?.duracion)} hs</p>
-          
-          <div className="pt-4">
-            <span className="text-pink-500">Plataforma</span><br />
-            {Array.isArray(servicio?.plataformas) && servicio.plataformas.length > 0 ? (
-              <div className="flex gap-2 mt-1 text-[22px]">
-                {servicio.plataformas.map((p, i) => (
-                  <span key={i}>{obtenerIconoPlataforma(p)}</span>
-                ))}
-              </div>
-            ) : (
-              <span className="text-gray-500">No especificada</span>
-            )}
-          </div>
+      </form>
+
+      <div className="flex justify-center mt-6">
+        <div className="w-24 h-24 border-2 border-[#009EE3] rounded-full flex items-center justify-center">
+          <span className="text-xl font-mono text-[#009EE3]">
+            {minutos}:{segundos.toString().padStart(2, "0")}
+          </span>
         </div>
       </div>
-    </div>
+      <p className="text-center text-sm text-gray-500 mt-2 mb-6">Tiempo restante para enviar el comprobante</p>
 
-    {/* Formulario */}
-    <form className="bg-white rounded-3xl shadow-md p-6 mb-6">
-      <h2 className="text-lg font-semibold text-center outline-none mb-6">Completá con tus datos 🪴</h2>
-      <input 
-        type="text" 
-        placeholder="Nombre y apellido" 
-        value={nombre} 
-        onChange={(e) => setNombre(e.target.value)} 
-        required 
-      className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:border-gray-500 focus:ring-0 outline-none" 
-      />
-
-      <input 
-        type="email" 
-        placeholder="Correo electrónico" 
-        value={email} 
-        onChange={(e) => setEmail(e.target.value)} 
-        required 
-        className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:border-gray-500 focus:ring-0 outline-none" 
-      />
-
-      <input 
-        type="tel" 
-        placeholder="Teléfono (sin el 15)" 
-        pattern="[0-9]{10}" 
-        maxLength={10} 
-        value={telefono} 
-        onChange={(e) => setTelefono(e.target.value)} 
-        required 
-        className="w-full p-2 mb-4 border border-gray-300 rounded-lg focus:border-gray-500 focus:ring-0 outline-none" 
-      />
-    </form>
-
-    {/* Temporizador */}
-    <div className="flex justify-center mt-10">
-      <div className="w-28 h-28 border border-[#009EE3] rounded-full flex items-center justify-center">
-        <span className="text-3xl text-[#009EE3] font-mono">{minutos}:{segundos.toString().padStart(2, "0")}</span>
-      </div>
-    </div>
-    <p className="text-center text-[#009EE3] mt-2 font-medium">Tiempo restante para completar el pago</p>
-    <p className="text-center text-sm text-gray-500 mt-1 mb-4 px-6">Si no realizás el pago antes de que finalice el tiempo, la reserva será cancelada automáticamente.</p>
-
-    {/* Términos y botón */}
-    <div className="bg-white rounded-3xl shadow-md p-6 mt-6">
-      <div className="flex items-center mb-4">
-        <input type="checkbox" id="terminos" checked={aceptaTerminos} onChange={(e) => setAceptaTerminos(e.target.checked)} className="mr-2" />
-        <label htmlFor="terminos" className="text-sm text-[#333]">
-          Acepto la{" "}
-          <Link to="/privacidad" target="_blank" rel="noopener noreferrer" className="underline text-[#009EE3]">
-            Política de Privacidad
-          </Link>
-        </label>
-      </div>
-      <button type="button" disabled={!aceptaTerminos} onClick={iniciarPago} className={`w-full mb-24 py-2 rounded-3xl text-lg transition ${aceptaTerminos ? "bg-[#009EE3] text-white hover:bg-[#007dc1]" : "bg-gray-300 text-white cursor-not-allowed"}`}>
-        Pagar con Mercado Pago
+      <button
+        onClick={handleSubmit}
+        className={`w-full py-2 rounded-lg text-white ${comprobanteURL ? "bg-[#009EE3] hover:bg-[#007bbd]" : "bg-gray-400 cursor-not-allowed"}`}
+        disabled={!comprobanteURL}
+      >
+        Ya realicé el pago
       </button>
     </div>
-  </div>
-);
+  );
 }
 
 export default PaginaPagoSimple;
