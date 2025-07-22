@@ -8,7 +8,7 @@ const PagosPendientes = () => {
 
   const obtenerReservas = async () => {
     try {
-      const res = await axios.get("https://servicios-holisticos-backend.onrender.com/admin/reservas-pendientes");
+      const res = await axios.get("https://servicios-holisticos-backend.onrender.com/api/admin/reservas-pendientes");
       setReservas(res.data);
     } catch (error) {
       console.error("❌ Error al obtener reservas pendientes:", error);
