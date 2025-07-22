@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+// 🔧 Aseguramos que todas las peticiones vayan al backend en Render
+axios.defaults.baseURL = "https://servicios-holisticos-backend.onrender.com";
+
 const PagosPendientes = () => {
   const [reservas, setReservas] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const obtenerReservas = async () => {
     try {
-      const res = await axios.get(
-        "https://servicios-holisticos-backend.onrender.com/api/admin/reservas-pendientes"
-      );
+      const res = await axios.get("/api/admin/reservas-pendientes");
       setReservas(res.data);
       setLoading(false);
     } catch (error) {
@@ -20,12 +21,9 @@ const PagosPendientes = () => {
 
   const actualizarEstado = async (id, nuevoEstado) => {
     try {
-      await axios.put(
-        `https://servicios-holisticos-backend.onrender.com/api/admin/reserva/${id}`,
-        {
-          estado: nuevoEstado,
-        }
-      );
+      await axios.put(`/api/admin/reserva/${id}`, {
+        estado: nuevoEstado,
+      });
 
       // Eliminamos la reserva aprobada/rechazada del estado local
       setReservas(reservas.filter((r) => r._id !== id));
@@ -39,7 +37,8 @@ const PagosPendientes = () => {
   }, []);
 
   if (loading) return <p className="text-center">Cargando reservas...</p>;
-  if (reservas.length === 0) return <p className="text-center">No hay pagos pendientes.</p>;
+  if (reservas.length === 0)
+    return <p className="text-center">No hay pagos pendientes.</p>;
 
   return (
     <div className="space-y-6">
