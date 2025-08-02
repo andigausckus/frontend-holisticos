@@ -13,6 +13,8 @@ const [email, setEmail] = useState('');
   const [reservaTemporal, setReservaTemporal] = useState(null);
   const [tiempoRestante, setTiempoRestante] = useState(120);
   const [reservaConfirmada, setReservaConfirmada] = useState(false);
+  const [comprobantePago, setComprobantePago] = useState(null);
+const [urlComprobante, setUrlComprobante] = useState("");
 
   if (!servicio || !fecha || !hora) {
     return (
@@ -69,6 +71,8 @@ const [email, setEmail] = useState('');
             mensaje: datosUsuario?.mensaje || "",
             fecha,
             hora,
+            precio: servicio.precio,        // <-- AÑADIR
+            duracion: servicio.duracion     // <-- AÑADIR
           }),
         });
         const data = await resp.json();
@@ -82,39 +86,107 @@ const [email, setEmail] = useState('');
   }, [servicio, fecha, hora, datosUsuario, reservaTemporal]);
 
   useEffect(() => {
-    const intervalo = setInterval(() => {
-      setTiempoRestante((prev) => {
-        if (prev <= 1) {
-          clearInterval(intervalo);
-          alert("El tiempo para completar esta reserva expiró.");
-          navigate("/servicios");
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(intervalo);
-  }, [navigate]);
+  const claveStorage = "limitePago";
+
+  let horaLimite = localStorage.getItem(claveStorage);
+
+  if (!horaLimite) {
+    const nuevaHoraLimite = Date.now() + 2 * 60 * 1000; // 2 minutos
+    localStorage.setItem(claveStorage, nuevaHoraLimite);
+    horaLimite = nuevaHoraLimite;
+  }
+
+  const idIntervalo = setInterval(() => {
+    const ahora = Date.now();
+    const diferencia = parseInt(horaLimite) - ahora;
+
+    if (diferencia <= 0) {
+      setTiempoRestante(0);
+      clearInterval(idIntervalo);
+      localStorage.removeItem(claveStorage);
+    } else {
+      setTiempoRestante(Math.floor(diferencia / 1000));
+    }
+  }, 1000);
+
+  return () => clearInterval(idIntervalo);
+}, []);
+
+  // ⬆️ otras imports arriba
+
+const subirACloudinary = async (archivo) => {
+  const data = new FormData();
+  data.append("file", archivo);
+  data.append("upload_preset", "servicios_holisticos");
+
+  try {
+    const resp = await fetch("https://api.cloudinary.com/v1_1/dbu5cfqzf/image/upload", {
+      method: "POST",
+      body: data,
+    });
+
+    const json = await resp.json();
+    return json.secure_url;
+  } catch (err) {
+    console.error("❌ Error subiendo a Cloudinary:", err);
+    return null;
+  }
+};
 
   const confirmarReserva = async () => {
+    console.log("⏳ Intentando confirmar reserva con los siguientes datos:");
+    console.log("servicio._id:", servicio?._id);
+    console.log("servicio.terapeutaId:", servicio?.terapeutaId);
+    console.log("servicio.precio:", servicio?.precio);
+    console.log("servicio.duracion:", servicio?.duracion);
+
+    if (!servicio?.precio || !servicio?.duracion || !servicio?.terapeutaId) {
+      console.error("❌ Error: faltan datos obligatorios del servicio.");
+      alert("No se puede confirmar la reserva. Faltan datos del servicio.");
+      return;
+    }
+
     try {
+      if (
+        !servicio ||
+        !servicio._id ||
+        !servicio.terapeutaId ||
+        !servicio.precio ||
+        !servicio.duracion
+      ) {
+        console.error("❌ Datos de servicio incompletos");
+        return alert("Hubo un problema con los datos del servicio. Recargá la página.");
+      }
+
+      console.log("✅ URL del comprobante:", urlComprobante);
+
+      const datosParaEnviar = {
+        servicioId: servicio._id,
+        terapeutaId: servicio.terapeutaId,
+        fecha,
+        hora,
+        nombreUsuario: nombre,
+        emailUsuario: email,
+        mensaje: datosUsuario?.mensaje || "",
+        precio: servicio.precio,
+        duracion: servicio.duracion,
+        comprobantePago: urlComprobante,
+      };
+
+      console.log("🧪 Enviando datos:", datosParaEnviar);
+
       const resp = await fetch(`${API_URL}/api/reservas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          servicioId: servicio._id,
-          terapeutaId: servicio.terapeutaId,
-          fecha,
-          hora,
-          nombreUsuario: nombre,
-          emailUsuario: email,
-          mensaje: datosUsuario?.mensaje || "",
-        }),
+        body: JSON.stringify(datosParaEnviar),
       });
 
       const data = await resp.json();
+      console.log("✅ Reserva confirmada:", data);
       setReservaConfirmada(true);
+      localStorage.removeItem("limitePago");
     } catch (error) {
-      console.error("Error al confirmar reserva:", error);
+      console.error("❌ Error al confirmar reserva:", error);
     }
   };
 
@@ -145,6 +217,8 @@ const [email, setEmail] = useState('');
       </div>
     );
   }
+
+  const botonDeshabilitado = !nombre.trim() || !email.trim() || !urlComprobante.trim();
 
   return (
   <div className="p-6 pt-24 max-w-xl mx-auto space-y-6">
@@ -224,7 +298,22 @@ const [email, setEmail] = useState('');
     {/* Subir comprobante de pago */}
     <div>
       <h3 className="text-base text-left font-semibold mb-2">Subí el comprobante de pago</h3>
-      <input type="file" className="border p-2 w-full rounded" />
+      <input
+  type="file"
+  accept="image/*"
+  className="border p-2 w-full rounded"
+  onChange={async (e) => {
+    const archivo = e.target.files[0];
+    setComprobantePago(archivo);
+    const url = await subirACloudinary(archivo);
+    if (url) {
+      setUrlComprobante(url);
+      console.log("✅ URL del comprobante:", url);
+    } else {
+      alert("Error al subir comprobante");
+    }
+  }}
+/>
     </div>
 
     <div className="flex flex-col items-center">
@@ -262,7 +351,12 @@ const [email, setEmail] = useState('');
 
     <button
       onClick={confirmarReserva}
-      className="bg-sky-500 text-white px-4 py-2 rounded hover:bg-sky-600 w-full"
+      disabled={botonDeshabilitado}
+      className={`mt-4 px-4 py-2 rounded w-full font-semibold transition-colors duration-200 ${
+        botonDeshabilitado
+          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          : 'bg-sky-500 hover:bg-sky-600 text-white'
+      }`}
     >
       Confirmar y enviar pago
     </button>

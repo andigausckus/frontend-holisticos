@@ -22,45 +22,51 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
   }, []);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const inicio = dias[0];
-        const fin = dias[dias.length - 1];
+  const fetchData = async () => {
+    try {
+      const inicio = dias[0];
+      const fin = dias[dias.length - 1];
 
-        if (!servicio || !servicio._id || !inicio || !fin) return;
+      if (!servicio || !servicio._id || !inicio || !fin) return;
 
-        console.log(`Cargando bloqueos y reservas para servicio: ${servicio._id} desde ${inicio} hasta ${fin}`);
+      console.log(`Cargando bloqueos y reservas para servicio: ${servicio._id} desde ${inicio} hasta ${fin}`);
 
-        const res = await fetch(
-  `${process.env.REACT_APP_BACKEND_URL}/reservas/estado-actual/${servicio._id}?inicio=${inicio}&fin=${fin}`
-);
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/reservas/estado-actual/${servicio._id}?inicio=${inicio}&fin=${fin}`
+      );
 
-        const data = await res.json();
+      const data = await res.json();
 
-        console.log(" Respuesta RAW:", JSON.stringify(data));
-        console.log(" RESERVAS:");
-        console.log(data.reservas);
-        console.log(" BLOQUEOS:");
-        console.log(data.bloqueos);
+      console.log("🔍 Respuesta RAW:", JSON.stringify(data));
+      console.log("⬇️ RESERVAS:");
+      console.log(data.reservas);
+      console.log("⬇️ BLOQUEOS:");
+      console.log(data.bloqueos);
 
-        if (data && data.reservas && data.bloqueos) {
-          const clavesReservas = Object.keys(data.reservas);
-          console.log("Claves válidas reservas: \nArray", clavesReservas);
+      if (data && data.reservas && data.bloqueos) {
+        const clavesReservas = Object.keys(data.reservas);
+        console.log("Claves válidas reservas: \nArray", clavesReservas);
 
-          setReservas(data.reservas);
-          setBloqueos(data.bloqueos);
-          console.log("reservas cargadas: \nObject", data.reservas);
-          console.log("bloqueos cargados: \nObject", data.bloqueos);
-        } else {
-          console.error(" Error: respuesta incompleta del servidor");
-        }
-      } catch (error) {
-        console.error("Error al obtener bloqueos + reservas: \nReferenceError {}", error);
+        setReservas(data.reservas);
+        setBloqueos(data.bloqueos);
+        console.log("✅ reservas cargadas: \nObject", data.reservas);
+        console.log("✅ bloqueos cargados: \nObject", data.bloqueos);
+      } else {
+        console.error("❌ Error: respuesta incompleta del servidor");
       }
-    };
+    } catch (error) {
+      console.error("❌ Error al obtener bloqueos + reservas:", error);
+    }
+  };
 
+  fetchData();
+
+  const intervalo = setInterval(() => {
     fetchData();
-  }, [dias, servicio]);
+  }, 5000);
+
+  return () => clearInterval(intervalo);
+}, [dias, servicio]);
 
   const obtenerHorarios = (fecha) => {
     const fechaISO = fecha;
@@ -102,6 +108,8 @@ const horaFormateada = `${h.padStart(2, "0")}:${m.padStart(2, "0")}`;
                   let bg = "";
                   let label = "";
 
+                console.log("Probando key:", key, "¿Está en bloqueos?", Boolean(bloqueos[key]));
+console.log("Todas las claves de bloqueos:", Object.keys(bloqueos));
                   if (bloqueos[key]) {
                     estado = "en_proceso";
                     disabled = true;

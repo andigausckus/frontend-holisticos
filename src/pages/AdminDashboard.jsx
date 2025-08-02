@@ -36,20 +36,11 @@ const AdminDashboard = () => {
         >
           Reseñas
         </button>
-        <button
-          onClick={() => setVista("pagos")}
-          className={`px-4 py-2 rounded-xl ${
-            vista === "pagos" ? "bg-pink-500 text-white" : "bg-gray-200"
-          }`}
-        >
-          Pagos
-        </button>
       </div>
 
       {vista === "terapeutas" && <TerapeutasPendientes />}
       {vista === "servicios" && <ServiciosPendientes />}
       {vista === "resenas" && <ResenasPendientes />}
-      {vista === "pagos" && <PagosPendientes />}
     </div>
   );
 };

@@ -30,9 +30,10 @@ function AdminReservas() {
               key={reserva._id}
               className="bg-white shadow-md rounded-xl p-4 border border-gray-200"
             >
-              <p><strong>Usuario:</strong> {reserva.usuarioNombre}</p>
-              <p><strong>Email:</strong> {reserva.usuarioEmail}</p>
-              <p><strong>Fecha:</strong> {new Date(reserva.fecha).toLocaleString("es-AR")}</p>
+              <p><strong>Usuario:</strong> {reserva.nombreUsuario}</p>
+              <p><strong>Email:</strong> {reserva.emailUsuario}</p>
+              <p><strong>Fecha:</strong> {new Date(reserva.fecha).toLocaleDateString("es-AR")}</p>
+              <p><strong>Hora:</strong> {reserva.hora}</p>
               <p><strong>Terapeuta ID:</strong> {reserva.terapeutaId}</p>
               {reserva.servicioId && (
                 <p><strong>Servicio ID:</strong> {reserva.servicioId}</p>
@@ -40,8 +41,15 @@ function AdminReservas() {
               {reserva.precio && (
                 <p><strong>Precio:</strong> ${reserva.precio}</p>
               )}
-              {reserva.paymentId && (
-                <p><strong>Pago:</strong> ID {reserva.paymentId}</p>
+              {reserva.comprobantePago && (
+                <div className="mt-2">
+                  <strong>Comprobante:</strong><br />
+                  <img
+                    src={reserva.comprobantePago}
+                    alt="Comprobante de pago"
+                    className="mt-1 max-w-xs rounded shadow-md border border-gray-300"
+                  />
+                </div>
               )}
             </div>
           ))}
