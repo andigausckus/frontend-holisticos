@@ -40,16 +40,32 @@ function Servicios() {
     { value: "60+", label: "Más de 60 minutos" },
   ];
 
+  // 🟩 Esta función convierte "60 minutos", "90 min", "45", etc. en números
+const extraerMinutos = (duracion) => {
+  if (typeof duracion === "number") return duracion;
+  if (typeof duracion === "string") {
+    const match = duracion.match(/(\d+)/);
+    return match ? parseInt(match[1]) : 0;
+  }
+  return 0;
+};
+
   const serviciosFiltrados = servicios.filter((s) => {
+    console.log("🧪 Servicio:", s);
     const coincideCategoria = !categoriaSeleccionada || s.categoria === categoriaSeleccionada.value;
     const coincidePrecio =
       (!precioMinimo || s.precio >= parseInt(precioMinimo)) &&
       (!precioMaximo || s.precio <= parseInt(precioMaximo));
-    const coincideDuracion = !duracionSeleccionada || (
-      duracionSeleccionada.value === "30-45" && s.duracion >= 30 && s.duracion <= 45 ||
-      duracionSeleccionada.value === "45-60" && s.duracion >= 45 && s.duracion <= 60 ||
-      duracionSeleccionada.value === "60+" && s.duracion > 60
-    );
+    const minutos = s.duracionMinutos;
+    const coincideDuracion =
+      !duracionSeleccionada ||
+      (duracionSeleccionada.value === "30-45" &&
+        minutos >= 30 &&
+        minutos <= 45) ||
+      (duracionSeleccionada.value === "45-60" &&
+        minutos >= 45 &&
+        minutos <= 60) ||
+      (duracionSeleccionada.value === "60+" && minutos > 60);
     return coincideCategoria && coincidePrecio && coincideDuracion;
   });
 
@@ -126,24 +142,32 @@ function Servicios() {
         />
 
         {/* Precio */}
-        <div className="flex gap-2 focus-within:border-[2px] items-center border border-gray-300 rounded-[1rem] px-3 py-2 focus-within:border-violet-600 hover:border-violet-500 transition duration-200">
-          <input
-            type="number"
-            placeholder="Mínimo ($)"
-            className="w-full border-none focus:outline-none text-sm"
-            value={precioMinimo}
-            onChange={(e) => setPrecioMinimo(e.target.value)}
-          />
-          <span>-</span>
-          <input
-            type="number"
-            placeholder="Máximo ($)"
-            className="w-full border-none focus:outline-none text-sm"
-            value={precioMaximo}
-            onChange={(e) => setPrecioMaximo(e.target.value)}
-          />
+        <div className="flex gap-3 w-full">
+          {/* Campo precio mínimo */}
+          <div className="flex-1 border border-gray-300 rounded-xl px-3 py-2 focus-within:border-b-2 focus-within:border-violet-400 transition duration-200">
+            <input
+              type="number"
+              placeholder="Mínimo ($)"
+              className="w-full border-none focus:outline-none text-sm"
+              value={precioMinimo}
+              onChange={(e) => setPrecioMinimo(e.target.value)}
+              min={0}
+            />
+          </div>
+
+          {/* Campo precio máximo */}
+          <div className="flex-1 border border-gray-300 rounded-xl px-3 py-2 focus-within:border-b-2 focus-within:border-violet-400 transition duration-200">
+            <input
+              type="number"
+              placeholder="Máximo ($)"
+              className="w-full border-none focus:outline-none text-sm"
+              value={precioMaximo}
+              onChange={(e) => setPrecioMaximo(e.target.value)}
+              min={0}
+            />
+          </div>
         </div>
-      </div>
+        </div>
 
       {/* Servicios */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

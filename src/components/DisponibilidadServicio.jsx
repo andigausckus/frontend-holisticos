@@ -110,7 +110,12 @@ const { servicioId } = useParams();
         if (rangosValidos.length === 0) return null;
 
         return {
-          fecha: d.fecha.toISOString().split("T")[0],
+          fecha:
+          d.fecha.getFullYear() +
+          "-" +
+          String(d.fecha.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(d.fecha.getDate()).padStart(2, "0"),
           horariosFijos: rangosValidos,
         };
       })

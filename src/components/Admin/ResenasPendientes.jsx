@@ -35,9 +35,9 @@ const ResenasPendientes = () => {
             className="bg-white rounded-xl p-4 shadow mb-4"
           >
             <p><strong>Nombre:</strong> {r.nombre}</p>
-            <p><strong>Valoración:</strong> {r.puntuacion} ⭐</p>
+            <p><strong>Valoración:</strong> {r.puntaje} ⭐</p>
             <p><strong>Comentario:</strong> {r.comentario}</p>
-            <p><strong>Terapeuta:</strong> {r.terapeuta?.nombreCompleto}</p>
+            <p><strong>Terapeuta:</strong> {r.terapeuta?.nombreCompleto || "ID: " + r.terapeuta}</p>
 
             <div className="flex gap-2 mt-3">
               <button

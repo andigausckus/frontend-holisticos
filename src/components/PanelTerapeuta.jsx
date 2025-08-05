@@ -39,10 +39,26 @@ export default function PanelTerapeuta() {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("❌ Error HTTP:", errorData);
+          setReservas([]); // evitamos errores si data no es un array
+          return;
+        }
+
         const data = await res.json();
-        setReservas(data);
+        console.log("📦 RESERVAS:", data);
+
+        if (Array.isArray(data)) {
+          setReservas(data);
+        } else {
+          console.error("❌ La respuesta no es un array:", data);
+          setReservas([]); // para que el .map() no crashee
+        }
       } catch (err) {
-        console.error("Error al cargar reservas:", err);
+        console.error("❌ Error al cargar reservas:", err);
+        setReservas([]); // backup en caso de error
       }
     };
 

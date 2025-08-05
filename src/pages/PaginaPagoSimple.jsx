@@ -160,18 +160,25 @@ const subirACloudinary = async (archivo) => {
 
       console.log("✅ URL del comprobante:", urlComprobante);
 
+      console.log("🟡 servicio:", servicio);
+console.log("🟡 servicio.terapeutaId:", servicio?.terapeutaId);
+
+      console.log("🟡 Terapeuta que se envía:", servicio.terapeutaId);
+
       const datosParaEnviar = {
-        servicioId: servicio._id,
-        terapeutaId: servicio.terapeutaId,
-        fecha,
-        hora,
-        nombreUsuario: nombre,
-        emailUsuario: email,
-        mensaje: datosUsuario?.mensaje || "",
-        precio: servicio.precio,
-        duracion: servicio.duracion,
-        comprobantePago: urlComprobante,
-      };
+  servicioId: servicio._id,
+  terapeutaId: servicio.terapeutaId,
+  fecha,
+  hora,
+  nombreUsuario: nombre,
+  emailUsuario: email,
+  mensaje: datosUsuario?.mensaje || "",
+  precio: servicio.precio,
+  duracion: servicio.duracion,
+  comprobantePago: urlComprobante,
+  cbuTerapeuta: servicio.cbu,         // ✅ asegurate que estos campos existan en el objeto `servicio`
+  bancoTerapeuta: servicio.banco      // ✅
+};
 
       console.log("🧪 Enviando datos:", datosParaEnviar);
 
@@ -184,6 +191,7 @@ const subirACloudinary = async (archivo) => {
       const data = await resp.json();
       console.log("✅ Reserva confirmada:", data);
       setReservaConfirmada(true);
+      window.scrollTo({ top: 0, behavior: "smooth" });
       localStorage.removeItem("limitePago");
     } catch (error) {
       console.error("❌ Error al confirmar reserva:", error);
@@ -204,9 +212,9 @@ const subirACloudinary = async (archivo) => {
     return (
       <div className="p-6 pt-24 text-center">
         <FaCheckCircle className="text-green-500 text-5xl mx-auto mb-4" />
-        <h2 className="text-2xl font-bold mb-2">¡Reserva confirmada!</h2>
+        <h2 className="text-2xl font-bold mb-2">¡Reserva confirmada! 🎊</h2>
         <p className="mb-4">
-          Gracias por reservar. El terapeuta se pondrá en contacto contigo.
+          Te hemos enviado un email con la confirmación de tu reserva y los detalles del terapeuta holístico. Revisá tu bandeja de entrada y tu carpeta de spam. 
         </p>
         <button
           className="bg-violet-600 text-white px-4 py-2 rounded"
@@ -233,7 +241,11 @@ const subirACloudinary = async (archivo) => {
         </div>
         <div className="flex items-center space-x-1">
           <span>🗓️</span>
-          <span>{new Date(fecha).toLocaleDateString("es-AR")}</span>
+          <span>{(() => {
+            const [year, month, day] = fecha.split("-").map(Number);
+            const fechaObj = new Date(year, month - 1, day);
+            return fechaObj.toLocaleDateString("es-AR");
+          })()}</span>
         </div>
         <div className="flex items-center space-x-1">
           <span>⏰</span>

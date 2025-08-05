@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import CalendarioSemanal from "../components/CalendarioSemanal";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FiChevronDown } from "react-icons/fi";
 import {
   FaUser,
@@ -25,6 +25,7 @@ function ServicioDetalle() {
   const [seleccion, setSeleccion] = useState(null);
   const [reservas, setReservas] = useState({});
 const [bloqueos, setBloqueos] = useState({});
+  const botonReservaRef = useRef(null); // 👈 lo agregás acá
 
   useEffect(() => {
     const fetchServicio = async () => {
@@ -223,16 +224,22 @@ const data = JSON.parse(texto);
           bloqueos={bloqueos}
           onSeleccionar={(fecha, hora) => {
             setSeleccion({ fecha, hora });
+
+            setTimeout(() => {
+              botonReservaRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 100);
           }}
         />
+  
       </div>
 
       {/* ✅ Botón para reservar */}
-      {seleccion && (
-        <div className="mt-4 text-center">
-          <button
-            className="bg-[#009929] mb-24 hover:bg-[#006414] text-white px-6 py-3 rounded-3xl shadow"
-            onClick={async () => {
+              {seleccion && (
+                <div className="mt-4 text-center">
+                  <button
+                    ref={botonReservaRef} // 👈 agregado
+                    className="bg-[#FF69B4] mb-24 hover:bg-[#FF3385] text-white px-6 py-3 rounded-3xl shadow"
+                    onClick={async () => {
               try {
                 const res = await fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/temporales`, {
                   method: "POST",
