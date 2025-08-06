@@ -137,7 +137,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
   console.log("🟡 DÍAS RENDERIZADOS EN EL FRONTEND:", dias);
 
   return (
-    <div>
+      <div className="mb-24">
       {lunes && domingo && (
         <div className="text-[#444444] mb-4 text-center text-lg font-semibold">
           Semana del {lunes.getDate()} al {domingo.getDate()} de {lunes.toLocaleDateString("es-AR", { month: 'long' })}

@@ -15,10 +15,12 @@ import {
 } from "react-icons/fa";
 
 function ServicioDetalle() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
 
   const [servicio, setServicio] = useState(null);
+  const [loading, setLoading] = useState(true);
+const [error, setError] = useState(null);
   const [mostrarDescripcion, setMostrarDescripcion] = useState(false);
   const [mostrarResenas, setMostrarResenas] = useState(false);
   const [disponibilidad, setDisponibilidad] = useState([]);
@@ -31,10 +33,13 @@ const [bloqueos, setBloqueos] = useState({});
     const fetchServicio = async () => {
       try {
         const response = await fetch(
-          `https://servicios-holisticos-backend.onrender.com/api/servicios/publico/${id}`
+          `https://servicios-holisticos-backend.onrender.com/api/servicios/publico/${slug}`
         );
+
         if (!response.ok) throw new Error("No se pudo obtener el servicio");
+
         const data = await response.json();
+        console.log("Respuesta:", data);
 
         const duracionRaw = data.duracion ?? data.duracionMinutos ?? 0;
         const duracionMin = parseInt(duracionRaw, 10);
@@ -45,14 +50,21 @@ const [bloqueos, setBloqueos] = useState({});
         if (horas > 0) duracionFormateada += `${horas} h `;
         if (minutos > 0 || horas === 0) duracionFormateada += `${minutos} min`;
         data.duracionFormateada = duracionFormateada.trim();
+        data.duracion = data.duracion ?? data.duracionMinutos;
 
         setServicio(data);
+        setError(null); // ✅ en caso de éxito, limpiamos error
       } catch (error) {
         console.error("❌ Error al cargar servicio:", error);
+        setError("No se pudo obtener el servicio"); // ✅ informamos que hubo error
+      } finally {
+        setLoading(false); // ✅ indicamos que terminó de cargar
       }
     };
+
+    setLoading(true); // 👈 importante antes de llamar
     fetchServicio();
-  }, [id]);
+  }, [slug]);
 
   useEffect(() => {
     if (servicio?.horariosDisponibles) {
@@ -108,69 +120,84 @@ const data = JSON.parse(texto);
     }
   };
 
+  if (loading) {
+    return (
+      <div className="pt-24 text-center text-[#333]">Cargando servicio...</div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pt-24 text-center text-[#333]">{error}</div>
+    );
+  }
+
   if (!servicio) {
     return (
       <div className="pt-24 text-center text-[#333]">Servicio no encontrado</div>
     );
   }
 
-  return (
-    <div className="bg-white pt-24 px-2 max-w-6xl mx-auto shadow-md rounded-xl overflow-hidden">
-      {/* 🖼 Imagen del servicio */}
-      {servicio.imagen && (
-        <img
-          src={servicio.imagen}
-          alt={servicio.titulo}
-          className="w-full aspect-video object-cover mb-6 rounded-t-xl lg:max-h-[400px]"
-        />
-      )}
+    return (
+      <div className="bg-white pt-24 px-2 max-w-6xl mx-auto shadow-md rounded-xl overflow-hidden">
+        <div className="shadow-md rounded-xl overflow-hidden bg-white space-y-4">
+          
+        {/* Imagen del servicio */}
+        {servicio.imagen && (
+          <img
+            src={servicio.imagen}
+            alt={servicio.titulo}
+            className="w-full h-[310px] object-cover mb-6 rounded-t-xl"
+          />
+        )}
 
-      {/* 🧾 Información del servicio */}
-      <div className="bg-white shadow-md rounded-3xl text-sm pl-6 p-4 text-[#333] space-y-4">
-        <h1 className="text-xl font-bold text-center">{servicio.titulo}</h1>
+        {/* Título del servicio */}
+        <h1 className="text-xl font-bold text-center text-[#333] mb-4">
+          {servicio.titulo}
+        </h1>
 
-        <div className="flex justify-center gap-1 text-gray-400 text-sm -mt-1">
-          <span>☆☆☆☆☆</span>
-          <span>(0 reseñas)</span>
-        </div>
+    <div className="flex justify-center gap-1 text-gray-400 text-sm -mt-1">
+      <span>☆☆☆☆☆</span>
+      <span>(0 reseñas)</span>
+    </div>
 
-        <div className="flex justify-center gap-6 text-center px-2 flex-wrap">
-          <div className="flex items-center gap-1 text-gray-600">
-            <FaUser className="text-pink-500" />
-            <span>{servicio.terapeuta?.nombreCompleto}</span>
-          </div>
-
-          <div className="flex items-center gap-1 text-gray-600">
-            <FaLaptop className="text-pink-500" />
-            <span>{servicio.modalidad}</span>
-          </div>
-
-          <div className="flex items-center gap-1 text-gray-600">
-            <FaDollarSign className="text-pink-500" />
-            <span>{servicio.precio}</span>
-          </div>
-        </div>
-
-        <div className="flex justify-center items-center gap-6 mt-4 flex-wrap">
-          <div className="flex items-center gap-1 text-gray-600">
-            <FaClock className="text-pink-500" />
-            <span>{servicio.duracionFormateada}</span>
-          </div>
-
-          <div className="flex items-center gap-2 text-gray-600">
-            <FaWifi className="text-pink-500" />
-            <span>Se brinda por</span>
-            {servicio.plataformas?.length > 0 ? (
-              servicio.plataformas.map((p, i) => (
-                <span key={i}>{obtenerIconoPlataforma(p)}</span>
-              ))
-            ) : (
-              <span className="text-gray-400">Sin definir</span>
-            )}
-          </div>
-        </div>
+    <div className="flex justify-center gap-6 text-center px-2 flex-wrap">
+      <div className="flex text-sm items-center gap-1 text-gray-600">
+        <FaUser className="text-pink-500" />
+        <span>{servicio.terapeuta?.nombreCompleto}</span>
       </div>
 
+      <div className="flex items-center gap-1 text-sm text-gray-600">
+        <FaLaptop className="text-pink-500" />
+        <span>{servicio.modalidad}</span>
+      </div>
+
+      <div className="flex items-center gap-1 text-sm text-gray-600">
+        <FaDollarSign className="text-pink-500" />
+        <span>{servicio.precio}</span>
+      </div>
+    </div>
+
+    <div className="flex justify-center items-center gap-6 mt-4 flex-wrap">
+      <div className="flex mb-4 items-center gap-1 text-sm text-gray-600">
+        <FaClock className="text-pink-500" />
+        <span>{servicio.duracionFormateada}</span>
+      </div>
+
+      <div className="flex mb-4 text-sm items-center gap-2 text-gray-600">
+        <FaWifi className="text-pink-500" />
+        <span>Se brinda por</span>
+        {servicio.plataformas?.length > 0 ? (
+          servicio.plataformas.map((p, i) => (
+            <span key={i}>{obtenerIconoPlataforma(p)}</span>
+          ))
+        ) : (
+          <span className="text-gray-400">Sin definir</span>
+        )}
+      </div>
+    </div>
+          </div>
+          
       {/* 📑 Botones de Descripción y Reseñas */}
       <div className="mt-8 flex flex-row justify-center pt-4 gap-4">
         <button

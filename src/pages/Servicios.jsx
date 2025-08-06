@@ -214,12 +214,12 @@ const extraerMinutos = (duracion) => {
             <div
               key={servicio._id}
               className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between"
-              style={{ height: "470px" }}
+              style={{ height: "500px" }}
             >
               <img
                 src={servicio.imagen}
                 alt={servicio.titulo}
-                className="w-full h-1/2 object-cover"
+                className="w-full h-[60%] object-cover"
               />
               <div className="p-4 flex flex-col items-center justify-between flex-grow text-center">
                 <div className="mb-2">
