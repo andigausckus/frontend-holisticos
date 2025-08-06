@@ -119,55 +119,89 @@ const extraerMinutos = (duracion) => {
       </div>
 
       {/* Filtros */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
-        {/* Categoría */}
-        <Select
-          options={opcionesSinIcono(categorias)}
-          placeholder="Seleccioná una categoría"
-          value={categoriaSeleccionada}
-          onChange={setCategoriaSeleccionada}
-          styles={customStyles}
-          isClearable
-          noOptionsMessage={() => "No hay servicios para esta categoría. ¡Muy pronto habrá!"}
-        />
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
+  {/* Categoría */}
+  <Select
+    options={opcionesSinIcono(categorias)}
+    placeholder="Seleccioná una categoría"
+    value={categoriaSeleccionada}
+    onChange={setCategoriaSeleccionada}
+    styles={{
+      ...customStyles,
+      control: (base) => ({
+        ...base,
+        borderColor: "#D1D5DB",
+        boxShadow: "none",
+        "&:hover": {
+          borderColor: "#D1D5DB",
+        },
+        "&:focus-within": {
+          borderColor: "#C7B8EA",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderRadius: "0.75rem",
+          borderBottom: "1px solid #C7B8EA",
+        },
+      }),
+    }}
+    isClearable
+    noOptionsMessage={() => "No hay servicios para esta categoría. ¡Muy pronto habrá!"}
+  />
 
-        {/* Duración */}
-        <Select
-          options={duraciones}
-          placeholder="Seleccioná una duración"
-          value={duracionSeleccionada}
-          onChange={setDuracionSeleccionada}
-          styles={customStyles}
-          isClearable
-        />
+  {/* Duración */}
+  <Select
+    options={duraciones}
+    placeholder="Seleccioná una duración"
+    value={duracionSeleccionada}
+    onChange={setDuracionSeleccionada}
+    styles={{
+      ...customStyles,
+      control: (base) => ({
+        ...base,
+        borderColor: "#D1D5DB",
+        boxShadow: "none",
+        "&:hover": {
+          borderColor: "#D1D5DB",
+        },
+        "&:focus-within": {
+          borderColor: "#C7B8EA",
+          borderWidth: "1px",
+          borderStyle: "solid",
+          borderRadius: "0.75rem",
+          borderBottom: "1px solid #C7B8EA",
+        },
+      }),
+    }}
+    isClearable
+  />
 
-        {/* Precio */}
-        <div className="flex gap-3 w-full">
-          {/* Campo precio mínimo */}
-          <div className="flex-1 border border-gray-300 rounded-xl px-3 py-2 focus-within:border-b-2 focus-within:border-violet-400 transition duration-200">
-            <input
-              type="number"
-              placeholder="Mínimo ($)"
-              className="w-full border-none focus:outline-none text-sm"
-              value={precioMinimo}
-              onChange={(e) => setPrecioMinimo(e.target.value)}
-              min={0}
-            />
-          </div>
+  {/* Precio */}
+  <div className="flex gap-3 w-full">
+    {/* Campo precio mínimo */}
+    <div className="flex-1 border border-gray-300 rounded-xl px-3 py-2 focus-within:border-b-[1px] focus-within:border-[#C7B8EA] transition duration-200">
+      <input
+        type="number"
+        placeholder="Mínimo ($)"
+        className="w-full border-none focus:outline-none text-sm"
+        value={precioMinimo}
+        onChange={(e) => setPrecioMinimo(e.target.value)}
+        min={0}
+      />
+    </div>
 
-          {/* Campo precio máximo */}
-          <div className="flex-1 border border-gray-300 rounded-xl px-3 py-2 focus-within:border-b-2 focus-within:border-violet-400 transition duration-200">
-            <input
-              type="number"
-              placeholder="Máximo ($)"
-              className="w-full border-none focus:outline-none text-sm"
-              value={precioMaximo}
-              onChange={(e) => setPrecioMaximo(e.target.value)}
-              min={0}
-            />
-          </div>
-        </div>
-        </div>
+    {/* Campo precio máximo */}
+    <div className="flex-1 border border-gray-300 rounded-xl px-3 py-2 focus-within:border-b-[1px] focus-within:border-[#C7B8EA] transition duration-200">
+      <input
+        type="number"
+        placeholder="Máximo ($)"
+        className="w-full border-none focus:outline-none text-sm"
+        value={precioMaximo}
+        onChange={(e) => setPrecioMaximo(e.target.value)}
+        min={0}
+      />
+    </div>
+  </div>
+</div>
 
       {/* Servicios */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -213,8 +247,8 @@ const extraerMinutos = (duracion) => {
                   </div>
                 </div>
 
-                <Link
-                  to={`/servicios/${servicio._id}`}
+                  <Link
+                    to={`/servicios/${servicio.slug}`}
                   className="bg-pink-400 text-white px-4 py-2 rounded-full text-base hover:bg-pink-500 transition-all text-center block"
                 >
                   Ver más

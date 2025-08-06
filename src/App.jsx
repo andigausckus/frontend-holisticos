@@ -55,7 +55,7 @@ export default function App() {
           <Route path="registro" element={<Registro />} />
           <Route path="panel" element={<PanelTerapeuta />} />
           <Route path="terapeuta/:id" element={<PerfilTerapeuta />} />
-          <Route path="servicios/:id" element={<ServicioDetalle />} />
+          <Route path="servicios/:slug" element={<ServicioDetalle />} />
           <Route path="pago" element={<PaginaPagoSimple />} />
           <Route path="admin/reservas" element={<AdminReservas />} />
           <Route path="admin/terapeutas" element={<AdminTerapeutas />} />
