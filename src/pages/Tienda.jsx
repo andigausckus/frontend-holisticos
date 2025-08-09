@@ -188,44 +188,46 @@ export default function Tienda() {
         </p>
 
         {/* Filtros */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
-          <Select
-            placeholder="Tipo de producto"
-            options={[
-              { value: "digital", label: "Producto digital" },
-              { value: "fisico", label: "Producto físico" },
-            ]}
-            value={filtroTipoProducto}
-            onChange={setFiltroTipoProducto}
-            isClearable
-            styles={estilosSelect}
-          />
-          <Select
-            placeholder="Categoría"
-            options={categorias}
-            value={filtroCategoria}
-            onChange={setFiltroCategoria}
-            styles={estilosSelect}
-            isClearable
-          />
-          
-          <div className="flex gap-2 items-center">
-            <input
-              type="number"
-              placeholder="Mínimo ($)"
-              className="w-full border border-gray-300 rounded-[5px] px-3 py-2 text-sm focus:outline-none focus:border-orange-400 hover:border-orange-400 transition"
-              value={filtroPrecio.min}
-              onChange={(e) => setFiltroPrecio({ ...filtroPrecio, min: e.target.value })}
-            />
-            <input
-              type="number"
-              placeholder="Máximo ($)"
-              className="w-full border border-gray-300 rounded-[5px] px-3 py-2 text-sm focus:outline-none focus:border-orange-400 hover:border-orange-400 transition"
-              value={filtroPrecio.max}
-              onChange={(e) => setFiltroPrecio({ ...filtroPrecio, max: e.target.value })}
-            />
-          </div>
-        </div>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
+  <Select
+    placeholder="Tipo de producto"
+    options={[
+      { value: "digital", label: "Producto digital" },
+      { value: "fisico", label: "Producto físico" },
+    ]}
+    value={filtroTipoProducto}
+    onChange={setFiltroTipoProducto}
+    isClearable
+    styles={estilosSelect}
+  />
+  <Select
+    placeholder="Categoría"
+    options={categorias}
+    value={filtroCategoria}
+    onChange={setFiltroCategoria}
+    styles={estilosSelect}
+    isClearable
+  />
+  
+  {filtroTipoProducto?.value === "fisico" && (
+    <div className="flex gap-2 items-center">
+      <input
+        type="number"
+        placeholder="Mínimo ($)"
+        className="w-full border border-gray-300 rounded-[5px] px-3 py-2 text-sm focus:outline-none focus:border-orange-400 hover:border-orange-400 transition"
+        value={filtroPrecio.min}
+        onChange={(e) => setFiltroPrecio({ ...filtroPrecio, min: e.target.value })}
+      />
+      <input
+        type="number"
+        placeholder="Máximo ($)"
+        className="w-full border border-gray-300 rounded-[5px] px-3 py-2 text-sm focus:outline-none focus:border-orange-400 hover:border-orange-400 transition"
+        value={filtroPrecio.max}
+        onChange={(e) => setFiltroPrecio({ ...filtroPrecio, max: e.target.value })}
+      />
+    </div>
+  )}
+</div>
 
         {/* Lista de productos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 gap-y-12 max-w-full mx-auto">
@@ -237,7 +239,7 @@ export default function Tienda() {
               <img
                 src={producto.imagen}
                 alt={producto.titulo}
-                className="w-full h-80 object-cover"
+                className="w-full h-64 object-cover"
               />
               <div className="p-6 space-y-1 flex-grow flex flex-col justify-between">
                 <div>

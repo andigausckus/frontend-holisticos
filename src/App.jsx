@@ -27,7 +27,6 @@ import NuevoServicio from "./pages/NuevoServicio";
 import DisponibilidadServicio from "./components/DisponibilidadServicio";
 import EditarMisServicios from "./components/EditarMisServicios";
 import EditarServicio from "./components/EditarServicio";
-import MisionValores from "./components/MisionValores";
 import AdminReservas from './components/AdminReservas';
 import AdminTerapeutas from './pages/AdminTerapeutas';
 import AdminComunicado from "./pages/AdminComunicado";
@@ -74,7 +73,6 @@ export default function App() {
           <Route path="editar-mis-servicios" element={<EditarMisServicios />} />
           <Route path="/admin/pagos" element={<AdminPagos />} />
           <Route path="editar-servicio/:servicioId" element={<EditarServicio />} />
-          <Route path="mision-valores" element={<MisionValores />} />
         </Route>
       </Routes>
     </BrowserRouter>

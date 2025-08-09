@@ -10,7 +10,6 @@ import Contacto from "../components/Contacto";
 import PreguntasFrecuentes from "../components/PreguntasFrecuentes";
 import BlogCard from "../components/BlogCard";
 import FrasesInspiradoras from "../components/FrasesInspiradoras";
-import MisionValores from "../components/MisionValores";
 
 export default function Home() {
   const articulos = [
@@ -143,7 +142,7 @@ export default function Home() {
           onMouseUp={iniciarAutoSlide}
           onTouchStart={detenerAutoSlide}
           onTouchEnd={iniciarAutoSlide}
-          className="mt-20 mb-16 max-w-4xl mx-auto overflow-hidden relative select-none"
+          className="mt-20 w-full mb-16 max-w-4xl mx-auto overflow-hidden relative select-none"
         >
           <h2 className="text-xl text-center md:text-3xl font-semibold text-[#444444] mb-6">
             Últimos artículos del Blog
@@ -186,7 +185,6 @@ export default function Home() {
 
         {/* FAQs y contacto */}
         <PreguntasFrecuentes />
-        <MisionValores />
         <Contacto />
       </div>
     </>
