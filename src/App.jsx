@@ -33,7 +33,7 @@ import AdminComunicado from "./pages/AdminComunicado";
 import AdminDashboard from "./pages/AdminDashboard";
 import ReservaDetalle from "./pages/ReservaDetalle";
 import Tienda from "./pages/Tienda";
-import ResenaPage from "./pages/resenas[reservaId]";
+import ResenaPage from "./pages/ResenaPage";
 // Blog
 import QueSonLasTerapiasHolisticas from "./pages/blog/QueSonLasTerapiasHolisticas";
 import QueEsElYoga from "./pages/blog/QueEsElYoga";
@@ -55,7 +55,7 @@ export default function App() {
 <Route path="panel" element={<PanelTerapeuta />} />
 <Route path="terapeuta/:id" element={<PerfilTerapeuta />} />
 <Route path="servicios/:slug" element={<ServicioDetalle />} />
-          <Route path="resenas/:reservaId" element={<ReseñaPage />} />
+<Route path="resenas/:reservaId" element={<ResenaPage />} />
 <Route path="pago" element={<PaginaPagoSimple />} />
 <Route path="admin/reservas" element={<AdminReservas />} />
 <Route path="admin/terapeutas" element={<AdminTerapeutas />} />

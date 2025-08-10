@@ -286,8 +286,9 @@ console.log("🟡 servicio.terapeutaId:", servicio?.terapeutaId);
       <div className="text-sm space-y-1 divide-y divide-gray-200">
         {[
           { label: "Titular admin", value: "Andres Nazareth Olivera Gausckus", copiar: false },
-          { label: "CVU", value: "0000003100010544642813", copiar: true },
+          { label: "CBU", value: "0110181830018113270015", copiar: true },
           { label: "Alias", value: "ServiciosHolisticos.", copiar: true },
+    { label: "N° de cuenta", value: "CA $ 13001811327001", copiar: true },
           { label: "CUIT/CUIL", value: "20349950007", copiar: false },
         ].map(({ label, value, copiar }, idx) => (
           <div key={idx} className="pt-2">
