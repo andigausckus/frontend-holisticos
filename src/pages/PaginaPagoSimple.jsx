@@ -214,7 +214,7 @@ console.log("🟡 servicio.terapeutaId:", servicio?.terapeutaId);
         <FaCheckCircle className="text-green-500 text-5xl mx-auto mb-4" />
         <h2 className="text-2xl font-bold mb-2">¡Reserva confirmada! 🎊</h2>
         <p className="mb-4">
-          Te hemos enviado un email con la confirmación de tu reserva y los detalles del terapeuta holístico. Revisá tu bandeja de entrada y tu carpeta de spam. 
+          Te hemos enviado un email con la confirmación de tu reserva y los datos del terapeuta holístico. Revisá tu bandeja de entrada y tu carpeta de spam. 
         </p>
         <button
           className="bg-violet-600 text-white px-4 py-2 rounded"
