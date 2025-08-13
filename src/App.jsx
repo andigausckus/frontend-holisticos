@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -40,7 +40,7 @@ import QueEsElYoga from "./pages/blog/QueEsElYoga";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -76,6 +76,6 @@ export default function App() {
 <Route path="editar-servicio/:servicioId" element={<EditarServicio />} />
 </Route>
 </Routes>
-</BrowserRouter>
+</HashRouter>
 );
 }
