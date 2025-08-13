@@ -11,12 +11,14 @@ export default function ResenaPage() {
   const [enviada, setEnviada] = useState(false);
   const [error, setError] = useState("");
 
+  const API_URL = process.env.REACT_APP_BACKEND_URL; // URL de tu backend en Render
+
   useEffect(() => {
-    fetch(`https://serviciosholisticos-backend.andrecode.repl.co/reservas/${reservaId}`)
+    fetch(`${API_URL}/reservas/${reservaId}`)
       .then((res) => res.json())
       .then((data) => setReserva(data))
-      .catch(() => setError("Error al cargar la reserva"));
-  }, [reservaId]);
+      .catch((err) => setError("Error al cargar la reserva"));
+  }, [reservaId, API_URL]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ export default function ResenaPage() {
     }
 
     try {
-      const res = await fetch("https://serviciosholisticos-backend.andrecode.repl.co/resenas", {
+      const res = await fetch(`${API_URL}/resenas`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -43,7 +45,7 @@ export default function ResenaPage() {
       } else {
         setError("No se pudo enviar la reseña.");
       }
-    } catch {
+    } catch (err) {
       setError("Error al enviar la reseña.");
     }
   };
