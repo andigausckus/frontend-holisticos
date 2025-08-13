@@ -156,10 +156,23 @@ const data = JSON.parse(texto);
           {servicio.titulo}
         </h1>
 
-    <div className="flex justify-center gap-1 text-gray-400 text-sm -mt-1">
-      <span>☆☆☆☆☆</span>
-      <span>(0 reseñas)</span>
-    </div>
+          <div className="flex justify-center items-center gap-2 mb-3">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <span
+                key={n}
+                className={`text-lg ${
+                  n <= Math.round(servicio.promedioEstrellas || 0)
+                    ? "text-yellow-400"
+                    : "text-gray-300"
+                }`}
+              >
+                ★
+              </span>
+            ))}
+            <span className="text-gray-400 text-sm">
+              ({servicio.totalReseñas || 0} reseñas)
+            </span>
+          </div>
 
     <div className="flex justify-center gap-6 text-center px-2 flex-wrap">
       <div className="flex text-sm items-center gap-1 text-gray-600">
@@ -225,23 +238,35 @@ const data = JSON.parse(texto);
         </button>
       </div>
 
-      {(mostrarDescripcion || mostrarResenas) && (
-        <div className="mt-4 flex flex-col md:flex-row gap-4 overflow-x-auto">
-          {mostrarDescripcion && (
-            <div className="flex-1 min-w-[300px] bg-white text-sm text-[#333] px-6 py-5 rounded-xl shadow-inner text-left">
-              {servicio.descripcion || "Este servicio no tiene descripción aún."}
-            </div>
-          )}
-          {mostrarResenas && (
-            <div className="flex-1 min-w-[300px] bg-white text-sm text-[#333] px-6 py-5 rounded-xl shadow-inner">
-              <p className="text-gray-400">Este servicio aún no tiene reseñas.</p>
-            </div>
-          )}
-        </div>
-      )}
+    {(mostrarDescripcion || mostrarResenas) && (
+      <div className="mt-4 flex flex-col md:flex-row gap-4 overflow-x-auto">
+        {mostrarDescripcion && (
+          <div className="flex-1 min-w-[300px] bg-white text-sm text-[#333] px-6 py-5 rounded-xl shadow-inner text-left">
+            {servicio.descripcion || "Este servicio no tiene descripción aún."}
+          </div>
+        )}
 
-      {/* 🗓 Calendario */}
-      <div className="mt-8">
+        {mostrarResenas && (
+          <div className="flex-1 min-w-[300px] bg-white text-sm text-[#333] px-6 py-5 rounded-xl shadow-inner">
+            {servicio.reseñas && servicio.reseñas.length > 0 ? (
+              servicio.reseñas.map((r, i) => (
+                <div key={i} className="mb-4 border-b pb-2">
+                  <p className="font-semibold text-gray-700">
+                    {r.usuarioId?.nombre || "Usuario"}
+                  </p>
+                  <p className="text-gray-600 text-sm mt-1">{r.comentario}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400">Este servicio aún no tiene reseñas.</p>
+            )}
+          </div>
+        )}
+      </div>
+    )}
+
+        {/* 🗓 Calendario */}
+        <div className="mt-8">
         <CalendarioSemanal
           servicio={servicio}
           servicioId={servicio._id}

@@ -226,9 +226,22 @@ const extraerMinutos = (duracion) => {
                   <h3 className="text-xl text-[#333] font-semibold mb-2 mt-2">
                     {servicio.titulo}
                   </h3>
-                  <div className="flex items-center justify-center gap-1 text-gray-400 mb-3 text-sm">
-                    <span>☆☆☆☆☆</span>
-                    <span className="text-gray-400">(0) reseñas</span>
+                  <div className="flex items-center justify-center gap-1 mb-3">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <span
+                        key={n}
+                        className={`text-lg ${
+                          n <= Math.round(servicio.promedioResenas)
+                            ? "text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        ★
+                      </span>
+                    ))}
+                    <span className="text-gray-400 text-sm">
+                      ({servicio.cantidadResenas} reseñas)
+                    </span>
                   </div>
 
                   <div className="mt-3 pt-2 flex flex-row items-center justify-center gap-6 text-[#333] text-sm flex-wrap">
