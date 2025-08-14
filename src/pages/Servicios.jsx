@@ -121,86 +121,86 @@ const extraerMinutos = (duracion) => {
       {/* Filtros */}
 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
   {/* Categoría */}
-  <Select
-    options={opcionesSinIcono(categorias)}
-    placeholder="Seleccioná una categoría"
-    value={categoriaSeleccionada}
-    onChange={setCategoriaSeleccionada}
-    styles={{
-      ...customStyles,
-      control: (base) => ({
-        ...base,
+<Select
+  options={opcionesSinIcono(categorias)}
+  placeholder="Seleccioná una categoría"
+  value={categoriaSeleccionada}
+  onChange={setCategoriaSeleccionada}
+  styles={{
+    ...customStyles,
+    control: (base) => ({
+      ...base,
+      borderColor: "#D1D5DB",
+      boxShadow: "none",
+      borderRadius: "1.5rem", // Utiliza este valor para rounded-xl
+      "&:hover": {
         borderColor: "#D1D5DB",
-        boxShadow: "none",
-        "&:hover": {
-          borderColor: "#D1D5DB",
-        },
-        "&:focus-within": {
-          borderColor: "#C7B8EA",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderRadius: "0.75rem",
-          borderBottom: "1px solid #C7B8EA",
-        },
-      }),
-    }}
-    isClearable
-    noOptionsMessage={() => "No hay servicios para esta categoría. ¡Muy pronto habrá!"}
-  />
+      },
+      "&:focus-within": {
+        borderColor: "#C7B8EA",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderBottom: "1px solid #C7B8EA",
+      },
+    }),
+  }}
+  isClearable
+  noOptionsMessage={() => "No hay servicios para esta categoría. ¡Muy pronto habrá!"}
+/>
 
-  {/* Duración */}
-  <Select
-    options={duraciones}
-    placeholder="Seleccioná una duración"
-    value={duracionSeleccionada}
-    onChange={setDuracionSeleccionada}
-    styles={{
-      ...customStyles,
-      control: (base) => ({
-        ...base,
+{/* Duración */}
+<Select
+  options={duraciones}
+  placeholder="Seleccioná una duración"
+  value={duracionSeleccionada}
+  onChange={setDuracionSeleccionada}
+  styles={{
+    ...customStyles,
+    control: (base) => ({
+      ...base,
+      borderColor: "#D1D5DB",
+      boxShadow: "none",
+      borderRadius: "1.5rem", // Utiliza este valor para rounded-xl
+      "&:hover": {
         borderColor: "#D1D5DB",
-        boxShadow: "none",
-        "&:hover": {
-          borderColor: "#D1D5DB",
-        },
-        "&:focus-within": {
-          borderColor: "#C7B8EA",
-          borderWidth: "1px",
-          borderStyle: "solid",
-          borderRadius: "0.75rem",
-          borderBottom: "1px solid #C7B8EA",
-        },
-      }),
-    }}
-    isClearable
-  />
+      },
+      "&:focus-within": {
+        borderColor: "#C7B8EA",
+        borderWidth: "1px",
+        borderStyle: "solid",
+        borderBottom: "1px solid #C7B8EA",
+      },
+    }),
+  }}
+  isClearable
+/>
 
   {/* Precio */}
-  <div className="flex gap-3 w-full">
-    {/* Campo precio mínimo */}
-    <div className="flex-1 border border-gray-300 rounded-xl px-3 py-2 focus-within:border-b-[1px] focus-within:border-[#C7B8EA] transition duration-200">
-      <input
-        type="number"
-        placeholder="Mínimo ($)"
-        className="w-full border-none focus:outline-none text-sm"
-        value={precioMinimo}
-        onChange={(e) => setPrecioMinimo(e.target.value)}
-        min={0}
-      />
-    </div>
+<div className="flex gap-3 w-full">
+{/* Campo precio mínimo */}
+<div className="flex-1 border border-gray-300 rounded-3xl px-3 py-2 focus-within:border-b-[1px] focus-within:border-[#C7B8EA] transition duration-200">
+<input
+type="number"
+placeholder="Mínimo ($)"
+className="w-full border-none focus:outline-none text-sm"
+value={precioMinimo}
+onChange={(e) => setPrecioMinimo(e.target.value)}
+min={0}
+/>
+</div>
 
-    {/* Campo precio máximo */}
-    <div className="flex-1 border border-gray-300 rounded-xl px-3 py-2 focus-within:border-b-[1px] focus-within:border-[#C7B8EA] transition duration-200">
-      <input
-        type="number"
-        placeholder="Máximo ($)"
-        className="w-full border-none focus:outline-none text-sm"
-        value={precioMaximo}
-        onChange={(e) => setPrecioMaximo(e.target.value)}
-        min={0}
-      />
-    </div>
-  </div>
+{/* Campo precio máximo */}
+<div className="flex-1 border border-gray-300 rounded-3xl px-3 py-2 focus-within:border-b-[1px] focus-within:border-[#C7B8EA] transition duration-200">
+<input
+type="number"
+placeholder="Máximo ($)"
+className="w-full border-none focus:outline-none text-sm"
+value={precioMaximo}
+onChange={(e) => setPrecioMaximo(e.target.value)}
+min={0}
+/>
+</div>
+</div>
 </div>
 
       {/* Servicios */}
@@ -211,26 +211,54 @@ const extraerMinutos = (duracion) => {
           </p>
         ) : (
           serviciosFiltrados.map((servicio) => (
-            <div
-              key={servicio._id}
-              className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between"
-              style={{ height: "500px" }}
-            >
-              <img
-                src={servicio.imagen}
-                alt={servicio.titulo}
-                className="w-full h-[60%] object-cover"
-              />
+              <div
+                key={servicio._id}
+                className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between"
+                style={{ height: "500px" }}
+              >
+                {/* Contenedor relativo para poder colocar el badge */}
+                <div className="relative w-full h-[60%]">
+                  <img
+                    src={servicio.imagen}
+                    alt={servicio.titulo}
+                    className="w-full h-full object-cover"
+                  />
+
+                  {/* Badge "NUEVO" */}
+                  {(() => {
+                    const fechaCreacion = new Date(servicio.createdAt); // <-- asume que existe este campo
+                    const hoy = new Date();
+                    const diasDiferencia = Math.floor((hoy - fechaCreacion) / (1000 * 60 * 60 * 24));
+                    if (diasDiferencia <= 3) { // mostrar solo los primeros 3 días
+                      return (
+                        <span className="absolute top-2 right-2 bg-green-600 text-white text-xs font-bold px-2 py-1 rounded-full animate-pulse shadow-md">
+                          NUEVO 
+                        </span>
+                      );
+                    }
+                    return null;
+                  })()}
+                </div>
               <div className="p-4 flex flex-col items-center justify-between flex-grow text-center">
                 <div className="mb-2">
                   <h3 className="text-xl text-[#333] font-semibold mb-2 mt-2">
                     {servicio.titulo}
                   </h3>
                   <div className="flex items-center justify-center gap-2 mb-3">
-                    {/* Promedio grande con fondo amarillo oscuro */}
-                    <span className="text-xl font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3">
-                      {servicio.promedioResenas?.toFixed(1) || 0}
-                    </span>
+  {/* Promedio grande con fondo amarillo oscuro */}
+  <span 
+  className="text-gl font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3 text-center"
+  style={{ 
+    width: "4.5ch", 
+    display: "inline-block",
+    textAlign: "center"
+  }}
+>
+  {servicio.promedioResenas?.toFixed(servicio.promedioResenas === 5 ? 0 : 1) || "0.0"}
+</span>
+
+
+
 
                     {/* Estrellas */}
                     {[1, 2, 3, 4, 5].map((n) => (

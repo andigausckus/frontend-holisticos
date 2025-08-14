@@ -372,6 +372,7 @@ console.log("🟡 servicio.terapeutaId:", servicio?.terapeutaId);
     >
       Confirmar y enviar pago
     </button>
+    <div className="h-24"></div> {/* Agrega un espacio de 8 unidades */}
   </div>
 );
 }

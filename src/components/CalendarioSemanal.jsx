@@ -143,7 +143,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
           Semana del {lunes.getDate()} al {domingo.getDate()} de {lunes.toLocaleDateString("es-AR", { month: 'long' })}
         </div>
       )}
-      <div className="grid grid-cols-2 md:grid-cols-7 gap-4 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-7 gap-4 w-full">
         {dias.map((dia, index) => {
           const horarios = obtenerHorarios(dia);
 

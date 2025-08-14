@@ -162,23 +162,30 @@ const data = JSON.parse(texto);
 
           <div className="flex justify-center items-center gap-2 mb-3">
             {/* Promedio grande con fondo amarillo oscuro y algo de padding */}
-            <span className="text-xl font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3">
-              {servicio.promedioEstrellas?.toFixed(1) || 0}
-            </span>
+            <span 
+  className="text-gl font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3 text-center"
+  style={{ 
+    width: "4.5ch", 
+    display: "inline-block",
+    textAlign: "center"
+  }}
+>
+  {servicio.promedioEstrellas?.toFixed(servicio.promedioEstrellas === 5 ? 0 : 1) || "0.0"}
+</span>
 
-            {/* Estrellas */}
-            {[1, 2, 3, 4, 5].map((n) => (
-              <span
-                key={n}
-                className={`text-lg ${
-                  n <= Math.round(servicio.promedioEstrellas || 0)
-                    ? "text-yellow-400"
-                    : "text-gray-300"
-                }`}
-              >
-                ★
-              </span>
-            ))}
+{/* Estrellas */}
+{[1, 2, 3, 4, 5].map((n) => (
+  <span
+    key={n}
+    className={`text-lg ${
+      n <= Math.round(servicio.promedioEstrellas || 0)
+        ? "text-yellow-400"
+        : "text-gray-300"
+    }`}
+  >
+    ★
+  </span>
+))}
 
             {/* Cantidad de reseñas */}
             <span className="text-gray-400 text-sm ml-2">
