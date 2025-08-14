@@ -226,12 +226,18 @@ const extraerMinutos = (duracion) => {
                   <h3 className="text-xl text-[#333] font-semibold mb-2 mt-2">
                     {servicio.titulo}
                   </h3>
-                  <div className="flex items-center justify-center gap-1 mb-3">
+                  <div className="flex items-center justify-center gap-2 mb-3">
+                    {/* Promedio grande con fondo amarillo oscuro */}
+                    <span className="text-xl font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3">
+                      {servicio.promedioResenas?.toFixed(1) || 0}
+                    </span>
+
+                    {/* Estrellas */}
                     {[1, 2, 3, 4, 5].map((n) => (
                       <span
                         key={n}
                         className={`text-lg ${
-                          n <= Math.round(servicio.promedioResenas)
+                          n <= Math.round(servicio.promedioResenas || 0)
                             ? "text-yellow-400"
                             : "text-gray-300"
                         }`}
@@ -239,8 +245,10 @@ const extraerMinutos = (duracion) => {
                         ★
                       </span>
                     ))}
-                    <span className="text-gray-400 text-sm">
-                      ({servicio.cantidadResenas} reseñas)
+
+                    {/* Cantidad de reseñas */}
+                    <span className="text-gray-400 text-sm ml-2">
+                      ({servicio.cantidadResenas || 0} reseñas)
                     </span>
                   </div>
 

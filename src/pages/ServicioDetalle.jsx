@@ -39,7 +39,11 @@ const [bloqueos, setBloqueos] = useState({});
         if (!response.ok) throw new Error("No se pudo obtener el servicio");
 
         const data = await response.json();
-        console.log("Respuesta:", data);
+
+console.log("📦 Datos completos desde backend:", data);
+console.log("⭐ promedioEstrellas:", data.promedioEstrellas);
+console.log("📝 totalReseñas:", data.totalReseñas);
+console.log("📃 reseñas:", data.reseñas);
 
         const duracionRaw = data.duracion ?? data.duracionMinutos ?? 0;
         const duracionMin = parseInt(duracionRaw, 10);
@@ -157,6 +161,12 @@ const data = JSON.parse(texto);
         </h1>
 
           <div className="flex justify-center items-center gap-2 mb-3">
+            {/* Promedio grande con fondo amarillo oscuro y algo de padding */}
+            <span className="text-xl font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3">
+              {servicio.promedioEstrellas?.toFixed(1) || 0}
+            </span>
+
+            {/* Estrellas */}
             {[1, 2, 3, 4, 5].map((n) => (
               <span
                 key={n}
@@ -169,7 +179,9 @@ const data = JSON.parse(texto);
                 ★
               </span>
             ))}
-            <span className="text-gray-400 text-sm">
+
+            {/* Cantidad de reseñas */}
+            <span className="text-gray-400 text-sm ml-2">
               ({servicio.totalReseñas || 0} reseñas)
             </span>
           </div>
@@ -251,10 +263,27 @@ const data = JSON.parse(texto);
             {servicio.reseñas && servicio.reseñas.length > 0 ? (
               servicio.reseñas.map((r, i) => (
                 <div key={i} className="mb-4 border-b pb-2">
+                  {/* Nombre */}
                   <p className="font-semibold text-gray-700">
-                    {r.usuarioId?.nombre || "Usuario"}
+                    {r.nombre || r.usuarioId?.nombre || "Usuario"}
                   </p>
+
+                  {/* Puntaje en estrellas */}
+                  <div className="flex items-center gap-1 text-yellow-400 text-sm">
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <span key={n} className={n <= r.puntaje ? "text-yellow-400" : "text-gray-300"}>
+                        ★
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Comentario */}
                   <p className="text-gray-600 text-sm mt-1">{r.comentario}</p>
+
+                  {/* Fecha */}
+                  <p className="text-gray-400 text-xs mt-1">
+                    {new Date(r.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
               ))
             ) : (
