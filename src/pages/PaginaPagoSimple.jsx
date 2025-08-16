@@ -281,9 +281,12 @@ console.log("🟡 servicio.terapeutaId:", servicio?.terapeutaId);
       />
     </div>
 
-    {/* Datos para la transferencia */}
-    <div className="bg-white shadow-md rounded-lg p-4">
-      <h3 className="text-base font-semibold text-left mb-4">Datos para la transferencia</h3>
+      {/* Datos para la transferencia */}
+      <div className="bg-white shadow-md rounded-lg p-4">
+        <h3 className="text-base font-semibold text-left mb-1">Datos para la transferencia</h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Sugerimos pagar con una billetera virtual (MercadoPago, Ualá, etc) para una acreditación inmediata
+        </p>
       <div className="text-sm space-y-1 divide-y divide-gray-200">
         {[
           { label: "Titular admin", value: "Andres Nazareth Olivera Gausckus", copiar: false },
