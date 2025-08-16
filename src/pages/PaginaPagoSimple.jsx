@@ -100,9 +100,12 @@ const [urlComprobante, setUrlComprobante] = useState("");
     const ahora = Date.now();
     const diferencia = parseInt(horaLimite) - ahora;
 
-    if (diferencia <= 0) {
-      setTiempoRestante(0);
-      clearInterval(idIntervalo);
+      if (diferencia <= 0) {
+        setTiempoRestante(0);
+        clearInterval(idIntervalo);
+        localStorage.removeItem(claveStorage);
+        window.location.href = "/#/servicios"; // redirige a servicios
+      }
       localStorage.removeItem(claveStorage);
     } else {
       setTiempoRestante(Math.floor(diferencia / 1000));
@@ -347,7 +350,7 @@ console.log("🟡 servicio.terapeutaId:", servicio?.terapeutaId);
             className="text-sky-500"
             stroke="currentColor"
             strokeWidth="3"
-            strokeDasharray={`${(tiempoRestante / 120) * 100}, 100`}
+            strokeDasharray={`${(tiempoRestante / 300) * 100}, 100`}
             fill="none"
             d="M18 2.0845
               a 15.9155 15.9155 0 0 1 0 31.831
