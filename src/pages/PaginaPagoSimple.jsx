@@ -91,7 +91,7 @@ const [urlComprobante, setUrlComprobante] = useState("");
   let horaLimite = localStorage.getItem(claveStorage);
 
   if (!horaLimite) {
-    const nuevaHoraLimite = Date.now() + 2 * 60 * 1000; // 2 minutos
+    const nuevaHoraLimite = Date.now() + 5 * 60 * 1000; // 2 minutos
     localStorage.setItem(claveStorage, nuevaHoraLimite);
     horaLimite = nuevaHoraLimite;
   }
@@ -370,7 +370,7 @@ console.log("🟡 servicio.terapeutaId:", servicio?.terapeutaId);
           : 'bg-sky-500 hover:bg-sky-600 text-white'
       }`}
     >
-      Confirmar y enviar pago
+      Confirmar reserva
     </button>
     <div className="h-24"></div> {/* Agrega un espacio de 8 unidades */}
   </div>
