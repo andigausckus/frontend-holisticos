@@ -85,13 +85,13 @@ const [urlComprobante, setUrlComprobante] = useState("");
     crearReservaTemporal();
   }, [servicio, fecha, hora, datosUsuario, reservaTemporal]);
 
-  useEffect(() => {
+useEffect(() => {
   const claveStorage = "limitePago";
 
   let horaLimite = localStorage.getItem(claveStorage);
 
   if (!horaLimite) {
-    const nuevaHoraLimite = Date.now() + 5 * 60 * 1000; // 2 minutos
+    const nuevaHoraLimite = Date.now() + 5 * 60 * 1000; // 5 minutos
     localStorage.setItem(claveStorage, nuevaHoraLimite);
     horaLimite = nuevaHoraLimite;
   }
@@ -100,13 +100,11 @@ const [urlComprobante, setUrlComprobante] = useState("");
     const ahora = Date.now();
     const diferencia = parseInt(horaLimite) - ahora;
 
-      if (diferencia <= 0) {
-        setTiempoRestante(0);
-        clearInterval(idIntervalo);
-        localStorage.removeItem(claveStorage);
-        window.location.href = "/#/servicios"; // redirige a servicios
-      }
+    if (diferencia <= 0) {
+      setTiempoRestante(0);
+      clearInterval(idIntervalo);
       localStorage.removeItem(claveStorage);
+      window.location.href = "/#/servicios"; // redirige a servicios
     } else {
       setTiempoRestante(Math.floor(diferencia / 1000));
     }
