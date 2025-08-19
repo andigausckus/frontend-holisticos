@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-montserrat text-textoPrincipal bg-white;
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+  
+}
+
+/* ✅ Elimina la caja interna rectangular */
+.react-time-picker__wrapper {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ✅ Estilo del contenedor externo de los números */
+.react-time-picker__wrapper {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.react-time-picker {
+  background-color: white !important;
+  border: 1px solid #f48fb1 !important;
+  border-radius: 5px !important;
+  height: 44px !important;
+  padding: 0 12px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.react-time-picker__inputGroup__input {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  width: 1.75rem !important;
+  margin: 0 0.05rem !important;
+  text-align: center;
+  font-size: 1.125rem;
+  font-family: 'Roboto', sans-serif !important; /* ✅ Roboto aplicada */
+  font-weight: 500 !important;
+  color: #333 !important;
+  letter-spacing: 0.2px;
+}
+
+.react-time-picker__inputGroup__input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
+.react-time-picker__inputGroup__divider {
+  padding: 0 0.3rem;
+  color: #333;
+  font-size: 1.125rem;
+}
+
