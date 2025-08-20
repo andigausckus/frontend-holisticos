@@ -9,30 +9,33 @@ const ServiciosPendientes = ({ actualizarCantidad }) => {
     fetch("https://servicios-holisticos-backend.onrender.com/api/admin/servicios-pendientes")
       .then(res => res.json())
       .then(data => {
-        // 🔹 Filtramos solo los servicios pendientes
-        const pendientes = data.filter(s => !s.aprobado);
+        const pendientes = data.filter(s => !s.aprobado && !s.rechazado);
         setServicios(pendientes);
       })
       .catch(err => console.error("❌ Error:", err));
   }, []);
 
-  // 🔹 Actualizar badge del padre solo cuando servicios cambien
   useEffect(() => {
     if (actualizarCantidad) actualizarCantidad(servicios.length);
   }, [servicios, actualizarCantidad]);
 
   const manejarAccion = (id, aprobado) => {
-    fetch(`https://servicios-holisticos-backend.onrender.com/api/admin/aprobar-servicio/${id}`, {
+    const url = aprobado
+      ? `https://servicios-holisticos-backend.onrender.com/api/admin/aprobar-servicio/${id}`
+      : `https://servicios-holisticos-backend.onrender.com/api/admin/rechazar-servicio/${id}`;
+
+    fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ aprobado }),
+      body: JSON.stringify({ aprobado: aprobado || false }),
     })
       .then(res => res.json())
       .then(() => {
-        setServicios(prev => prev.filter(s => s._id !== id));
-        if (aprobado) alert("Servicio aprobado 🎊 ¡Ahora es visible online!");
+        // 🔹 Remover el servicio aprobado o rechazado del estado local
+        setServicios(prev => prev.filter(s => s._id !== id && !s.rechazado));
+        if (actualizarCantidad) actualizarCantidad(prev => prev.length - 1);
       })
-      .catch(err => console.error("❌ Error al aprobar/rechazar:", err));
+      .catch(err => console.error("❌ Error al actualizar servicio:", err));
   };
 
   const serviciosAMostrar = verTodos ? servicios : servicios.slice(0, 3);
@@ -50,14 +53,27 @@ const ServiciosPendientes = ({ actualizarCantidad }) => {
           {serviciosAMostrar.map(s => (
             <div
               key={s._id}
-              className="bg-white rounded-xl p-4 shadow mb-4 flex flex-col md:flex-row justify-between items-start md:items-center"
+              className="bg-white rounded-xl p-5 shadow mb-6 flex flex-col md:flex-row justify-between items-start md:items-center"
             >
-              <div className="flex-1 mb-3 md:mb-0">
-                <p className="text-lg text-gray-800">{s.titulo}</p>
+              <div className="flex-1 mb-4 md:mb-0">
+                <p className="text-lg font-semibold text-gray-800">{s.titulo}</p>
                 <p className="text-sm text-gray-500">Precio: ${s.precio}</p>
-                <p className="text-sm text-gray-500">Modalidad: {s.modalidad}</p>
-                <p className="text-sm text-gray-500">Terapeuta: {s.terapeuta?.nombreCompleto}</p>
+                <p className="text-sm text-gray-500 mb-2">
+                  Terapeuta: {s.terapeuta?.nombreCompleto}
+                </p>
+
+                {s.imagen && (
+                  <div className="w-full md:w-64">
+                    <img
+                      src={s.imagen}
+                      alt="Preview del servicio"
+                      className="rounded-lg border shadow-sm max-h-56 object-cover"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">📷 Ver imagen</p>
+                  </div>
+                )}
               </div>
+
               <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={() => manejarAccion(s._id, true)}
@@ -71,14 +87,6 @@ const ServiciosPendientes = ({ actualizarCantidad }) => {
                 >
                   Rechazar
                 </button>
-                {s._id && (
-                  <button
-                    onClick={() => window.open(`https://www.serviciosholisticos.com.ar/servicio/${s._id}`, "_blank")}
-                    className="bg-blue-200 text-blue-800 px-3 py-1 rounded shadow hover:bg-blue-300 transition"
-                  >
-                    ¡Servicio aprobado! 🎊 Ver online
-                  </button>
-                )}
               </div>
             </div>
           ))}

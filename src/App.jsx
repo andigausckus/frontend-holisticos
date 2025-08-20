@@ -13,7 +13,7 @@ import PerfilTerapeuta from "./components/PerfilTerapeuta";
 import ServicioDetalle from "./pages/ServicioDetalle";
 import PaginaPagoSimple from "./pages/PaginaPagoSimple";
 import Contacto from "./components/Contacto";
-import AdminPagos from "./pages/AdminPagos";
+import AdminPagos from "./components/AdminPagos";
 
 // Páginas legales
 import Terminos from "./pages/Terminos";
@@ -70,7 +70,7 @@ export default function App() {
 <Route path="pago-fallido" element={<PaginaPagoFallido />} />
 <Route path="pago-pendiente" element={<PaginaPagoPendiente />} />
 <Route path="nuevo-servicio" element={<NuevoServicio />} />
-<Route path="disponibilidad/:servicioId" element={<DisponibilidadServicio />} />
+<Route path="/disponibilidad/:servicioId" element={<DisponibilidadServicio />} />
 <Route path="editar-mis-servicios" element={<EditarMisServicios />} />
 <Route path="/admin/pagos" element={<AdminPagos />} />
 <Route path="editar-servicio/:servicioId" element={<EditarServicio />} />

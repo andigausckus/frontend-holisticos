@@ -19,7 +19,7 @@ function Servicios() {
         const res = await fetch("https://servicios-holisticos-backend.onrender.com/api/servicios");
         const data = await res.json();
 
-        console.log("👉 DATA:", data); // <-- AGREGÁ ESTO
+        console.log("Servicios recibidos para la grilla:", data); // <-- log más claro
 
         setServicios(data);
       } catch (error) {
@@ -113,7 +113,7 @@ const extraerMinutos = (duracion) => {
   return (
     <div className="bg-white min-h-screen max-w-6xl mb-24 mx-auto px-4 pt-24 pb-8">
       <div className="mb-6 text-center">
-        <h2 className="text-2xl md:text-3xl font-semibold text-[#333] mb-2">
+        <h2 className="text-2xl md:text-xl font-normal text-[#333] mb-2">
           Reservá hoy tu sesión online y comenzá tu camino de transformación 🌟
         </h2>
       </div>
@@ -241,13 +241,13 @@ min={0}
                 </div>
               <div className="p-4 flex flex-col items-center justify-between flex-grow text-center">
                 <div className="mb-2">
-                  <h3 className="text-xl text-[#333] font-semibold mb-2 mt-2">
+                  <h3 className="text-gl text-[#333] font-semibold mb-2 mt-2">
                     {servicio.titulo}
                   </h3>
                   <div className="flex items-center justify-center gap-2 mb-3">
   {/* Promedio grande con fondo amarillo oscuro */}
   <span 
-  className="text-gl font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3 text-center"
+  className="text-md font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3 text-center"
   style={{ 
     width: "4.5ch", 
     display: "inline-block",
@@ -264,7 +264,7 @@ min={0}
                     {[1, 2, 3, 4, 5].map((n) => (
                       <span
                         key={n}
-                        className={`text-lg ${
+                        className={`text-md ${
                           n <= Math.round(servicio.promedioResenas || 0)
                             ? "text-yellow-400"
                             : "text-gray-300"

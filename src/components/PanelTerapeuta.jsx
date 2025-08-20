@@ -112,14 +112,14 @@ export default function PanelTerapeuta() {
         <div className="flex flex-col gap-4 mb-12">
           <button
             onClick={() => navigate("/nuevo-servicio")}
-            className="w-full bg-pink-400 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-pink-500 hover:scale-105 transition-transform duration-200 ease-in-out"
+            className="mx-auto bg-sky-400 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-sky-500 hover:scale-105 transition-transform duration-200 ease-in-out"
           >
             ➕ Agregar un servicio
           </button>
 
           <button
             onClick={() => navigate("/editar-mis-servicios")}
-            className="w-full bg-teal-400 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-teal-500 hover:scale-105 transition-transform duration-200 ease-in-out"
+            className="mx-auto bg-green-400 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-green-500 hover:scale-105 transition-transform duration-200 ease-in-out"
           >
             ✏️ Editar mis servicios
           </button>

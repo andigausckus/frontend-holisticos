@@ -180,7 +180,7 @@ export default function Tienda() {
   return (
     <div className="pt-24 min-h-screen bg-white py-10 px-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-green-600 mb-2">
+        <h1 className="text-3xl font-bold text-center text-gray-500 mb-2">
           Tienda Holística 🌿
         </h1>
         <p className="text-center text-gray-600 mb-8">
@@ -243,7 +243,7 @@ export default function Tienda() {
               />
               <div className="p-6 space-y-1 flex-grow flex flex-col justify-between">
                 <div>
-                  <h2 className="text-2xl font-semibold text-[#333] mb-1">
+                  <h2 className="text-xl font-semibold text-[#333] mb-1">
                     {producto.titulo}
                   </h2>
                   <div className="flex items-center gap-3 flex-wrap mb-2">

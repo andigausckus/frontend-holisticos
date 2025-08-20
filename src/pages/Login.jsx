@@ -47,7 +47,7 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-white pt-24 max-w-full mx-auto p-8 rounded-xl">
+    <div className="bg-white pt-56 max-w-full mx-auto p-8 rounded-xl">
       <blockquote className="text-[#444444] italic text-center border-l-4 border-[#444444] pl-4 mb-8 max-w-xl mx-auto">
         “Tu vocación transforma vidas. Este es tu espacio para brillar y ayudar”
       </blockquote>
@@ -56,9 +56,7 @@ export default function Login() {
         onSubmit={handleLogin}
         className="w-full max-w-md mt-12 mx-auto mb-32"
       >
-        <h2 className="text-xl font-bold mb-4 text-center text-[#333]">
-          Iniciar sesión 🌳
-        </h2>
+        
 
         <input
           type="email"
@@ -80,7 +78,7 @@ export default function Login() {
 
         <button
           type="submit"
-          className="w-full mt-10 bg-pink-500 text-white py-2 rounded-3xl hover:bg-pink-600 transition"
+          className="block mx-auto text-center mt-10 bg-pink-500 text-white py-2 px-6 min-w-max rounded-xl hover:bg-pink-600 transition"
         >
           Iniciar sesión
         </button>

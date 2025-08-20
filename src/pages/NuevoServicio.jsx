@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { FaWhatsapp, FaSkype, FaVideo, FaGoogle } from "react-icons/fa";
-import imageCompression from "browser-image-compression";
+import axios from "axios";
 
 export default function NuevoServicio() {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ export default function NuevoServicio() {
   ];
 
   const cloudName = "dbu5cfqzf";
-const uploadPreset = "servicios_holisticos";
+  const uploadPreset = "servicios_holisticos";
 
   const plataformasDisponibles = [
     { nombre: "WhatsApp", icono: <FaWhatsapp className="text-green-500 text-2xl" /> },
@@ -23,8 +23,7 @@ const uploadPreset = "servicios_holisticos";
     { nombre: "Google Meet", icono: <FaGoogle className="text-green-600 text-2xl" /> },
   ];
 
-  const [imagenFile, setImagenFile] = useState(null); // para la preview
-
+  const [imagenFile, setImagenFile] = useState(null);
   const [formulario, setFormulario] = useState({
     titulo: "",
     descripcion: "",
@@ -59,45 +58,6 @@ const uploadPreset = "servicios_holisticos";
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-    if (!token) return alert("No estás autenticado");
-
-    const duracionTotalMinutos = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
-
-    const body = {
-      titulo: formulario.titulo,
-      descripcion: formulario.descripcion,
-      modalidad: formulario.modalidad[0],
-      duracionMinutos: duracionTotalMinutos,
-      precio: formulario.precio,
-      categoria: formulario.categoria,
-      plataformas: formulario.plataformas,
-      imagen: formulario.imagen, // 💡 es la URL de Cloudinary
-    };
-
-    try {
-      const res = await fetch("https://servicios-holisticos-backend.onrender.com/api/servicios", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", // 💡 clave para que el backend lo entienda
-        },
-        body: JSON.stringify(body),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al guardar");
-
-      alert("Servicio creado correctamente");
-      navigate(`/disponibilidad/${data.id}`);
-    } catch (err) {
-      console.error("❌ Error:", err);
-      alert(`No se pudo guardar el servicio. Motivo: ${err.message}`);
-    }
-  };
-
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -106,7 +66,7 @@ const uploadPreset = "servicios_holisticos";
       return alert("Solo se permiten archivos de imagen.");
     }
 
-    setImagenFile(file); // 👈 guardar para preview
+    setImagenFile(file);
 
     try {
       const formData = new FormData();
@@ -120,7 +80,7 @@ const uploadPreset = "servicios_holisticos";
       });
 
       const data = await res.json();
-      setFormulario((prev) => ({ ...prev, imagen: data.secure_url })); // ✅ usar la URL para el backend
+      setFormulario((prev) => ({ ...prev, imagen: data.secure_url }));
     } catch (error) {
       console.error("❌ Error al subir imagen a Cloudinary:", error);
       alert("No se pudo subir la imagen.");
@@ -144,6 +104,49 @@ const uploadPreset = "servicios_holisticos";
     label: cat,
   }));
 
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const duracionTotalMinutos = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
+
+  const servicioTemp = {
+    titulo: formulario.titulo,
+    descripcion: formulario.descripcion,
+    modalidad: formulario.modalidad[0],
+    duracionMinutos: duracionTotalMinutos,
+    precio: formulario.precio,
+    categoria: formulario.categoria,
+    plataformas: formulario.plataformas,
+    imagen: formulario.imagen,
+    aprobado: false,
+  };
+
+  try {
+    const token = localStorage.getItem("token"); // tu token JWT
+    const res = await axios.post(
+      "https://servicios-holisticos-backend.onrender.com/api/servicios",
+      servicioTemp,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // servicio creado correctamente
+    const servicioCreado = res.data;
+
+    console.log("Servicio creado:", servicioCreado); // 🔹 revisa que _id exista
+navigate(`/disponibilidad/${servicioCreado._id}`, {
+  state: { servicioTemp: servicioCreado },
+});
+
+  } catch (error) {
+    console.error("❌ Error al crear servicio:", error);
+    alert("No se pudo crear el servicio, intentá nuevamente.");
+  }
+};
 
   return (
     <div className="bg-white pt-24 p-4 min-h-screen">
@@ -153,7 +156,6 @@ const uploadPreset = "servicios_holisticos";
         {/* Título */}
         <label className="block mb-4">
           <span className="block mb-2">Título *</span>
-          <p className="text-sm text-gray-500 mb-1">Entre 4 y 6 palabras para armonia visual</p>
           <input
             type="text"
             name="titulo"
@@ -270,18 +272,12 @@ const uploadPreset = "servicios_holisticos";
         {/* Imagen */}
         <label className="block mb-8">
           <span className="block mb-2">Imagen del servicio *</span>
-          <div className="border border-gray-300 rounded p-4 mb-4">
-            <p className="text-sm text-gray-500">
-              Subí una imagen clara y limpia de tu servicio. No está permitido imágenes escritas con nombres de otras terapias o número de WhatsApp, esto es para mantener una estética minimalista y simple de la plataforma.
-              
-            </p>
-          </div>
           <input type="file" accept="image/*" onChange={handleImageChange} className="mb-2 pt-6" />
           {imagenFile && (
             <div className="mt-4">
               <p className="text-sm text-gray-600 mb-2">Vista previa:</p>
               <img
-  src={formulario.imagen}
+                src={formulario.imagen}
                 alt="Vista previa"
                 className="w-full aspect-video object-cover rounded-2xl"
               />
@@ -290,10 +286,10 @@ const uploadPreset = "servicios_holisticos";
         </label>
 
         {/* Botón */}
-        <div className="text-center mt-10">
+        <div className="w-full flex justify-center mt-10">
           <button
             type="submit"
-            className="bg-violet-500 w-full text-white py-2 px-3 rounded-3xl hover:bg-violet-600 transition"
+            className="bg-violet-500 text-white py-2 px-6 rounded-3xl hover:bg-violet-600 transition"
           >
             Continuar
           </button>

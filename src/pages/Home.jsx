@@ -74,18 +74,18 @@ export default function Home() {
       <Navbar />
 
       {/* Banner principal */}
-      <section className="relative h-[500px] w-full">
+      <section className="relative h-[400px] w-full">
         <img
-          src="https://i.postimg.cc/QtSt9JsD/lotus-1205631-1280.jpg"
+          src="https://i.postimg.cc/6Qp1TdtM/incense-4720736-1280.jpg"
           alt="Banner terapias holísticas"
           className="w-full h-full object-cover"
         />
       </section>
 
       {/* Contenedor común */}
-      <div className="text-[#444444] bg-white px-6 md:px-12 py-14 max-w-screen-xl mx-auto">
+      <div className="text-[#444444] bg-white px-4 md:px-12 py-8 max-w-screen-xl mx-auto">
         {/* Título principal */}
-        <h1 className="text-2xl md:text-5xl font-bold mb-4 mt-6 max-w-4xl text-left">
+        <h1 className="text-2xl md:text-5xl font-bold mb-4 max-w-4xl text-left">
           Marketplace de terapias holísticas en Argentina 🌿
         </h1>
 

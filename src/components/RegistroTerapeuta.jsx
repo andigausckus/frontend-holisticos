@@ -79,15 +79,15 @@ export default function RegistroTerapeuta() {
 
   return (
     <div className="bg-white pt-24 max-w-full mx-auto p-8 rounded-xl">
-      <h2 className="text-xl font-bold text-center text-gray-800 mb-4">
-        Registro de terapeuta 🌷
+      <h2 className="text-xl font-normal text-center text-gray-800 mb-4">
+        Ofrecé tus servicios en esta gran Comunidad Holística 
       </h2>
 
       {mensaje && (
-        <p className="mb-4 text-sm text-center text-red-600">{mensaje}</p>
+        <p className="mb-2 text-sm text-center text-red-600">{mensaje}</p>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mt-12 mx-auto mb-32">
+      <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mt-6 mx-auto mb-32">
         <input
           type="text"
           name="nombreCompleto"
@@ -146,7 +146,7 @@ export default function RegistroTerapeuta() {
             💸 Datos para transferirte tu dinero
           </h3>
           <p className="text-sm text-gray-600 mb-4">
-            Te enviamos el <strong>85%</strong> del valor de cada sesión. El <strong>15%</strong> es comisión por nuestro servicio. 
+            Te enviamos el <strong>90%</strong> del valor de cada sesión. El <strong>10%</strong> es comisión por nuestro servicio. 
           </p>
 
           <input
@@ -198,7 +198,7 @@ export default function RegistroTerapeuta() {
 
         <button
           type="submit"
-          className="w-full mt-6 bg-pink-500 text-white py-2 rounded-3xl hover:bg-pink-600 transition"
+          className="block mx-auto text-center mt-10 bg-pink-500 text-white py-2 px-6 min-w-max rounded-xl hover:bg-pink-600 transition"
         >
           Registrarme
         </button>

@@ -18,13 +18,14 @@ export default function Footer() {
           <Link to="/terminos" className="hover:underline">Términos y Condiciones</Link>
           <Link to="/privacidad" className="hover:underline">Política de Privacidad</Link>
           <Link to="/login" className="hover:underline">Iniciar sesión</Link>
-          <Link to="/registro" className="hover:underline">Regístrate</Link>
+          <Link to="/registro" className="hover:underline">Registrarme</Link>
         </div>
 
         {/* Íconos de redes */}
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center gap-4 pt-4">
+          {/* Instagram */}
           <a
-            href="https://www.instagram.com/holisticoservicios?igsh=bHhpdzI1cXk2cmpo"
+            href="https://www.instagram.com/servicios_holisticos?utm_source=qr&igsh=NGx1M212dGJnNGM1"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:opacity-80 transition-opacity"
@@ -32,7 +33,49 @@ export default function Footer() {
             <img
               src="https://www.svgrepo.com/show/452229/instagram-1.svg"
               alt="Instagram"
-              className="h-6 w-6"
+              className="h-10 w-10"
+            />
+          </a>
+
+          {/* Threads */}
+          <a
+            href="https://www.threads.net/@servicios_holisticos"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80 transition-opacity"
+          >
+            <img
+              src="https://img.icons8.com/?size=100&id=AS2a6aA9BwK3&format=png&color=000000"
+              alt="Threads"
+              className="h-10 w-10"
+            />
+          </a>
+
+          {/* WhatsApp */}
+          <a
+            href="https://wa.me/message/GQOZ2ZIA6UFTO1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80 transition-opacity"
+          >
+            <img
+              src="https://img.icons8.com/?size=100&id=BkugfgmBwtEI&format=png&color=25D366"
+              alt="WhatsApp"
+              className="h-10 w-10"
+            />
+          </a>
+
+          {/* Facebook */}
+          <a
+            href="https://www.facebook.com/profile.php?id=61568385726256"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:opacity-80 transition-opacity"
+          >
+            <img
+              src="https://img.icons8.com/?size=100&id=13912&format=png&color=1877F2"
+              alt="Facebook"
+              className="h-10 w-10"
             />
           </a>
         </div>
