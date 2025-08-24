@@ -1,4 +1,3 @@
-// NuevoServicio.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
@@ -61,10 +60,7 @@ export default function NuevoServicio() {
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      return alert("Solo se permiten archivos de imagen.");
-    }
+    if (!file.type.startsWith("image/")) return alert("Solo se permiten imágenes.");
 
     setImagenFile(file);
 
@@ -105,48 +101,46 @@ export default function NuevoServicio() {
   }));
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const duracionTotalMinutos = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
+    const duracionTotalMinutos = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
 
-  const servicioTemp = {
-    titulo: formulario.titulo,
-    descripcion: formulario.descripcion,
-    modalidad: formulario.modalidad[0],
-    duracionMinutos: duracionTotalMinutos,
-    precio: formulario.precio,
-    categoria: formulario.categoria,
-    plataformas: formulario.plataformas,
-    imagen: formulario.imagen,
-    aprobado: false,
+    const servicioTemp = {
+      titulo: formulario.titulo,
+      descripcion: formulario.descripcion,
+      modalidad: "Online",
+      duracionMinutos: duracionTotalMinutos,
+      precio: formulario.precio,
+      categoria: formulario.categoria,
+      plataformas: formulario.plataformas,
+      imagen: formulario.imagen,
+      aprobado: false,
+    };
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        "https://servicios-holisticos-backend.onrender.com/api/servicios",
+        servicioTemp,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const servicioCreado = res.data;
+
+      // Redirige a disponibilidad del nuevo servicio
+      navigate(`/disponibilidad/${servicioCreado._id}`, {
+        state: { servicioTemp: servicioCreado },
+      });
+    } catch (error) {
+      console.error("❌ Error al crear servicio:", error);
+      alert("No se pudo crear el servicio, intentá nuevamente.");
+    }
   };
-
-  try {
-    const token = localStorage.getItem("token"); // tu token JWT
-    const res = await axios.post(
-      "https://servicios-holisticos-backend.onrender.com/api/servicios",
-      servicioTemp,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    // servicio creado correctamente
-    const servicioCreado = res.data;
-
-    console.log("Servicio creado:", servicioCreado); // 🔹 revisa que _id exista
-navigate(`/disponibilidad/${servicioCreado._id}`, {
-  state: { servicioTemp: servicioCreado },
-});
-
-  } catch (error) {
-    console.error("❌ Error al crear servicio:", error);
-    alert("No se pudo crear el servicio, intentá nuevamente.");
-  }
-};
 
   return (
     <div className="bg-white pt-24 p-4 min-h-screen">
@@ -259,7 +253,8 @@ navigate(`/disponibilidad/${servicioCreado._id}`, {
             options={opcionesCategoria}
             value={
               formulario.categoria
-                ? opcionesCategoria.find((op) => op.value === formulario.categoria)
+                ? opcionesCategoria.find((op) => op.value ===
+                  formulario.categoria)
                 : null
             }
             onChange={handleCategoriaChange}

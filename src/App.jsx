@@ -25,7 +25,6 @@ import PaginaPagoPendiente from "./pages/PaginaPagoPendiente";
 // Administración y otras
 import NuevoServicio from "./pages/NuevoServicio";
 import DisponibilidadServicio from "./components/DisponibilidadServicio";
-import EditarMisServicios from "./components/EditarMisServicios";
 import EditarServicio from "./components/EditarServicio";
 import AdminReservas from './components/AdminReservas';
 import AdminTerapeutas from './pages/AdminTerapeutas';
@@ -71,7 +70,6 @@ export default function App() {
 <Route path="pago-pendiente" element={<PaginaPagoPendiente />} />
 <Route path="nuevo-servicio" element={<NuevoServicio />} />
 <Route path="/disponibilidad/:servicioId" element={<DisponibilidadServicio />} />
-<Route path="editar-mis-servicios" element={<EditarMisServicios />} />
 <Route path="/admin/pagos" element={<AdminPagos />} />
 <Route path="editar-servicio/:servicioId" element={<EditarServicio />} />
 </Route>

@@ -1,18 +1,81 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 export default function PanelTerapeuta() {
   const [terapeuta, setTerapeuta] = useState(null);
   const [misServicios, setMisServicios] = useState([]);
   const [reservas, setReservas] = useState([]);
+  const [verMas, setVerMas] = useState(false);
   const [mensajeGlobal, setMensajeGlobal] = useState("");
   const [cargóDisponibilidad, setCargóDisponibilidad] = useState(false);
-
-  const [mostrarTodasReservas, setMostrarTodasReservas] = useState(false);
   const [mostrarTodosServicios, setMostrarTodosServicios] = useState(false);
+  const [serviciosVistos, setServiciosVistos] = useState({});
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [urlCompartir, setUrlCompartir] = useState("");
 
   const navigate = useNavigate();
+  const location = useLocation();
 
+  // Actualiza servicios editados desde la navegación
+  useEffect(() => {
+    if (location.state?.servicioEditado) {
+      setMisServicios(prev =>
+        prev.map(s =>
+          s._id === location.state.servicioEditado._id
+            ? location.state.servicioEditado
+            : s
+        )
+      );
+    }
+  }, [location.state]);
+
+  // Cargar servicios vistos desde localStorage
+  useEffect(() => {
+    const vistosStorage = JSON.parse(localStorage.getItem("serviciosVistos")) || {};
+    setServiciosVistos(vistosStorage);
+  }, []);
+
+  // Funciones de acción
+  const handleVerOnline = (id, slug) => {
+    const nuevosVistos = { ...serviciosVistos, [id]: true };
+    setServiciosVistos(nuevosVistos);
+    localStorage.setItem("serviciosVistos", JSON.stringify(nuevosVistos));
+    window.open(`/#/servicios/${slug}`, "_blank");
+  };
+
+  const handleEliminarServicio = async (id) => {
+    const confirmar = window.confirm("¿Estás seguro que deseas eliminar este servicio?");
+    if (!confirmar) return;
+
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+        `https://servicios-holisticos-backend.onrender.com/api/servicios/${id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al eliminar servicio");
+
+      setMisServicios(data.serviciosActualizados);
+      alert("Servicio eliminado correctamente.");
+    } catch (err) {
+      console.error("Error al eliminar servicio:", err);
+      alert("No se pudo eliminar el servicio.");
+    }
+  };
+
+  const handleCompartir = (id, slug) => {
+    const url = `${window.location.origin}/#/servicios/${slug}`;
+    setUrlCompartir(url);
+    setMostrarModal(true);
+  };
+
+  // Carga inicial de datos
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
@@ -91,7 +154,7 @@ export default function PanelTerapeuta() {
     fetchReservas();
     verificarDisponibilidad();
     obtenerMensajeGlobal();
-  }, [navigate]);
+  }, [navigate, location.state?.refrescar]);
 
   if (!terapeuta) return <p className="p-6 text-gray-600">Cargando perfil...</p>;
 
@@ -117,13 +180,6 @@ export default function PanelTerapeuta() {
             ➕ Agregar un servicio
           </button>
 
-          <button
-            onClick={() => navigate("/editar-mis-servicios")}
-            className="mx-auto bg-green-400 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-green-500 hover:scale-105 transition-transform duration-200 ease-in-out"
-          >
-            ✏️ Editar mis servicios
-          </button>
-
           {cargóDisponibilidad && (
             <button
               onClick={() => navigate("/disponibilidad")}
@@ -132,46 +188,104 @@ export default function PanelTerapeuta() {
               🕒 Modificar disponibilidad semanal
             </button>
           )}
-
-          {/* Botón de perfil público temporalmente oculto */}
-          {/* <Link
-            to={`/terapeuta/${terapeuta._id}`}
-            className="w-full bg-violet-600 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-violet-700 hover:scale-105 transition-transform duration-200 ease-in-out text-center"
-          >
-            🌐 Ver mi perfil público
-          </Link> */}
         </div>
 
         {/* Servicios */}
         <div className="text-left mb-12">
-          <h2 className="text-xl font-semibold text-[#444] mb-4">🧘‍♀️ Tus servicios</h2>
+          <h2 className="text-xl font-semibold text-[#444] mb-4">🌻 Mis servicios</h2>
+
           {misServicios.length === 0 ? (
-            <p className="text-gray-500 text-gl">Aún no cargaste ningún servicio</p>
+            <p className="text-gray-500 text-md">Aún no cargaste ningún servicio</p>
           ) : (
             <>
               <ul className="space-y-4">
-                {(mostrarTodosServicios ? misServicios : misServicios.slice(0,1)).map((serv, i) => (
-                  <li key={i} className="bg-[#f9f6ff] p-4 rounded-xl shadow-sm">
-                    <p className="text-lg text-[#333]">{serv.titulo}</p>
-                    <p className="text-sm text-gray-600">{serv.descripcion?.slice(0, 100)}...</p>
-                    {serv.estado === "aprobado" && (
-                      <Link
-                        to={`/servicio/${serv._id}`}
-                        className="text-sm mt-1 inline-block text-green-700 hover:underline"
+                {(mostrarTodosServicios ? misServicios : misServicios.slice(0, 1)).map(
+                  (serv) => {
+                    const estaPendiente = !serv.aprobado;
+
+                    const slug =
+                      serv.slug ||
+                      (serv.titulo
+                        ? serv.titulo
+                            .normalize("NFD")
+                            .replace(/[\u0300-\u036f]/g, "")
+                            .toLowerCase()
+                            .replace(/\s+/g, "-")
+                            .replace(/[^a-z0-9\-]/g, "")
+                            .replace(/^-+|-+$/g, "")
+                        : "sin-titulo");
+
+                    return (
+                      <li
+                        key={serv._id}
+                        className={`p-4 rounded-xl shadow-sm ${
+                          estaPendiente
+                            ? "bg-gray-100 text-gray-400"
+                            : "bg-[#f9f6ff] text-[#333]"
+                        }`}
                       >
-                        ¡Servicio aprobado! 🎊 Ver online
-                      </Link>
-                    )}
-                  </li>
-                ))}
+                        <p className="text-lg font-semibold">{serv.titulo || "Sin título"}</p>
+                        <p className="text-sm text-gray-500 overflow-hidden text-ellipsis line-clamp-2">
+                          {serv.descripcion}
+                        </p>
+
+                        {estaPendiente && (
+                          <div className="text-sm text-gray-500 mt-1">
+                            Estamos revisando tu servicio 🕒 Podrás verlo en tu panel una vez aprobado.
+                          </div>
+                        )}
+
+                        <div className="mt-2">
+                          {serv.aprobado && !serviciosVistos[serv._id] && (
+                            <div className="text-sm text-green-700 mb-2">
+                              ¡Tu servicio fue aprobado! 🎉
+                            </div>
+                          )}
+
+                          {serv.aprobado && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleVerOnline(serv._id, slug)}
+                                className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition"
+                              >
+                                Ver
+                              </button>
+
+                              <button
+                                onClick={() => navigate(`/editar-servicio/${serv._id}`)}
+                                className="bg-sky-500 text-white py-1 px-3 rounded hover:bg-sky-600 transition"
+                              >
+                                Editar
+                              </button>
+
+                              <button
+                                onClick={() => handleEliminarServicio(serv._id)}
+                                className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"
+                              >
+                                Eliminar
+                              </button>
+
+                              <button
+                                onClick={() => handleCompartir(serv._id, slug)}
+                                className="bg-purple-500 text-white py-1 px-3 rounded hover:bg-purple-600 transition"
+                              >
+                                Compartir
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </li>
+                    );
+                  }
+                )}
               </ul>
 
               {misServicios.length > 1 && (
                 <button
                   onClick={() => setMostrarTodosServicios(!mostrarTodosServicios)}
-                  className="mt-2 text-sm text-indigo-600 hover:underline"
+                  className="mt-4 text-blue-600 hover:underline text-sm"
                 >
-                  {mostrarTodosServicios ? "Ver menos servicios" : "Ver más servicios"}
+                  {mostrarTodosServicios ? "Ver menos servicios ▲" : "Más servicios ▼"}
                 </button>
               )}
             </>
@@ -179,37 +293,110 @@ export default function PanelTerapeuta() {
         </div>
 
         {/* Reservas */}
-        <div className="text-left">
-          <h2 className="text-xl font-semibold text-[#444] mb-4">📅 Reservas recibidas</h2>
-          {reservas.length === 0 ? (
-            <p className="mb-24 text-gray-500">Aún no recibiste reservas</p>
-          ) : (
-            <>
-              <ul className="space-y-4">
-                {(mostrarTodasReservas ? reservas : reservas.slice(0,3)).map((r, i) => (
-                  <li key={i} className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
-                    <p className="text-sm text-gray-600">🗓️ {new Date(r.fecha).toLocaleDateString("es-AR")}</p>
-                    <p className="text-sm text-gray-600">👤 {r.usuarioNombre}</p>
-                    <p className="text-sm text-gray-600">💆 Servicio: {r.servicioTitulo}</p>
-                    <p className="mt-2 inline-block bg-green-100 text-green-700 px-2 py-1 rounded-full text-sm">
-                      Confirmada
-                    </p>
-                  </li>
-                ))}
-              </ul>
+<h2 className="text-xl text-left font-semibold text-[#444] mt-12 mb-4">📅 Tus reservas</h2>
+{reservas.length === 0 ? (
+  <p className="text-gray-500 tect-left text-md">Aún no tenes ninguna reserva</p>
+) : (
+  <>
+    <ul className="space-y-4">
+      {reservas.slice(0, verMas ? reservas.length : 3).map((reserva) => (
+        <li
+          key={reserva._id}
+          className="p-4 rounded-xl shadow-sm bg-[#f9f6ff] text-[#333]"
+        >
+          <p>🗓 Fecha: {new Date(reserva.fecha).toLocaleDateString()}</p>
+          <p>🕒 Hora: {reserva.hora}</p>
+          <p>💆 Servicio: {reserva.servicio}</p>
+          <p>👤 Usuario: {reserva.usuario}</p>
+          <p>💰 Valor: ${reserva.valor}</p>
+          <span className="inline-block mt-2 bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
+            Confirmada ✅
+          </span>
+        </li>
+      ))}
+    </ul>
 
-              {reservas.length > 3 && (
-                <button
-                  onClick={() => setMostrarTodasReservas(!mostrarTodasReservas)}
-                  className="mt-2 text-sm text-indigo-600 hover:underline"
-                >
-                  {mostrarTodasReservas ? "Ver menos reservas" : "Ver más reservas"}
-                </button>
-              )}
-            </>
-          )}
-        </div>
+    {reservas.length > 3 && (
+      <button
+        onClick={() => setVerMas(!verMas)}
+        className="mt-2 text-blue-600 hover:underline text-sm"
+      >
+        {verMas ? "Ver menos ▲" : "Ver más ▼"}
+      </button>
+    )}
+  </>
+)}
+
+{/* Modal para compartir */}
+{mostrarModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+      <h2 className="text-lg font-semibold text-gray-800 mb-2">✨ ¡Compartí tu servicio!</h2>
+      <p className="text-gray-600 mb-4">
+        Compartí tu servicio en tus redes sociales para que los usuarios ingresen, 
+        vean tus horarios y reserven directamente 📅
+      </p>
+
+      <div className="flex flex-col gap-2">
+        <a
+          href={`https://wa.me/?text=Mirá este servicio: ${urlCompartir}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+        >
+          WhatsApp
+        </a>
+
+        <a
+          href={`https://www.facebook.com/sharer/sharer.php?u=${urlCompartir}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+        >
+          Facebook
+        </a>
+
+        <a
+          href={`https://www.threads.net/intent/post?text=Mirá este servicio 👇 %0A${urlCompartir}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-black text-white py-2 px-4 rounded hover:bg-gray-800"
+        >
+          Threads
+        </a>
+
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(urlCompartir);
+            alert("Enlace copiado, ahora podés pegarlo en Instagram (bio, historias, DM) 📲");
+          }}
+          className="bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600"
+        >
+          Copiar para Instagram
+        </button>
+
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(urlCompartir);
+            alert("Enlace copiado al portapapeles ✅");
+          }}
+          className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700"
+        >
+          Copiar enlace
+        </button>
       </div>
+
+      <button
+        onClick={() => setMostrarModal(false)}
+        className="mt-4 text-gray-500 hover:text-gray-700"
+      >
+        Cerrar
+      </button>
     </div>
-  );
+  </div>
+)}
+
+</div> 
+</div> // Cierre bg-white
+);
 }

@@ -51,23 +51,23 @@ const extraerMinutos = (duracion) => {
 };
 
   const serviciosFiltrados = servicios.filter((s) => {
-    console.log("🧪 Servicio:", s);
-    const coincideCategoria = !categoriaSeleccionada || s.categoria === categoriaSeleccionada.value;
-    const coincidePrecio =
-      (!precioMinimo || s.precio >= parseInt(precioMinimo)) &&
-      (!precioMaximo || s.precio <= parseInt(precioMaximo));
-    const minutos = s.duracionMinutos;
-    const coincideDuracion =
-      !duracionSeleccionada ||
-      (duracionSeleccionada.value === "30-45" &&
-        minutos >= 30 &&
-        minutos <= 45) ||
-      (duracionSeleccionada.value === "45-60" &&
-        minutos >= 45 &&
-        minutos <= 60) ||
-      (duracionSeleccionada.value === "60+" && minutos > 60);
-    return coincideCategoria && coincidePrecio && coincideDuracion;
-  });
+console.log("🧪 Servicio:", s);
+const coincideCategoria = !categoriaSeleccionada || s.categoria === categoriaSeleccionada.value;
+const coincidePrecio =
+(!precioMinimo || s.precio >= parseInt(precioMinimo)) &&
+(!precioMaximo || s.precio <= parseInt(precioMaximo));
+const minutos = s.duracionMinutos;
+const coincideDuracion =
+!duracionSeleccionada ||
+(duracionSeleccionada.value === "30-45" &&
+minutos >= 30 &&
+minutos <= 45) ||
+(duracionSeleccionada.value === "45-60" &&
+minutos >= 45 &&
+minutos <= 60) ||
+(duracionSeleccionada.value === "60+" && minutos > 60);
+return coincideCategoria && coincidePrecio && coincideDuracion;
+});
 
   const customStyles = {
     control: (provided, state) => ({

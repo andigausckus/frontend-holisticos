@@ -1,21 +1,16 @@
-// EditarServicio.jsx
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { FaWhatsapp, FaSkype, FaVideo, FaGoogle } from "react-icons/fa";
-import axios from "axios";
 
 export default function EditarServicio() {
-  const navigate = useNavigate();
   const { servicioId } = useParams();
+  const navigate = useNavigate();
 
   const categorias = [
     "Astrología", "Biodescodificación", "Meditación", "Numerología",
     "Reiki", "Registros Akáshicos", "Tarot", "Terapia Floral", "Yoga"
   ];
-
-  const cloudName = "dbu5cfqzf";
-  const uploadPreset = "servicios_holisticos";
 
   const plataformasDisponibles = [
     { nombre: "WhatsApp", icono: <FaWhatsapp className="text-green-500 text-2xl" /> },
@@ -24,58 +19,58 @@ export default function EditarServicio() {
     { nombre: "Google Meet", icono: <FaGoogle className="text-green-600 text-2xl" /> },
   ];
 
-  const [imagenFile, setImagenFile] = useState(null);
-  const [cargando, setCargando] = useState(true);
   const [formulario, setFormulario] = useState({
     titulo: "",
     descripcion: "",
-    modalidad: ["Online"],
+    modalidad: "Online", // fija
     duracionHoras: "",
     duracionMinutos: "",
     precio: "",
     categoria: "",
     plataformas: [],
-    imagen: null,
+    disponibilidad: [], // 👈 lo agregamos
   });
 
-  // Cargar datos del servicio al iniciar
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return navigate("/login");
-
-    const cargarServicio = async () => {
+    const fetchServicio = async () => {
       try {
-        const res = await axios.get(
+        const token = localStorage.getItem("token");
+        const res = await fetch(
           `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
-        const s = res.data;
-        const horas = Math.floor((s.duracionMinutos || 0) / 60);
-        const minutos = (s.duracionMinutos || 0) % 60;
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Error al cargar servicio");
+
+        const duracionTotal = data.duracionMinutos || 0; // <-- usar el nombre correcto
+const horas = Math.floor(duracionTotal / 60);
+const minutos = duracionTotal % 60;
 
         setFormulario({
-          titulo: s.titulo || "",
-          descripcion: s.descripcion || "",
-          modalidad: s.modalidad ? [s.modalidad] : ["Online"],
+          titulo: data.titulo || "",
+          descripcion: data.descripcion || "",
+          modalidad: "Online",
           duracionHoras: horas,
           duracionMinutos: minutos,
-          precio: s.precio || "",
-          categoria: s.categoria || "",
-          plataformas: s.plataformas || [],
-          imagen: s.imagen || null,
+          precio: data.precio || "",
+          categoria: data.categoria || "",
+          plataformas: data.plataformas || [],
+          disponibilidad: data.horariosDisponibles || [],
         });
 
-        setCargando(false);
       } catch (err) {
-        console.error("❌ Error al cargar servicio:", err);
-        alert("No se pudo cargar el servicio.");
-        setCargando(false);
+        console.error("🔴 Error al cargar:", err);
+        alert("No se pudo cargar el servicio");
       }
     };
 
-    cargarServicio();
-  }, [servicioId, navigate]);
+    fetchServicio();
+  }, [servicioId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -85,10 +80,10 @@ export default function EditarServicio() {
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
     setFormulario((prev) => {
-      const nuevasPlataformas = checked
+      const nuevas = checked
         ? [...prev.plataformas, value]
-        : prev.plataformas.filter((plataforma) => plataforma !== value);
-      return { ...prev, plataformas: nuevasPlataformas };
+        : prev.plataformas.filter((p) => p !== value);
+      return { ...prev, plataformas: nuevas };
     });
   };
 
@@ -99,45 +94,63 @@ export default function EditarServicio() {
     }));
   };
 
-  const handleImageChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    if (!file.type.startsWith("image/")) {
-      return alert("Solo se permiten archivos de imagen.");
+    if (formulario.plataformas.length === 0) {
+      return alert("Debes seleccionar al menos una plataforma.");
     }
 
-    setImagenFile(file);
+    const token = localStorage.getItem("token");
+    const duracion = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
+
+    const payload = {
+      titulo: formulario.titulo,
+      descripcion: formulario.descripcion,
+      modalidad: "Online",
+      duracionMinutos: duracion,
+      precio: formulario.precio,
+      categoria: formulario.categoria,
+      plataformas: formulario.plataformas,
+    };
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", uploadPreset);
-      formData.append("folder", "servicios");
-
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await res.json();
-      setFormulario((prev) => ({ ...prev, imagen: data.secure_url }));
+      if (!res.ok) {
+        console.error("❌ Respuesta del backend:", data);
+        throw new Error(data.error || "Error al actualizar");
+      }
+
+      // Simplemente redirige a disponibilidad sin mostrar alert
+navigate(`/disponibilidad/${servicioId}`);
     } catch (error) {
-      console.error("❌ Error al subir imagen a Cloudinary:", error);
-      alert("No se pudo subir la imagen.");
+      console.error("❌ Error completo:", error);
+      alert(`Error: ${error.message}`);
     }
   };
 
   const customSelectStyles = {
     control: (base, state) => ({
       ...base,
-      borderColor: state.isFocused ? "#b481d9" : "#c7b6eb",
-      boxShadow: state.isFocused ? "0 0 0 1px #b481d9" : "none",
-      borderRadius: "5px",
+      borderColor: "#c7b6eb",
       backgroundColor: "#f6f0fe",
-      padding: "2px",
+      borderRadius: "5px",
+      boxShadow: state.isFocused ? "0 0 0 1px #b481d9" : "none",
     }),
     placeholder: (base) => ({ ...base, color: "#888" }),
+    singleValue: (base) => ({ ...base, color: "#333" }),
   };
 
   const opcionesCategoria = categorias.map((cat) => ({
@@ -145,49 +158,10 @@ export default function EditarServicio() {
     label: cat,
   }));
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const duracionTotalMinutos = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
-
-    const servicioActualizado = {
-      titulo: formulario.titulo,
-      descripcion: formulario.descripcion,
-      modalidad: "Online", 
-      duracionMinutos: duracionTotalMinutos,
-      precio: formulario.precio,
-      categoria: formulario.categoria,
-      plataformas: formulario.plataformas,
-      imagen: formulario.imagen,
-    };
-
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.put(
-  `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}`,
-        servicioActualizado,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
-      console.log("Servicio actualizado:", res.data);
-
-      // Redirigir a disponibilidad
-navigate(`/disponibilidad/${servicioId}`, {
-  state: { servicioTemp: res.data.servicio },
-});
-      
-    } catch (error) {
-      console.error("❌ Error al actualizar servicio:", error);
-      alert("No se pudo actualizar el servicio, intentá nuevamente.");
-    }
-  };
-
-  if (cargando) return <p className="p-6 text-gray-600">Cargando servicio...</p>;
-
   return (
-    <div className="bg-white pt-24 p-4 min-h-screen">
+    <div className="bg-white p-4 pt-24 min-h-screen">
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4 mb-24">
-        <h2 className="text-2xl font-semibold pt-12 text-center mb-6">Editar servicio 🩷</h2>
+        <h2 className="text-xl font-normal pt-12 text-center mb-6">Editar servicio 🌿</h2>
 
         {/* Título */}
         <label className="block mb-4">
@@ -197,9 +171,8 @@ navigate(`/disponibilidad/${servicioId}`, {
             name="titulo"
             value={formulario.titulo}
             onChange={handleChange}
-            placeholder="Ej: Sesión de Reiki para adultos"
-            className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none"
             required
+            className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none"
           />
         </label>
 
@@ -211,9 +184,8 @@ navigate(`/disponibilidad/${servicioId}`, {
             value={formulario.descripcion}
             onChange={handleChange}
             rows={4}
-            placeholder="Describí de qué se trata tu servicio, a quién está dirigido, y qué beneficios ofrece."
-            className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none"
             required
+            className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none"
           />
         </label>
 
@@ -221,8 +193,11 @@ navigate(`/disponibilidad/${servicioId}`, {
         <div className="flex gap-4 mb-4">
           <div className="flex-1">
             <label className="block mb-1">Modalidad *</label>
-            <div className="px-3 py-2 border border-[#c7b6eb] rounded">Online</div>
+            <div className="px-3 py-2 border border-[#c7b6eb] rounded bg-gray-50">
+              Online
+            </div>
           </div>
+          
           <div className="flex-1">
             <label className="block mb-1">Precio *</label>
             <div className="flex items-center border border-[#c7b6eb] rounded px-2">
@@ -270,7 +245,7 @@ navigate(`/disponibilidad/${servicioId}`, {
 
         {/* Plataformas */}
         <label className="block mb-4">
-          <span className="block mb-1">Plataforma para la sesión</span>
+          <span className="block mb-1">Plataforma para la sesión*</span>
           <div className="flex flex-wrap justify-between p-3 border border-[#c7b6eb] rounded">
             {plataformasDisponibles.map(({ nombre, icono }) => (
               <label key={nombre} className="flex flex-col items-center text-center text-sm cursor-pointer w-1/4">
@@ -279,7 +254,7 @@ navigate(`/disponibilidad/${servicioId}`, {
                   value={nombre}
                   checked={formulario.plataformas.includes(nombre)}
                   onChange={handleCheckboxChange}
-                  className="mb-1"
+                  className="mb-1 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-500"
                 />
                 {icono}
                 <span className="text-xs mt-1">{nombre}</span>
@@ -293,11 +268,7 @@ navigate(`/disponibilidad/${servicioId}`, {
           <span className="block mb-1">Categoría *</span>
           <Select
             options={opcionesCategoria}
-            value={
-              formulario.categoria
-                ? opcionesCategoria.find((op) => op.value === formulario.categoria)
-                : null
-            }
+            value={opcionesCategoria.find((op) => op.value === formulario.categoria)}
             onChange={handleCategoriaChange}
             placeholder="Seleccioná una categoría"
             styles={customSelectStyles}
@@ -305,34 +276,13 @@ navigate(`/disponibilidad/${servicioId}`, {
           />
         </label>
 
-        {/* Imagen */}
-        <label className="block mb-8">
-          <span className="block mb-2">Imagen del servicio *</span>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="mb-2 pt-6"
-          />
-          {imagenFile || formulario.imagen ? (
-            <div className="mt-4">
-              <p className="text-sm text-gray-600 mb-2">Vista previa:</p>
-              <img
-                src={formulario.imagen}
-                alt="Vista previa"
-                className="w-full aspect-video object-cover rounded-2xl"
-              />
-            </div>
-          ) : null}
-        </label>
-
         {/* Botón */}
-        <div className="w-full flex justify-center mt-10">
+        <div className="text-center mt-10">
           <button
             type="submit"
-            className="bg-violet-500 text-white py-2 px-6 rounded-3xl hover:bg-violet-600 transition"
+            className="bg-violet-500 text-white py-2 px-3 w-full rounded-3xl hover:bg-violet-600 transition"
           >
-            Guardar cambios
+            Continuar 
           </button>
         </div>
       </form>

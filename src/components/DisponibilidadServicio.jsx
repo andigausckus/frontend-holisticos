@@ -18,7 +18,7 @@ function obtenerSemanaActual() {
       fecha,
       rangos: [],
       nuevoDesde: "",
-      nuevoHasta: ""
+      nuevoHasta: "",
     });
   }
   return dias;
@@ -27,14 +27,14 @@ function obtenerSemanaActual() {
 export default function DisponibilidadServicio() {
   const [semana, setSemana] = useState([]);
   const [guardando, setGuardando] = useState(false);
-
-  const navigate = useNavigate();
   const [servicio, setServicio] = useState(null);
 
+  const navigate = useNavigate();
+  const { servicioId } = useParams();
   const location = useLocation();
-  const { servicioId } = useParams(); // obligatorio
   const servicioTemp = location.state?.servicioTemp || null;
 
+  // 🔹 Cargar servicio
   useEffect(() => {
     if (!servicioId) {
       console.error("❌ servicioId es undefined, redirigiendo");
@@ -47,7 +47,6 @@ export default function DisponibilidadServicio() {
         const token = localStorage.getItem("token");
         if (servicioTemp) {
           setServicio(servicioTemp);
-          
         } else {
           const { data } = await axios.get(
             `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}`,
@@ -64,13 +63,26 @@ export default function DisponibilidadServicio() {
     cargarServicio();
   }, [servicioId, servicioTemp, navigate]);
 
+  // 🔹 Mapear horarios existentes
   useEffect(() => {
-  if (servicio) {
-    const semanaBase = obtenerSemanaActual();
-    setSemana(semanaBase);
-  }
-}, [servicio]);
-  
+    if (servicio) {
+      const semanaBase = obtenerSemanaActual();
+
+      const semanaConHorarios = semanaBase.map((dia) => {
+        const diaExistente = servicio.horariosDisponibles?.find(
+          (d) => d.fecha === dia.fecha.toISOString().split("T")[0]
+        );
+        return {
+          ...dia,
+          rangos: diaExistente ? diaExistente.horariosFijos : [],
+        };
+      });
+
+      setSemana(semanaConHorarios);
+    }
+  }, [servicio]);
+
+  // 🔹 Funciones de edición
   const agregarRango = (index) => {
     const { nuevoDesde, nuevoHasta } = semana[index];
     if (!nuevoDesde || !nuevoHasta) return;
@@ -97,83 +109,93 @@ export default function DisponibilidadServicio() {
     setSemana(copia);
   };
 
+  // 🔹 Guardar servicio y disponibilidad
   const guardar = async () => {
     setGuardando(true);
+
     try {
       const token = localStorage.getItem("token");
+      if (!token) return navigate("/login");
+
+      // Formatear disponibilidad
       const disponibilidadFiltrada = semana
-      .map((d) => {
-        const rangosValidos = d.rangos.filter(
-          (r) =>
-            /^([01]\d|2[0-3]):[0-5]\d$/.test(r.desde) &&
-            /^([01]\d|2[0-3]):[0-5]\d$/.test(r.hasta)
-        );
+        .map((d) => {
+          const rangosValidos = d.rangos.filter(
+            (r) =>
+              /^([01]\d|2[0-3]):[0-5]\d$/.test(r.desde) &&
+              /^([01]\d|2[0-3]):[0-5]\d$/.test(r.hasta)
+          );
+          if (rangosValidos.length === 0) return null;
 
-        if (rangosValidos.length === 0) return null;
-
-        return {
-          fecha:
-          d.fecha.getFullYear() +
-          "-" +
-          String(d.fecha.getMonth() + 1).padStart(2, "0") +
-          "-" +
-          String(d.fecha.getDate()).padStart(2, "0"),
-          horariosFijos: rangosValidos,
-        };
-      })
-      .filter(Boolean);
-      
-  console.log("➡️ Enviando disponibilidad:", disponibilidadFiltrada);
-  console.log("TOKEN:", token);
-
-      console.log("🟡 Enviando disponibilidad:", JSON.stringify(disponibilidadFiltrada, null, 2));
-
+          return {
+            fecha:
+              d.fecha.getFullYear() +
+              "-" +
+              String(d.fecha.getMonth() + 1).padStart(2, "0") +
+              "-" +
+              String(d.fecha.getDate()).padStart(2, "0"),
+            horariosFijos: rangosValidos,
+          };
+        })
+        .filter(Boolean);
+            
+let servicioGuardado;
+if (!servicio._id) {
+  // Nuevo servicio
+  const res = await axios.post(
+    "https://servicios-holisticos-backend.onrender.com/api/servicios",
+    {
+      titulo: servicio.titulo,
+      descripcion: servicio.descripcion,
+      modalidad: servicio.modalidad,
+      duracionMinutos: servicio.duracionMinutos,
+      precio: servicio.precio,
+      categoria: servicio.categoria,
+      imagen: servicio.imagen || "",
+      plataformas: servicio.plataformas || [],
+      aprobado: false,
+      terapeuta: idDelTerapeuta  // <- aquí
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  
+  servicioGuardado = res.data;
+} else {
+  // Editar servicio existente
+  await axios.put(
+    `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicio._id}`,
+    {
+      titulo: servicio.titulo,
+      descripcion: servicio.descripcion,
+      modalidad: servicio.modalidad,
+      duracionMinutos: servicio.duracionMinutos,
+      precio: servicio.precio,
+      categoria: servicio.categoria,
+      imagen: servicio.imagen || "",
+      plataformas: servicio.plataformas || [],
+      aprobado: false,
+    },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  servicioGuardado = { _id: servicio._id };
+}
+      console.log("📌 servicioGuardado:", servicioGuardado);
+console.log("📌 servicioGuardado._id:", servicioGuardado?._id);
       // Guardar horarios
       await axios.put(
-        `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}/horarios`,
-        { horarios: disponibilidadFiltrada }, // ✅ NO `horariosDisponibles`
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioGuardado._id}/horarios`,
+        { horarios: disponibilidadFiltrada },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("📤 Horarios enviados correctamente");
-
-      // 🔹 Guardar el servicio final como pendiente (no aprobado)
-      await axios.put(
-        `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}`,
-        {
-          titulo: servicio.titulo,
-          descripcion: servicio.descripcion,
-          modalidad: servicio.modalidad,
-          duracionMinutos: servicio.duracionMinutos,
-          precio: servicio.precio,
-          categoria: servicio.categoria,
-          imagen: servicio.imagen || "",
-          plataformas: servicio.plataformas || [],
-          aprobado: false
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      console.log("📤 Servicio final guardado como pendiente");
-
-      // Mostrar mensaje y redirigir
-      alert("✅ Servicio enviado y disponibilidad guardada correctamente. Quedará pendiente de aprobación.");
+      console.log("✅ Servicio y horarios guardados correctamente");
       navigate("/panel");
-      
     } catch (error) {
       console.error("❌ Error al guardar disponibilidad:", error);
-      if (error.response && error.response.data) {
-        alert(`❌ Error al guardar: ${error.response.data.error || "Error desconocido"}`);
+      if (error.response?.data) {
+        alert(
+          `❌ Error al guardar: ${error.response.data.error || "Error desconocido"}`
+        );
       } else {
         alert("❌ Error inesperado al guardar disponibilidad");
       }
@@ -182,13 +204,11 @@ export default function DisponibilidadServicio() {
     }
   };
 
-  if (!servicio) {
-  return <p>Cargando servicio...</p>;
-  }
+  if (!servicio) return <p>Cargando servicio...</p>;
 
   return (
     <div className="bg-white p-4 pt-24 max-w-xl mx-auto">
-      <h2 className="text-xl font-semibold text-center text-[#333] mb-8">
+      <h2 className="text-xl font-normal text-center text-[#444] mb-8">
         Disponibilidad para este servicio 🌸
       </h2>
 
@@ -233,16 +253,13 @@ export default function DisponibilidadServicio() {
                 value={dia.nuevoDesde}
                 onChange={(e) => {
                   let valor = e.target.value.replace(/[^0-9]/g, "");
-                  if (valor.length >= 3) {
-                    valor = valor.slice(0, 2) + ":" + valor.slice(2, 4);
-                  }
+                  if (valor.length >= 3) valor = valor.slice(0, 2) + ":" + valor.slice(2, 4);
                   const copia = [...semana];
                   copia[index].nuevoDesde = valor.slice(0, 5);
                   setSemana(copia);
                 }}
                 className="border rounded px-2 py-1 text-sm w-full text-center"
               />
-
               <input
                 type="tel"
                 placeholder="__:__"
@@ -252,9 +269,7 @@ export default function DisponibilidadServicio() {
                 value={dia.nuevoHasta}
                 onChange={(e) => {
                   let valor = e.target.value.replace(/[^0-9]/g, "");
-                  if (valor.length >= 3) {
-                    valor = valor.slice(0, 2) + ":" + valor.slice(2, 4);
-                  }
+                  if (valor.length >= 3) valor = valor.slice(0, 2) + ":" + valor.slice(2, 4);
                   const copia = [...semana];
                   copia[index].nuevoHasta = valor.slice(0, 5);
                   setSemana(copia);
@@ -285,7 +300,8 @@ export default function DisponibilidadServicio() {
       <button
         onClick={guardar}
         disabled={guardando}
-        className="mb-24 bg-violet-500 text-white block mx-auto px-3 py-2 rounded-full">
+        className="mb-24 bg-violet-500 text-white block mx-auto px-3 py-2 rounded-full"
+      >
         {guardando ? "Guardando..." : "Guardar disponibilidad"}
       </button>
     </div>
