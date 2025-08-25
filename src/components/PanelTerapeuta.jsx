@@ -70,7 +70,9 @@ export default function PanelTerapeuta() {
   };
 
   const handleCompartir = (id, slug) => {
-    const url = `${window.location.origin}/#/servicios/${slug}`;
+    const slugFinal = slug || "sin-titulo";
+    const url = `${window.location.origin}/s/${slugFinal}`;
+    console.log("URL a compartir:", url);
     setUrlCompartir(url);
     setMostrarModal(true);
   };
@@ -215,6 +217,9 @@ export default function PanelTerapeuta() {
                             .replace(/^-+|-+$/g, "")
                         : "sin-titulo");
 
+                    console.log("Compartiendo servicio:", serv.titulo, "Slug generado:", slug);
+              
+
                     return (
                       <li
                         key={serv._id}
@@ -310,7 +315,7 @@ export default function PanelTerapeuta() {
           <p>👤 Usuario: {reserva.usuario}</p>
           <p>💰 Valor: ${reserva.valor}</p>
           <span className="inline-block mt-2 bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
-            Confirmada ✅
+            Confirmada
           </span>
         </li>
       ))}
@@ -333,8 +338,8 @@ export default function PanelTerapeuta() {
     <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
       <h2 className="text-lg font-semibold text-gray-800 mb-2">✨ ¡Compartí tu servicio!</h2>
       <p className="text-gray-600 mb-4">
-        Compartí tu servicio en tus redes sociales para que los usuarios ingresen, 
-        vean tus horarios y reserven directamente 📅
+        Compartilo en tus redes sociales para que los usuarios ingresen, 
+        vean tus horarios y reserven directamente 🌿
       </p>
 
       <div className="flex flex-col gap-2">
