@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -21,6 +21,7 @@ import Privacidad from "./pages/Privacidad";
 import PaginaGracias from "./pages/PaginaGracias";
 import PaginaPagoFallido from "./pages/PaginaPagoFallido";
 import PaginaPagoPendiente from "./pages/PaginaPagoPendiente";
+import TestRouter from "./pages/TestRouter";
 
 // Administración y otras
 import NuevoServicio from "./pages/NuevoServicio";
@@ -39,7 +40,7 @@ import QueEsElYoga from "./pages/blog/QueEsElYoga";
 
 export default function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -69,11 +70,12 @@ export default function App() {
 <Route path="pago-fallido" element={<PaginaPagoFallido />} />
 <Route path="pago-pendiente" element={<PaginaPagoPendiente />} />
 <Route path="nuevo-servicio" element={<NuevoServicio />} />
+          <Route path="/servicios/:slug" element={<TestRouter />} />
 <Route path="/disponibilidad/:servicioId" element={<DisponibilidadServicio />} />
 <Route path="/admin/pagos" element={<AdminPagos />} />
 <Route path="editar-servicio/:servicioId" element={<EditarServicio />} />
 </Route>
 </Routes>
-</HashRouter>
+</BrowserRouter>
 );
 }

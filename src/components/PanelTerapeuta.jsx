@@ -71,7 +71,8 @@ export default function PanelTerapeuta() {
 
   const handleCompartir = (id, slug) => {
     const slugFinal = slug || "sin-titulo";
-    const url = `${window.location.origin}/s/${slugFinal}`;
+    // Apunta al endpoint dinámico de Open Graph
+    const url = `https://www.serviciosholisticos.com.ar/share/${slugFinal}`;
     console.log("URL a compartir:", url);
     setUrlCompartir(url);
     setMostrarModal(true);
