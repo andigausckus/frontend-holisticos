@@ -156,7 +156,7 @@ const data = JSON.parse(texto);
         )}
 
         {/* Título del servicio */}
-        <h1 className="text-xl font-bold text-center text-[#333] mb-4">
+        <h1 className="text-xl font-normal text-center text-[#333] mb-4">
           {servicio.titulo}
         </h1>
 
@@ -231,31 +231,31 @@ const data = JSON.parse(texto);
           </div>
           
       {/* 📑 Botones de Descripción y Reseñas */}
-      <div className="mt-8 flex flex-row justify-center pt-4 gap-4">
-        <button
-          onClick={() => setMostrarDescripcion(!mostrarDescripcion)}
-          className={`w-48 mb-8 flex justify-center items-center px-4 py-3 font-semibold gap-2 rounded-3xl
-            ${mostrarDescripcion ? "bg-pink-500 text-white" : "bg-pink-400 text-white"}`}
-        >
-          Descripción
-          <FiChevronDown
-            className={`transition-transform duration-300 ${mostrarDescripcion ? "rotate-180" : ""}`}
-            size={20}
-          />
-        </button>
+        <div className="mt-8 flex flex-row justify-center pt-4 gap-4">
+          <button
+            onClick={() => setMostrarDescripcion(!mostrarDescripcion)}
+            className={`w-48 mb-8 flex justify-center items-center px-4 py-3 font-semibold gap-2 rounded-3xl
+              ${mostrarDescripcion ? "bg-pink-500 text-white" : "bg-pink-400 text-white"}`}
+          >
+            Descripción
+            <FiChevronDown
+              className={`transition-transform duration-300 ${mostrarDescripcion ? "rotate-180" : ""}`}
+              size={20}
+            />
+          </button>
 
-        <button
-          onClick={() => setMostrarResenas(!mostrarResenas)}
-          className={`w-48 mb-8 flex justify-center items-center px-4 py-3 font-semibold gap-2 rounded-3xl
-            ${mostrarResenas ? "bg-pink-500 text-white" : "bg-pink-400 text-white"}`}
-        >
-          Reseñas
-          <FiChevronDown
-            className={`transition-transform duration-300 ${mostrarResenas ? "rotate-180" : ""}`}
-            size={20}
-          />
-        </button>
-      </div>
+          <button
+            onClick={() => setMostrarResenas(!mostrarResenas)}
+            className={`w-48 mb-8 flex justify-center items-center px-4 py-3 font-semibold gap-2 rounded-3xl
+              ${mostrarResenas ? "bg-pink-500 text-white" : "bg-pink-400 text-white"}`}
+          >
+            Reseñas
+            <FiChevronDown
+              className={`transition-transform duration-300 ${mostrarResenas ? "rotate-180" : ""}`}
+              size={20}
+            />
+          </button>
+        </div>
 
     {(mostrarDescripcion || mostrarResenas) && (
       <div className="mt-4 flex flex-col md:flex-row gap-4 overflow-x-auto">

@@ -1,18 +1,17 @@
-// src/components/Admin/TerapeutasPendientes.jsx
 import React, { useEffect, useState } from "react";
 
 const TerapeutasPendientes = () => {
   const [terapeutas, setTerapeutas] = useState([]);
 
   useEffect(() => {
-    fetch("https://tu-backend/api/admin/terapeutas-pendientes")
+    fetch("https://servicios-holisticos-backend.onrender.com/api/admin/terapeutas-pendientes")
       .then(res => res.json())
       .then(data => setTerapeutas(data))
       .catch(err => console.error("❌ Error:", err));
   }, []);
 
   const manejarAccion = (id, aprobado) => {
-    fetch(`https://tu-backend/api/admin/aprobar-terapeuta/${id}`, {
+    fetch(`https://servicios-holisticos-backend.onrender.com/api/admin/aprobar-terapeuta/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ aprobado }),
@@ -20,7 +19,8 @@ const TerapeutasPendientes = () => {
       .then(res => res.json())
       .then(() => {
         setTerapeutas(prev => prev.filter(t => t._id !== id));
-      });
+      })
+      .catch(err => console.error("❌ Error:", err));
   };
 
   return (

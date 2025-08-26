@@ -69,10 +69,11 @@ export default function PanelTerapeuta() {
     }
   };
 
+ 
   const handleCompartir = (id, slug) => {
     const slugFinal = slug || "sin-titulo";
-    // Apunta al endpoint dinámico de Open Graph
-    const url = `https://www.serviciosholisticos.com.ar/share/${slugFinal}`;
+    // Apunta al hash router
+    const url = `https://www.serviciosholisticos.com.ar/#/servicios/${slugFinal}`;
     console.log("URL a compartir:", url);
     setUrlCompartir(url);
     setMostrarModal(true);
@@ -161,13 +162,35 @@ export default function PanelTerapeuta() {
 
   if (!terapeuta) return <p className="p-6 text-gray-600">Cargando perfil...</p>;
 
-  return (
-    <div className="bg-white p-4 pt-24 min-h-screen">
-      {mensajeGlobal && (
-        <div className="bg-purple-100 text-purple-900 p-3 rounded-md mb-6 text-sm">
-          📣 <strong>Comunicado:</strong> {mensajeGlobal}
-        </div>
-      )}
+    return (
+    <div className="bg-white p-6 pt-20 w-full space-y-4">
+  {/* Caja de Comunicado */}
+  {mensajeGlobal && (
+    <div className="bg-gray-100 text-gray-700 p-3 rounded-md text-sm w-full">
+      📣 Comunicado <br /> {mensajeGlobal}
+    </div>
+  )}
+
+  {/* Caja de Comunidad de WhatsApp */}
+  <a
+    href="https://chat.whatsapp.com/BSB28KdYJnzGomOptIUVi4?mode=ac_t"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="flex items-center bg-[#25D366] text-white p-3 rounded-md shadow-md hover:brightness-110 transition w-full"
+  >
+    {/* Icono de WhatsApp de Icons8 */}
+    <img
+      src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
+      alt="WhatsApp"
+      className="h-6 w-6 mr-3 flex-shrink-0"
+    />
+
+    {/* Texto */}
+    <span className="text-base font-medium">
+      Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
+    </span>
+  </a>
+
 
       <div className="max-w-xl mx-auto text-center">
         <h1 className="text-2xl pt-12 font-bold text-gray-600 mb-4">
@@ -195,10 +218,10 @@ export default function PanelTerapeuta() {
 
         {/* Servicios */}
         <div className="text-left mb-12">
-          <h2 className="text-xl font-semibold text-[#444] mb-4">🌻 Mis servicios</h2>
+          <h2 className="text-xl font-normal text-[#333] mb-4">🌻 Mis servicios</h2>
 
           {misServicios.length === 0 ? (
-            <p className="text-gray-500 text-md">Aún no cargaste ningún servicio</p>
+            <p className="text-gray-500 text-md text-center">Aún no cargaste ningún servicio</p>
           ) : (
             <>
               <ul className="space-y-4">
@@ -230,7 +253,7 @@ export default function PanelTerapeuta() {
                             : "bg-[#f9f6ff] text-[#333]"
                         }`}
                       >
-                        <p className="text-lg font-semibold">{serv.titulo || "Sin título"}</p>
+                        <p className="text-lg font-normal">{serv.titulo || "Sin título"}</p>
                         <p className="text-sm text-gray-500 overflow-hidden text-ellipsis line-clamp-2">
                           {serv.descripcion}
                         </p>
@@ -249,35 +272,28 @@ export default function PanelTerapeuta() {
                           )}
 
                           {serv.aprobado && (
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleVerOnline(serv._id, slug)}
-                                className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition"
-                              >
-                                Ver
-                              </button>
+                        <div className="flex justify-center gap-5">
+                          <button
+                            onClick={() => handleVerOnline(serv._id, slug)}
+                            className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition"
+                          >
+                            Ver
+                          </button>
 
-                              <button
-                                onClick={() => navigate(`/editar-servicio/${serv._id}`)}
-                                className="bg-sky-500 text-white py-1 px-3 rounded hover:bg-sky-600 transition"
-                              >
-                                Editar
-                              </button>
+                          <button
+                            onClick={() => navigate(`/editar-servicio/${serv._id}`)}
+                            className="bg-sky-500 text-white py-1 px-3 rounded hover:bg-sky-600 transition"
+                          >
+                            Editar
+                          </button>
 
-                              <button
-                                onClick={() => handleEliminarServicio(serv._id)}
-                                className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"
-                              >
-                                Eliminar
-                              </button>
-
-                              <button
-                                onClick={() => handleCompartir(serv._id, slug)}
-                                className="bg-purple-500 text-white py-1 px-3 rounded hover:bg-purple-600 transition"
-                              >
-                                Compartir
-                              </button>
-                            </div>
+                          <button
+                            onClick={() => handleEliminarServicio(serv._id)}
+                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"
+                          >
+                            Eliminar
+                          </button>
+                        </div>
                           )}
                         </div>
                       </li>
@@ -299,7 +315,7 @@ export default function PanelTerapeuta() {
         </div>
 
         {/* Reservas */}
-<h2 className="text-xl text-left font-semibold text-[#444] mt-12 mb-4">📅 Tus reservas</h2>
+<h2 className="text-xl text-left font-normal text-[#333] mt-12 mb-4">📅 Mis reservas</h2>
 {reservas.length === 0 ? (
   <p className="text-gray-500 tect-left text-md">Aún no tenes ninguna reserva</p>
 ) : (
@@ -312,11 +328,11 @@ export default function PanelTerapeuta() {
         >
           <p>🗓 Fecha: {new Date(reserva.fecha).toLocaleDateString()}</p>
           <p>🕒 Hora: {reserva.hora}</p>
-          <p>💆 Servicio: {reserva.servicio}</p>
-          <p>👤 Usuario: {reserva.usuario}</p>
-          <p>💰 Valor: ${reserva.valor}</p>
+          <p>💆 Servicio: {reserva.servicioId?.titulo || reserva.nombreServicio}</p>
+          <p>👤 Usuario: {reserva.nombreUsuario}</p>
+          <p>💰 Valor: ${reserva.precio}</p>
           <span className="inline-block mt-2 bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
-            Confirmada
+            {reserva.estado || "Confirmada"}
           </span>
         </li>
       ))}
@@ -331,75 +347,6 @@ export default function PanelTerapeuta() {
       </button>
     )}
   </>
-)}
-
-{/* Modal para compartir */}
-{mostrarModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
-      <h2 className="text-lg font-semibold text-gray-800 mb-2">✨ ¡Compartí tu servicio!</h2>
-      <p className="text-gray-600 mb-4">
-        Compartilo en tus redes sociales para que los usuarios ingresen, 
-        vean tus horarios y reserven directamente 🌿
-      </p>
-
-      <div className="flex flex-col gap-2">
-        <a
-          href={`https://wa.me/?text=Mirá este servicio: ${urlCompartir}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
-        >
-          WhatsApp
-        </a>
-
-        <a
-          href={`https://www.facebook.com/sharer/sharer.php?u=${urlCompartir}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-        >
-          Facebook
-        </a>
-
-        <a
-          href={`https://www.threads.net/intent/post?text=Mirá este servicio 👇 %0A${urlCompartir}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="bg-black text-white py-2 px-4 rounded hover:bg-gray-800"
-        >
-          Threads
-        </a>
-
-        <button
-          onClick={() => {
-            navigator.clipboard.writeText(urlCompartir);
-            alert("Enlace copiado, ahora podés pegarlo en Instagram (bio, historias, DM) 📲");
-          }}
-          className="bg-pink-500 text-white py-2 px-4 rounded hover:bg-pink-600"
-        >
-          Copiar para Instagram
-        </button>
-
-        <button
-          onClick={() => {
-            navigator.clipboard.writeText(urlCompartir);
-            alert("Enlace copiado al portapapeles ✅");
-          }}
-          className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700"
-        >
-          Copiar enlace
-        </button>
-      </div>
-
-      <button
-        onClick={() => setMostrarModal(false)}
-        className="mt-4 text-gray-500 hover:text-gray-700"
-      >
-        Cerrar
-      </button>
-    </div>
-  </div>
 )}
 
 </div> 

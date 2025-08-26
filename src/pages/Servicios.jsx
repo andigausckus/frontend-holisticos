@@ -241,7 +241,7 @@ min={0}
                 </div>
               <div className="p-4 flex flex-col items-center justify-between flex-grow text-center">
                 <div className="mb-2">
-                  <h3 className="text-gl text-[#333] font-semibold mb-2 mt-2">
+                  <h3 className="text-xl text-[#333] font-normal mb-2 mt-2">
                     {servicio.titulo}
                   </h3>
                   <div className="flex items-center justify-center gap-2 mb-3">

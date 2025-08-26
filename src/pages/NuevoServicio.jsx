@@ -86,11 +86,19 @@ export default function NuevoServicio() {
   const customSelectStyles = {
     control: (base, state) => ({
       ...base,
-      borderColor: state.isFocused ? "#b481d9" : "#c7b6eb",
-      boxShadow: state.isFocused ? "0 0 0 1px #b481d9" : "none",
+      borderColor: state.isFocused || state.hasValue ? "#b481d9" : "#c7b6eb",
+      boxShadow: "none",
+      "&:hover": {
+        borderColor: "#b481d9",
+      },
       borderRadius: "5px",
       backgroundColor: "#f6f0fe",
       padding: "2px",
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? "#b481d9" : state.isSelected ? "#b481d9" : "#f6f0fe",
+      color: state.isFocused || state.isSelected ? "#fff" : "#333",
     }),
     placeholder: (base) => ({ ...base, color: "#888" }),
   };
@@ -145,11 +153,15 @@ export default function NuevoServicio() {
   return (
     <div className="bg-white pt-24 p-4 min-h-screen">
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4 mb-24">
-        <h2 className="text-2xl font-semibold pt-12 text-center mb-6">Crear nuevo servicio 🩷</h2>
+        <h2 className="text-xl font-semibold pt-6 text-center mb-6">Nuevo servicio 🐥</h2>
 
         {/* Título */}
         <label className="block mb-4">
           <span className="block mb-2">Título *</span>
+          <div className="text-xs text-[#444444] mb-2">
+            <p>✍️ Escribí un título con 3-6 palabras máximo</p>
+            <p>❌️ No incluyas la palabra "Online"</p>
+          </div>
           <input
             type="text"
             name="titulo"
@@ -226,10 +238,11 @@ export default function NuevoServicio() {
           </label>
         </div>
 
-        {/* Plataformas */}
-        <label className="block mb-4">
-          <span className="block mb-1">Plataforma para la sesión</span>
-          <div className="flex flex-wrap justify-between p-3 border border-[#c7b6eb] rounded">
+            {/* Plataformas */}
+            <label className="block mb-4">
+              <span className="block mb-1">Plataforma para la sesión</span>
+              <span className="block text-xs text-[#444444] mb-2">Seleccioná al menos una</span>
+              <div className="flex flex-wrap justify-between p-3 border border-[#c7b6eb] rounded">
             {plataformasDisponibles.map(({ nombre, icono }) => (
               <label key={nombre} className="flex flex-col items-center text-center text-sm cursor-pointer w-1/4">
                 <input
@@ -253,8 +266,7 @@ export default function NuevoServicio() {
             options={opcionesCategoria}
             value={
               formulario.categoria
-                ? opcionesCategoria.find((op) => op.value ===
-                  formulario.categoria)
+                ? opcionesCategoria.find((op) => op.value === formulario.categoria)
                 : null
             }
             onChange={handleCategoriaChange}
@@ -264,21 +276,33 @@ export default function NuevoServicio() {
           />
         </label>
 
+
         {/* Imagen */}
-        <label className="block mb-8">
-          <span className="block mb-2">Imagen del servicio *</span>
-          <input type="file" accept="image/*" onChange={handleImageChange} className="mb-2 pt-6" />
-          {imagenFile && (
+        <div className="block mb-8">
+          <label>
+            <span className="block mb-2">Imagen del servicio *</span>
+          </label>
+          <div className="bg-gray-100 p-3 rounded-md text-xs text-gray-600 mb-2">
+            Agregá una imagen limpia y clara, sin información de contacto u otras terapias escritas. Todos los servicios se revisan antes de ser publicados para mantener un estilo minimalista en la plataforma 🌿 
+          </div>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="mb-2 pt-6"
+          />
+          {imagenFile || formulario.imagen ? (
             <div className="mt-4">
-              <p className="text-sm text-gray-600 mb-2">Vista previa:</p>
+              <p className="text-sm text-gray-600 mb-2">Esperá a que cargue la vista previa 🦋</p>
               <img
                 src={formulario.imagen}
                 alt="Vista previa"
-                className="w-full aspect-video object-cover rounded-2xl"
+                style={{ height: "250px", objectFit: "cover" }}
+                className="w-full rounded-2xl"
               />
             </div>
-          )}
-        </label>
+          ) : null}
+        </div>
 
         {/* Botón */}
         <div className="w-full flex justify-center mt-10">
