@@ -132,15 +132,16 @@ const mostrarAlerta = (mensaje) => {
     label: cat,
   }));
 
-const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const duracionTotalMinutos = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
+    const duracionTotalMinutos =
+      Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
 
-    const servicioActualizado = {
+    const nuevoServicio = {
       titulo: formulario.titulo,
       descripcion: formulario.descripcion,
-      modalidad: "Online", 
+      modalidad: "Online",
       duracionMinutos: duracionTotalMinutos,
       precio: formulario.precio,
       categoria: formulario.categoria,
@@ -150,22 +151,23 @@ const handleSubmit = async (e) => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.put(
-  `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}`,
-        servicioActualizado,
+      const res = await axios.post(
+        "https://servicios-holisticos-backend.onrender.com/api/servicios",
+        nuevoServicio,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("Servicio actualizado:", res.data);
+      console.log("✅ Servicio creado:", res.data);
+
+      const nuevoId = res.data.servicio ? res.data.servicio._id : res.data._id;
 
       // Redirigir a disponibilidad
-navigate(`/disponibilidad/${servicioId}`, {
-  state: { servicioTemp: res.data.servicio },
-});
-      
+      navigate(`/disponibilidad/${nuevoId}`, {
+        state: { servicioTemp: res.data.servicio },
+      });
     } catch (error) {
-      console.error("❌ Error al actualizar servicio:", error);
-      alert("No se pudo actualizar el servicio, intentá nuevamente.");
+      console.error("❌ Error al crear servicio:", error);
+      alert("No se pudo crear el servicio, intentá nuevamente.");
     }
   };
 
