@@ -136,16 +136,18 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
 
   console.log("🟡 DÍAS RENDERIZADOS EN EL FRONTEND:", dias);
 
-  return (
-      <div className="mb-24">
-      {lunes && domingo && (
-        <div className="text-[#444444] mb-4 text-center text-lg font-semibold">
-          Semana del {lunes.getDate()} al {domingo.getDate()} de {lunes.toLocaleDateString("es-AR", { month: 'long' })}
-        </div>
-      )}
-      <div className="grid grid-cols-2 md:grid-cols-7 gap-4 w-full">
-        {dias.map((dia, index) => {
-          const horarios = obtenerHorarios(dia);
+        return (
+          <div className="mb-24">
+            {lunes && domingo && (
+              <div className="border border-gray-300 rounded-3xl p-2 mb-4 shadow-sm">
+                <div className="text-[#444444] text-center text-gl font-normal">
+                  Semana del {lunes.getDate()} al {domingo.getDate()} de {lunes.toLocaleDateString("es-AR", { month: 'long' })}
+                </div>
+              </div>
+            )}
+            <div className="grid grid-cols-2 md:grid-cols-7 gap-4 w-full">
+              {dias.map((dia, index) => {
+                const horarios = obtenerHorarios(dia);
 
           return (
             <div key={index}>
@@ -192,7 +194,7 @@ const CalendarioSemanal = ({ disponibilidad, duracionMinutos, onSeleccionar, ser
                           break;
                         case "en_proceso":
                           bg = "bg-yellow-100 text-yellow-800";
-                          label = "En proceso de reserva. Volvé en unos minutos.";
+                          label = "En proceso de reserva ⌛ Volvé en unos minutos.";
                           break;
                         case "reservado_usuario_actual":
                         case "reservado":

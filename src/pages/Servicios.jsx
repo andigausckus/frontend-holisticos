@@ -12,6 +12,29 @@ function Servicios() {
   const [precioMinimo, setPrecioMinimo] = useState("");
   const [precioMaximo, setPrecioMaximo] = useState("");
   const [duracionSeleccionada, setDuracionSeleccionada] = useState(null);
+  const normalizar = (texto) => texto.trim();
+
+  const categoriaEmojis = {
+  "Aromaterapia": "🌺",
+  "Astrología": "🌸",
+  "Biodescodificación": "🌿",
+  "Chamanismo": "🌳",
+  "Coaching Holístico": "🍃",
+  "Constelaciones Familiares": "🌲",
+  "Hipnosis Regresiva": "🌴",
+  "Meditación": "🍀",
+  "Mindfulness": "🌸",
+  "Numerología": "🌻",
+  "Péndulo Hebreo": "🍃",
+  "Reiki": "🌺",
+  "Registros Akáshicos": "🌳",
+  "Sanación Energética": "🌿",
+  "Sonoterapia": "🎶",
+  "Tarot": "🌸",
+  "Terapia Floral": "🌺",
+  "ThetaHealing": "🌿",
+  "Yoga": "🍀"
+};
 
   useEffect(() => {
     const cargarServicios = async () => {
@@ -35,10 +58,10 @@ function Servicios() {
 
   const categorias = [...new Set(servicios.map((s) => s.categoria))].sort();
   const duraciones = [
-    { value: "30-45", label: "De 30 a 45 minutos" },
-    { value: "45-60", label: "De 45 a 60 minutos" },
-    { value: "60+", label: "Más de 60 minutos" },
-  ];
+  { value: "30-45", label: "🕒 30 a 45 minutos" },
+  { value: "45-60", label: "🕒 45 a 60 minutos" },
+  { value: "60+", label: "🕒 Más de 60 minutos" },
+];
 
   // 🟩 Esta función convierte "60 minutos", "90 min", "45", etc. en números
 const extraerMinutos = (duracion) => {
@@ -96,11 +119,14 @@ return coincideCategoria && coincidePrecio && coincideDuracion;
     }),
   };
 
-  const opcionesSinIcono = (array) =>
-    array.map((item) => ({
-      value: item,
-      label: item,
-    }));
+  const opcionesConEmoji = (array) =>
+    array.map((item) => {
+      const key = normalizar(item);
+      return {
+        value: key,
+        label: `${categoriaEmojis[key] || ""} ${key}`,
+      };
+    });
 
   if (loading) {
     return (
@@ -111,7 +137,7 @@ return coincideCategoria && coincidePrecio && coincideDuracion;
   }
 
   return (
-    <div className="bg-white min-h-screen max-w-6xl mb-24 mx-auto px-4 pt-24 pb-8">
+    <div className="bg-white min-h-screen max-w-4xl mb-24 mx-auto px-4 pt-24 pb-8">
       <div className="mb-6 text-center">
         <h2 className="text-2xl md:text-xl font-normal text-[#333] mb-2">
           Reservá hoy tu sesión online y comenzá tu camino de transformación 🌟
@@ -121,8 +147,8 @@ return coincideCategoria && coincidePrecio && coincideDuracion;
       {/* Filtros */}
 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10 max-w-4xl mx-auto">
   {/* Categoría */}
-<Select
-  options={opcionesSinIcono(categorias)}
+  <Select
+    options={opcionesConEmoji(categorias)}
   placeholder="Seleccioná una categoría"
   value={categoriaSeleccionada}
   onChange={setCategoriaSeleccionada}
@@ -214,7 +240,7 @@ min={0}
               <div
                 key={servicio._id}
                 className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between"
-                style={{ height: "500px" }}
+                style={{ height: "560px" }}
               >
                 {/* Contenedor relativo para poder colocar el badge */}
                 <div className="relative w-full h-[60%]">
@@ -241,9 +267,9 @@ min={0}
                 </div>
               <div className="p-4 flex flex-col items-center justify-between flex-grow text-center">
                 <div className="mb-2">
-                  <h3 className="text-xl text-[#333] font-normal mb-2 mt-2">
-                    {servicio.titulo}
-                  </h3>
+                  <h3 className="text-xl text-[#444] font-medium mb-2 mt-2 truncate">
+  {servicio.titulo}
+</h3>
                   <div className="flex items-center justify-center gap-2 mb-3">
   {/* Promedio grande con fondo amarillo oscuro */}
   <span 
@@ -289,12 +315,14 @@ min={0}
                       <FaLaptop className="text-pink-500 w-4 h-4" />
                       <span>{servicio.modalidad}</span>
                     </div>
-                    <div className="flex items-center gap-1 font-semibold text-[17px]">
+                    <div className="flex items-center gap-1 font-normal text-[17px]">
                       <FaDollarSign className="text-pink-500 w-4 h-4" />
                       <span>{servicio.precio}</span>
                     </div>
                   </div>
                 </div>
+
+                 
 
                   <Link
                     to={`/servicios/${servicio.slug}`}

@@ -10,8 +10,25 @@ export default function EditarServicio() {
   const { servicioId } = useParams();
 
   const categorias = [
-    "Astrología", "Biodescodificación", "Meditación", "Numerología",
-    "Reiki", "Registros Akáshicos", "Tarot", "Terapia Floral", "Yoga"
+    "🌺 Aromaterapia",
+    "🌸 Astrología",
+    "🌿 Biodescodificación",
+    "🌳 Chamanismo",
+    "🍃 Coaching Holístico",
+    "🌲 Constelaciones Familiares",
+    "🌴 Hipnosis Regresiva",
+    "🍀 Meditación",
+    "🌸 Mindfulness",
+    "🌻 Numerología",
+    "🍃 Péndulo Hebreo",
+    "🌺 Reiki",
+    "🌳 Registros Akáshicos",
+    "🌿 Sanación Energética",
+    "🎶 Sonoterapia",
+    "🌸 Tarot",
+    "🌺 Terapia Floral",
+    "🌿 ThetaHealing",
+    "🍀 Yoga"
   ];
 
   const cloudName = "dbu5cfqzf";
@@ -37,6 +54,13 @@ export default function EditarServicio() {
     plataformas: [],
     imagen: null,
   });
+
+  const [alerta, setAlerta] = useState(null); // null o string del mensaje
+
+  const mostrarAlerta = (mensaje) => {
+  setAlerta(mensaje);
+  setTimeout(() => setAlerta(null), 4000); // desaparece después de 4 segundos
+};
 
   // Cargar datos del servicio al iniciar
   useEffect(() => {
@@ -156,12 +180,28 @@ export default function EditarServicio() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validaciones
+    if (
+      !formulario.titulo.trim() ||
+      !formulario.descripcion.trim() ||
+      !formulario.precio ||
+      formulario.duracionHoras === "" ||
+      formulario.duracionMinutos === "" ||
+      !formulario.categoria ||
+      formulario.plataformas.length === 0 ||
+      !formulario.imagen
+    ) {
+      mostrarAlerta("❌ Por favor completá todos los campos obligatorios");
+      return; // Detiene el submit
+    }
+
+    // Duración en minutos
     const duracionTotalMinutos = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
 
     const servicioActualizado = {
       titulo: formulario.titulo,
       descripcion: formulario.descripcion,
-      modalidad: "Online", 
+      modalidad: "Online",
       duracionMinutos: duracionTotalMinutos,
       precio: formulario.precio,
       categoria: formulario.categoria,
@@ -172,21 +212,19 @@ export default function EditarServicio() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.put(
-  `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}`,
+        `https://servicios-holisticos-backend.onrender.com/api/servicios/${servicioId}`,
         servicioActualizado,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
       console.log("Servicio actualizado:", res.data);
 
-      // Redirigir a disponibilidad
-navigate(`/disponibilidad/${servicioId}`, {
-  state: { servicioTemp: res.data.servicio },
-});
-      
+      navigate(`/disponibilidad/${servicioId}`, {
+        state: { servicioTemp: res.data.servicio },
+      });
     } catch (error) {
       console.error("❌ Error al actualizar servicio:", error);
-      alert("No se pudo actualizar el servicio, intentá nuevamente.");
+      mostrarAlerta("No se pudo actualizar el servicio, intentá nuevamente.");
     }
   };
 
@@ -194,8 +232,15 @@ navigate(`/disponibilidad/${servicioId}`, {
 
   return (
     <div className="bg-white pt-24 p-4 min-h-screen">
+
+      {alerta && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-pink-100 text-[#333] px-8 py-4 rounded-lg shadow-md z-50 animate-fade-in max-w-xl w-full text-center">
+          {alerta}
+        </div>
+      )}
+      
       <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4 mb-24">
-        <h2 className="text-xl font-semibold pt-6 text-center mb-6">Editar servicio ✍️</h2>
+        <h2 className="text-2xl font-normal pt-6 text-center mb-6">Editar servicio ✍️</h2>
 
         {/* Título */}
         <label className="block mb-4">
@@ -203,6 +248,7 @@ navigate(`/disponibilidad/${servicioId}`, {
           <div className="text-xs text-[#444444] mb-2">
             <p>✍️ Escribí un título con 3-6 palabras máximo</p>
             <p>❌️ No incluyas la palabra "Online"</p>
+            <p>🍃 Podes incluir un (1) emoji al final para darle un toque amigable (opcional)</p>
           </div>
           <input
             type="text"
@@ -237,18 +283,19 @@ navigate(`/disponibilidad/${servicioId}`, {
           </div>
           <div className="flex-1">
             <label className="block mb-1">Precio *</label>
-            <div className="flex items-center border border-[#c7b6eb] rounded px-2">
-              <span className="text-lg text-[#555]">$</span>
-              <input
-                type="number"
-                name="precio"
-                value={formulario.precio}
-                onChange={handleChange}
-                className="w-full p-2 border-none focus:outline-none"
-                required
-              />
-            </div>
-          </div>
+        <div className="flex items-center border border-[#c7b6eb] rounded px-2">
+          <span className="text-lg text-[#555]">$</span>
+          <input
+            type="number"
+            name="precio"
+            value={formulario.precio}
+            onChange={handleChange}
+            placeholder="Usá un valor real"
+            className="w-full p-2 border-none focus:outline-none placeholder:text-xs"
+            required
+          />
+        </div>
+        </div>
         </div>
 
         {/* Duración */}
@@ -325,7 +372,9 @@ navigate(`/disponibilidad/${servicioId}`, {
               <span className="block mb-2">Imagen del servicio *</span>
             </label>
             <div className="bg-gray-100 p-3 rounded-md text-xs text-gray-600 mb-2">
-              Agregá una imagen limpia y clara, sin información de contacto u otras terapias escritas. Todos los servicios se revisan antes de ser publicados para mantener un estilo minimalista en la plataforma 🌿
+              Agregá una imagen limpia, sin información de contacto u otras terapias escritas, para mantener un estilo visual claro y minimalista en la plataforma 🌿 
+
+              Todos los servicios se revisan antes de ser publicados.
             </div>
             <input
               type="file"

@@ -143,7 +143,7 @@ const data = JSON.parse(texto);
   }
 
     return (
-      <div className="bg-white pt-24 px-2 max-w-6xl mx-auto shadow-md rounded-xl overflow-hidden">
+      <div className="bg-white pt-24 px-4 max-w-4xl mx-auto shadow-md rounded-xl overflow-hidden">
         <div className="shadow-md rounded-xl overflow-hidden bg-white space-y-4">
           
         {/* Imagen del servicio */}
@@ -156,7 +156,7 @@ const data = JSON.parse(texto);
         )}
 
         {/* Título del servicio */}
-        <h1 className="text-xl font-normal text-center text-[#333] mb-4">
+        <h1 className="text-xl font-medium text-center text-[#444] mb-4">
           {servicio.titulo}
         </h1>
 
@@ -177,7 +177,7 @@ const data = JSON.parse(texto);
 {[1, 2, 3, 4, 5].map((n) => (
   <span
     key={n}
-    className={`text-lg ${
+    className={`text-md ${
       n <= Math.round(servicio.promedioEstrellas || 0)
         ? "text-yellow-400"
         : "text-gray-300"
@@ -204,7 +204,7 @@ const data = JSON.parse(texto);
         <span>{servicio.modalidad}</span>
       </div>
 
-      <div className="flex items-center gap-1 text-sm text-gray-600">
+      <div className="flex items-center gap-1 text-md text-gray-600">
         <FaDollarSign className="text-pink-500" />
         <span>{servicio.precio}</span>
       </div>

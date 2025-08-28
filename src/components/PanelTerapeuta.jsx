@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
 
 export default function PanelTerapeuta() {
   const [terapeuta, setTerapeuta] = useState(null);
@@ -16,6 +15,8 @@ export default function PanelTerapeuta() {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const [modalEliminar, setModalEliminar] = useState(null); // guarda el id del servicio a eliminar
+const [mensajeAlerta, setMensajeAlerta] = useState(null); // muestra confirmaciones o errores
 
   // Actualiza servicios editados desde la navegación
   useEffect(() => {
@@ -36,6 +37,20 @@ export default function PanelTerapeuta() {
     setServiciosVistos(vistosStorage);
   }, []);
 
+  const refrescarServicios = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+        "https://servicios-holisticos-backend.onrender.com/api/servicios/mis-servicios",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = await res.json();
+      setMisServicios(data || []);
+    } catch (err) {
+      console.error("Error al refrescar servicios:", err);
+    }
+  };
+
   // Funciones de acción
   const handleVerOnline = (id, slug) => {
     const nuevosVistos = { ...serviciosVistos, [id]: true };
@@ -45,36 +60,36 @@ export default function PanelTerapeuta() {
   };
 
   const handleEliminarServicio = async (id) => {
-    const confirmar = window.confirm("¿Estás seguro que deseas eliminar este servicio?");
-    if (!confirmar) return;
+    setModalEliminar(id); // en lugar de window.confirm abrimos modal
+  };
+
+  const confirmarEliminar = async () => {
+    const id = modalEliminar;
+    if (!id) return;
 
     const token = localStorage.getItem("token");
     try {
-      const res = await fetch(
+      await fetch(
         `https://servicios-holisticos-backend.onrender.com/api/servicios/${id}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al eliminar servicio");
-
-      setMisServicios(data.serviciosActualizados);
-      alert("Servicio eliminado correctamente.");
+      setMisServicios((prev) => prev.filter((s) => s._id !== id));
+      setMensajeAlerta("✅ Servicio eliminado correctamente.");
     } catch (err) {
       console.error("Error al eliminar servicio:", err);
-      alert("No se pudo eliminar el servicio.");
+      setMensajeAlerta("❌ No se pudo eliminar el servicio.");
+    } finally {
+      setModalEliminar(null); // cerrar modal
+      setTimeout(() => setMensajeAlerta(null), 4000);
     }
   };
 
- 
   const handleCompartir = (id, slug) => {
     const slugFinal = slug || "sin-titulo";
-    // Apunta al hash router
     const url = `https://www.serviciosholisticos.com.ar/#/servicios/${slugFinal}`;
-    console.log("URL a compartir:", url);
     setUrlCompartir(url);
     setMostrarModal(true);
   };
@@ -162,35 +177,42 @@ export default function PanelTerapeuta() {
 
   if (!terapeuta) return <p className="p-6 text-gray-600">Cargando perfil...</p>;
 
-    return (
+  return (
     <div className="bg-white p-6 pt-20 w-full space-y-4">
-  {/* Caja de Comunicado */}
-  {mensajeGlobal && (
-    <div className="bg-gray-100 text-gray-700 p-3 rounded-md text-sm w-full">
-      📣 Comunicado <br /> {mensajeGlobal}
-    </div>
-  )}
 
-  {/* Caja de Comunidad de WhatsApp */}
-  <a
-    href="https://chat.whatsapp.com/BSB28KdYJnzGomOptIUVi4?mode=ac_t"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="flex items-center bg-[#25D366] text-white p-3 rounded-md shadow-md hover:brightness-110 transition w-full"
-  >
-    {/* Icono de WhatsApp de Icons8 */}
-    <img
-      src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
-      alt="WhatsApp"
-      className="h-6 w-6 mr-3 flex-shrink-0"
-    />
+      {mensajeAlerta && (
+  <div className="fixed top-20 left-1/2 transform -translate-x-1/2 
+                  bg-pink-100 text-[#333] w-full max-w-md px-6 py-3 
+                  rounded-lg shadow-md z-50 text-center animate-fade-in">
+    {mensajeAlerta}
+  </div>
+)}
+      
+      {/* Caja de Comunicado */}
+      {mensajeGlobal && (
+        <div className="bg-gray-100 text-gray-700 p-3 rounded-md text-sm w-full">
+          📣 Comunicado <br /> {mensajeGlobal}
+        </div>
+      )}
 
-    {/* Texto */}
-    <span className="text-base font-medium">
-      Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
-    </span>
-  </a>
-
+      {/* 
+        Caja de Comunidad de WhatsApp
+        <a
+          href="https://chat.whatsapp.com/BSB28KdYJnzGomOptIUVi4?mode=ac_t"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center bg-[#25D366] text-white p-3 rounded-md shadow-md hover:brightness-110 transition w-full"
+        >
+          <img
+            src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png"
+            alt="WhatsApp"
+            className="h-6 w-6 mr-3 flex-shrink-0"
+          />
+          <span className="text-base font-medium">
+            Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
+          </span>
+        </a>
+      */}
 
       <div className="max-w-xl mx-auto text-center">
         <h1 className="text-2xl pt-12 font-bold text-gray-600 mb-4">
@@ -220,7 +242,7 @@ export default function PanelTerapeuta() {
         <div className="text-left mb-12">
           <h2 className="text-xl font-normal text-[#333] mb-4">🌻 Mis servicios</h2>
 
-          {misServicios.length === 0 ? (
+          {(misServicios || []).length === 0 ? (
             <p className="text-gray-500 text-md text-center">Aún no cargaste ningún servicio</p>
           ) : (
             <>
@@ -241,9 +263,6 @@ export default function PanelTerapeuta() {
                             .replace(/^-+|-+$/g, "")
                         : "sin-titulo");
 
-                    console.log("Compartiendo servicio:", serv.titulo, "Slug generado:", slug);
-              
-
                     return (
                       <li
                         key={serv._id}
@@ -259,97 +278,133 @@ export default function PanelTerapeuta() {
                         </p>
 
                         {estaPendiente && (
-                          <div className="text-sm text-gray-500 mt-1">
-                            Estamos revisando tu servicio 🕒 Podrás verlo en tu panel una vez aprobado.
-                          </div>
-                        )}
+  <div className="text-sm text-gray-500 mt-1">
+    Estamos revisando tu servicio 🕒 Podrás verlo en tu panel una vez aprobado.
+  </div>
+)}
 
-                        <div className="mt-2">
-                          {serv.aprobado && !serviciosVistos[serv._id] && (
-                            <div className="text-sm text-green-700 mb-2">
-                              ¡Tu servicio fue aprobado! 🎉
-                            </div>
-                          )}
+<div className="mt-2">
+  {serv.aprobado && !serviciosVistos[serv._id] && (
+    <div className="text-sm text-green-700 mb-2">
+      ¡Tu servicio fue aprobado! 🎉
+    </div>
+  )}
 
-                          {serv.aprobado && (
-                        <div className="flex justify-center gap-5">
-                          <button
-                            onClick={() => handleVerOnline(serv._id, slug)}
-                            className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition"
-                          >
-                            Ver
-                          </button>
-
-                          <button
-                            onClick={() => navigate(`/editar-servicio/${serv._id}`)}
-                            className="bg-sky-500 text-white py-1 px-3 rounded hover:bg-sky-600 transition"
-                          >
-                            Editar
-                          </button>
-
-                          <button
-                            onClick={() => handleEliminarServicio(serv._id)}
-                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"
-                          >
-                            Eliminar
-                          </button>
-                        </div>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  }
-                )}
-              </ul>
-
-              {misServicios.length > 1 && (
-                <button
-                  onClick={() => setMostrarTodosServicios(!mostrarTodosServicios)}
-                  className="mt-4 text-blue-600 hover:underline text-sm"
-                >
-                  {mostrarTodosServicios ? "Ver menos servicios ▲" : "Más servicios ▼"}
-                </button>
-              )}
-            </>
-          )}
-        </div>
-
-        {/* Reservas */}
-<h2 className="text-xl text-left font-normal text-[#333] mt-12 mb-4">📅 Mis reservas</h2>
-{reservas.length === 0 ? (
-  <p className="text-gray-500 tect-left text-md">Aún no tenes ninguna reserva</p>
-) : (
-  <>
-    <ul className="space-y-4">
-      {reservas.slice(0, verMas ? reservas.length : 3).map((reserva) => (
-        <li
-          key={reserva._id}
-          className="p-4 rounded-xl shadow-sm bg-[#f9f6ff] text-[#333]"
-        >
-          <p>🗓 Fecha: {new Date(reserva.fecha).toLocaleDateString()}</p>
-          <p>🕒 Hora: {reserva.hora}</p>
-          <p>💆 Servicio: {reserva.servicioId?.titulo || reserva.nombreServicio}</p>
-          <p>👤 Usuario: {reserva.nombreUsuario}</p>
-          <p>💰 Valor: ${reserva.precio}</p>
-          <span className="inline-block mt-2 bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
-            {reserva.estado || "Confirmada"}
-          </span>
-        </li>
-      ))}
-    </ul>
-
-    {reservas.length > 3 && (
+  {serv.aprobado && (
+    <div className="flex justify-center gap-5">
       <button
-        onClick={() => setVerMas(!verMas)}
-        className="mt-2 text-blue-600 hover:underline text-sm"
+        onClick={() => handleVerOnline(serv._id, slug)}
+        className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition"
       >
-        {verMas ? "Ver menos ▲" : "Ver más ▼"}
+        Ver
       </button>
+
+      <button
+        onClick={() => navigate(`/editar-servicio/${serv._id}`)}
+        className="bg-sky-500 text-white py-1 px-3 rounded hover:bg-sky-600 transition"
+      >
+        Editar
+      </button>
+
+      <button
+        onClick={() => handleEliminarServicio(serv._id)}
+        className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"
+      >
+        Eliminar
+      </button>
+    </div>
+  )}
+</div>
+</li>
+);
+}
+)}
+</ul>
+
+{misServicios.length > 1 && (
+  <button
+    onClick={() => setMostrarTodosServicios(!mostrarTodosServicios)}
+    className="mt-4 text-blue-600 hover:underline text-sm"
+  >
+    {mostrarTodosServicios ? "Ver menos ▲" : "Más servicios ▼"}
+  </button>
+)}
+</>
+)}
+
+</div>
+
+        {/* --- RESERVAS (ocultas por ahora) --- */}
+{false && (
+  <>
+    <h2 className="text-xl text-left font-normal text-[#333] mt-12 mb-4">
+      📅 Mis reservas
+    </h2>
+
+    {(reservas || []).length === 0 ? (
+      <p className="text-gray-500 text-left text-md">Aún no tenes ninguna reserva</p>
+    ) : (
+      <>
+        <ul className="space-y-4">
+          {(reservas || [])
+            .slice(0, verMas ? reservas.length : 3)
+            .map((reserva) => (
+              <li
+                key={reserva._id}
+                className="p-4 rounded-xl shadow-sm bg-[#f9f6ff] text-[#333]"
+              >
+                <p>🗓 Fecha: {new Date(reserva.fecha).toLocaleDateString()}</p>
+                <p>🕒 Hora: {reserva.hora}</p>
+                <p>💆 Servicio: {reserva.servicioId?.titulo || reserva.nombreServicio}</p>
+                <p>👤 Usuario: {reserva.nombreUsuario}</p>
+                <p>💰 Valor: ${reserva.precio}</p>
+                <span className="inline-block mt-2 bg-green-100 text-green-700 px-2 py-1 rounded text-sm">
+                  {reserva.estado || "Confirmada"}
+                </span>
+              </li>
+            ))}
+        </ul>
+
+        {(reservas || []).length > 3 && (
+          <button
+            onClick={() => setVerMas(!verMas)}
+            className="mt-2 text-blue-600 hover:underline text-sm"
+          >
+            {verMas ? "Ver menos ▲" : "Ver más ▼"}
+          </button>
+        )}
+      </>
     )}
   </>
 )}
 
-</div> 
-</div> // Cierre bg-white
-);
+        
+
+{modalEliminar && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white w-full max-w-md p-6 rounded-lg shadow-lg text-center">
+      <p className="text-[#333] text-lg mb-4">
+        ❓ ¿Estás seguro que deseas eliminar este servicio?
+      </p>
+      <div className="flex justify-center gap-4">
+        <button
+          onClick={confirmarEliminar}
+          className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        >
+          Sí, eliminar
+        </button>
+        <button
+          onClick={() => setModalEliminar(null)}
+          className="bg-gray-300 text-[#333] px-4 py-2 rounded hover:bg-gray-400"
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+        </div>
+        </div>
+        );
 }
