@@ -94,7 +94,7 @@ Ofrecé tus servicios en esta gran Comunidad Holística 🐣
       name="nombreCompleto"  
       value={formData.nombreCompleto}  
       onChange={handleChange}  
-      placeholder="Nombre y apellido"  
+      placeholder="Nombre y apellido o empresa"  
       className="w-full p-2 border border-[#444444] rounded-lg outline-none"  
       required  
     />  
