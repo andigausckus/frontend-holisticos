@@ -224,7 +224,7 @@ Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
       onClick={() => window.open(`https://www.serviciosholisticos.com.ar/#/terapeuta/${terapeuta._id}`, "_blank")}
       className="mx-auto bg-green-500 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-green-600 hover:scale-105 transition-transform duration-200 ease-in-out"
     >
-      ✏️ Editar perfil público
+      ✏️ Editar perfil público ahora
     </button>
 
     {cargóDisponibilidad && (    
