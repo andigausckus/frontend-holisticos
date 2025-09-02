@@ -240,7 +240,7 @@ min={0}
               <div
                 key={servicio._id}
                 className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between"
-                style={{ height: "560px" }}
+                style={{ height: "520px" }}
               >
                 {/* Contenedor relativo para poder colocar el badge */}
                 <div className="relative w-full h-[60%]">

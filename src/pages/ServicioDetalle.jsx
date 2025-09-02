@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import CalendarioSemanal from "../components/CalendarioSemanal";
 import { useState, useEffect, useRef } from "react";
 import { FiChevronDown } from "react-icons/fi";
+import { Link } from "react-router-dom";
 import {
   FaUser,
   FaDollarSign,
@@ -144,7 +145,7 @@ const data = JSON.parse(texto);
 
     return (
       <div className="bg-white pt-24 px-4 max-w-4xl mx-auto shadow-md rounded-xl overflow-hidden">
-        <div className="shadow-md rounded-xl overflow-hidden bg-white space-y-4">
+        <div className="relative shadow-md rounded-xl overflow-hidden bg-white space-y-4 pb-8">
           
         {/* Imagen del servicio */}
         {servicio.imagen && (
@@ -227,7 +228,17 @@ const data = JSON.parse(texto);
           <span className="text-gray-400">Sin definir</span>
         )}
       </div>
-    </div>
+
+      {/* Botón Ver perfil */}
+      <div className="flex justify-center absolute bottom-3 left-1/2 transform -translate-x-1/2">
+        <Link
+          to={`/terapeuta/${servicio.terapeuta._id}`}
+          className="px-4 py-1 bg-sky-500 text-white rounded-3xl text-sm hover:bg-sky-600 transition-colors"
+        >
+          Ver perfil
+        </Link>
+      </div>
+          </div>
           </div>
           
       {/* 📑 Botones de Descripción y Reseñas */}
@@ -326,7 +337,7 @@ const data = JSON.parse(texto);
                 <div className="mt-4 text-center">
                   <button
                     ref={botonReservaRef} // 👈 agregado
-                    className="bg-[#FF69B4] mb-24 hover:bg-[#FF3385] text-white px-6 py-3 rounded-3xl shadow"
+                    className="bg-green-600 mb-24 hover:bg-green-700 text-white px-6 py-3 rounded-3xl shadow"
                     onClick={async () => {
               try {
                 const res = await fetch(`https://servicios-holisticos-backend.onrender.com/api/bloqueos/temporales`, {
