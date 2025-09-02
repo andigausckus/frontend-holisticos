@@ -278,7 +278,7 @@ return (
       {/* Sobre mí */}
       <div className="mt-6 bg-gray-50 rounded-xl shadow p-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-md font-semibold text-[#444]">Sobre mí</h3>
+          <h3 className="text-md font-semibold text-[#444]">Sobre mí 😀</h3>
           {esDueñoPerfil && (
             <button
               onClick={() => {
@@ -326,8 +326,8 @@ return (
       </div>
 
       {/* Mis servicios */}
-      <div className="mt-12 bg-gray-50 rounded-xl shadow p-4">
-        <h3 className="text-md font-semibold text-[#444] mb-3">Mis servicios</h3>
+      <div className="mt-12 mb-24 bg-gray-50 rounded-xl shadow p-4">
+        <h3 className="text-md font-semibold text-[#444] mb-3">Mis servicios 🦋</h3>
         {terapeuta.servicios?.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {terapeuta.servicios.map((servicio) => {
