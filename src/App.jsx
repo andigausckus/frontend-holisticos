@@ -71,11 +71,11 @@ export default function App() {
           <Route path="gracias" element={<PaginaGracias />} />
 
           {/* Administración */}
-          <Route path="admin/reservas" element={<AdminReservas />} />
-          <Route path="admin/terapeutas" element={<AdminTerapeutas />} />
-          <Route path="admin/comunicado" element={<AdminComunicado />} />
           <Route path="admin/dashboard" element={<AdminDashboard />} />
           <Route path="admin/pagos" element={<AdminPagos />} />
+          <Route path="admin/comunicado" element={<AdminComunicado />} />
+          <Route path="admin/reservas" element={<AdminReservas />} />
+          <Route path="admin/terapeutas" element={<AdminTerapeutas />} />
 
           {/* Otros */}
           <Route path="tienda" element={<Tienda />} />

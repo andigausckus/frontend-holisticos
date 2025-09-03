@@ -57,7 +57,7 @@ export default function PanelTerapeuta() {
     const nuevosVistos = { ...serviciosVistos, [id]: true };
     setServiciosVistos(nuevosVistos);
     localStorage.setItem("serviciosVistos", JSON.stringify(nuevosVistos));
-    window.open(`/#/servicios/${slug}`, "_blank");
+    window.open(`/servicios/${slug}`, "_blank");
   };
 
   const handleEliminarServicio = async (id) => {
@@ -87,7 +87,7 @@ export default function PanelTerapeuta() {
 
   const handleCompartir = (id, slug) => {
     const slugFinal = slug || "sin-titulo";
-    const url = `https://www.serviciosholisticos.com.ar/#/servicios/${slugFinal}`;
+    const url = `https://www.serviciosholisticos.com.ar/servicios/${slugFinal}`;
     setUrlCompartir(url);
     setMostrarModal(true);
   };
@@ -221,7 +221,7 @@ Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
     </button>
 
     <button
-      onClick={() => window.open(`https://www.serviciosholisticos.com.ar/#/terapeuta/${terapeuta._id}`, "_blank")}
+      onClick={() => window.open(`https://www.serviciosholisticos.com.ar/terapeuta/${terapeuta._id}`, "_blank")}
       className="mx-auto mb-8 bg-green-500 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-green-600 hover:scale-105 transition-transform duration-200 ease-in-out"
     >
       ✏️ Editar perfil público
