@@ -42,6 +42,7 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       <Routes>
+        {/* Público con Layout */}
         <Route path="/" element={<Layout />}>
           {/* Home */}
           <Route index element={<Home />} />
@@ -70,13 +71,6 @@ export default function App() {
           <Route path="pago-pendiente" element={<PaginaPagoPendiente />} />
           <Route path="gracias" element={<PaginaGracias />} />
 
-          {/* Administración */}
-          <Route path="admin/dashboard" element={<AdminDashboard />} />
-          <Route path="admin/pagos" element={<AdminPagos />} />
-          <Route path="admin/comunicado" element={<AdminComunicado />} />
-          <Route path="admin/reservas" element={<AdminReservas />} />
-          <Route path="admin/terapeutas" element={<AdminTerapeutas />} />
-
           {/* Otros */}
           <Route path="tienda" element={<Tienda />} />
           <Route path="nuevo-servicio" element={<NuevoServicio />} />
@@ -86,6 +80,13 @@ export default function App() {
           <Route path="terminos" element={<Terminos />} />
           <Route path="privacidad" element={<Privacidad />} />
         </Route>
+
+        {/* Administración sin Layout */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/pagos" element={<AdminPagos />} />
+        <Route path="/admin/comunicado" element={<AdminComunicado />} />
+        <Route path="/admin/reservas" element={<AdminReservas />} />
+        <Route path="/admin/terapeutas" element={<AdminTerapeutas />} />
       </Routes>
     </BrowserRouter>
   );
