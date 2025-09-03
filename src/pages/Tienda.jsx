@@ -54,17 +54,7 @@ export default function Tienda() {
   ];
 
   const productosDigitales = [
-    {
-      id: 1,
-      titulo: "Curso de Yoga Prenatal",
-      tipoProducto: "digital",
-      descripcion:
-        "El yoga prenatal es seguro y beneficioso para mujeres embarazadas y sus bebés, reduce el estrés y la ansiedad, mejora la flexibilidad y resistencia muscular, promueve un parto más fácil y humanizado. ¡Descubrí más y comenzá tu práctica hoy!",
-      tipo: "Curso online",
-      categoria: "yogaPrenatal",
-      imagen: "https://i.postimg.cc/x1NRnyzs/pregnant-6189040-1280.jpg",
-      enlace: "https://go.hotmart.com/B100719523M",
-    },
+    
     {
       id: 2,
       titulo: "67 posturas esenciales de Yoga",
@@ -76,53 +66,10 @@ export default function Tienda() {
       imagen: "https://i.postimg.cc/3JRZx82y/Yoga67P.png",
       enlace: "https://go.hotmart.com/U100730139R", 
     },
-    {
-  id: 3,
-  titulo: "Curso Masajista Master",
-  tipoProducto: "digital",
-  descripcion:
-    "Aprendé técnicas profesionales de masaje y emprendé en estética con un curso online que incluye acceso vitalicio, comunidad privada, 4 bonos y certificado. ¡Inscríbete ahora y comenzá a transformar tu carrera sin riesgos, con 7 días de garantía!",
-  tipo: "Curso online",
-  categoria: "masajes",
-  imagen: "https://i.postimg.cc/pLBH89jG/massage-2717431-1280.jpg",
-  enlace: "https://go.hotmart.com/M100731243R",
-  descuento: "Aprovechá 50% OFF por tiempo limitado!",
-},
-{
-  id: 4,
-  titulo: "Secretos de la medicina Ayurvedica",
-  tipoProducto: "digital",
-  descripcion:
-    "La medicina ayurvédica ofrece una perspectiva integral sobre la salud mental, con 50 recetas para promover el equilibrio doshico y la armonía interior. ¡Descubrí tu equilibrio interior hoy y comenzá a vivir en armonía con la naturaleza!",
-  tipo: "Ebook",
-  categoria: "ayurveda",
-  imagen: "https://i.postimg.cc/K8vL26jc/cook-2364221-640.jpg",
-  enlace: "https://go.hotmart.com/X100735838H?ap=b245",
-  descuento: "Aprovechá 20% OFF por tiempo limitado!",
-},
-    {
-  id: 5,
-  titulo: "Numerología",
-  tipoProducto: "digital",
-  descripcion:
-    "¡Descubre el fascinante mundo de la numerología con este eBook completo de 193 páginas! Aprende sobre numerología pitagórica, vibraciones numéricas, personalidad, karma y más. ¡Haz clic y empezá a explorar tu destino!",
-  tipo: "Ebook",
-  categoria: "numerología",
-  imagen: "https://i.postimg.cc/dDcY9jyL/clock-1274699-1280.jpg",
-  enlace: "https://go.hotmart.com/J100759393X",
-},
-    {
-  id: 6,
-  titulo: "Elimina los Síntomas Físicos de la Ansiedad",
-  tipoProducto: "digital",
-  descripcion:
-    "La guía ofrece beneficios como comprender y aliviar síntomas físicos de ansiedad, técnicas prácticas para manejar crisis, autoconfianza para enfrentar desencadenantes y gestionar la ansiedad de forma autónoma y vivir una vida más tranquila. ¡Descubrelo hoy mismo!",
-  tipo: "Ebook",
-  categoria: "ansiedad",
-  imagen: "https://i.postimg.cc/PrfsdJMG/stress-2902537-640.jpg",
-  enlace: "https://go.hotmart.com/Q100799298D",
-      descuento: "Aprovechá 66% OFF por tiempo limitado!",
-    },
+    
+
+    
+    
         {
     id: 7,
   titulo: "400 recetas de jabones, velas, cosmética natural (shampoo y cremas) y Aromaterapia",
@@ -134,28 +81,8 @@ export default function Tienda() {
   imagen: "https://i.postimg.cc/PqSSHbT9/soaps-2958985-640.jpg",
   enlace: "https://go.hotmart.com/W100800796D",
     },
-    {
-    id: 8,
-  titulo: "Curso de Tarot Arcanos Mayores",
-  tipoProducto: "digital",
-  descripcion:
-          "¡Descubre el Tarot con 4 módulos, certificado, clases bonus y prácticas! Accede ahora y domina nuevas herramientas espirituales para tu crecimiento personal. ¡Inscríbete ya y comienza a leer el futuro con confianza!",
-  tipo: "Ebook",
-  categoria: "tarot",
-  imagen: "https://i.postimg.cc/RFn2BqTL/fortune-telling-4896472-640.jpg",
-  enlace: "https://go.hotmart.com/I101025528T",
-    },
-    {
-    id: 9,
-  titulo: "MEGA PACK Aromaterapia - Medicina alternativa",
-  tipoProducto: "digital",
-  descripcion:
-          "¡Descubre los secretos de la aromaterapia! Aprende a preparar recetas naturales para el bienestar físico, mental y emocional. ¡Descarga ahora el eBook y recibe 9 bonus exclusivos! ¡Transforma tu vida con el poder de los aceites esenciales de manera sencilla y natural!",
-  tipo: "Ebook",
-  categoria: "aromaterapia",
-  imagen: "https://i.postimg.cc/MK4PWzvs/Screenshot-20250725-195215-Chrome.jpg",
-  enlace: "https://go.hotmart.com/L101026046N",
-    },
+    
+    
   ];
 
   const categorias = filtroTipoProducto?.value === "digital" ? terapiasDigitales : categoriasFisicas;
@@ -180,7 +107,7 @@ export default function Tienda() {
   return (
     <div className="pt-24 min-h-screen bg-white py-10 px-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-gray-500 mb-2">
+        <h1 className="text-3xl font-bold text-center text-gray-600 mb-2">
           Tienda Holística 🌿
         </h1>
         <p className="text-center text-gray-600 mb-8">

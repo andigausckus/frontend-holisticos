@@ -139,7 +139,7 @@ return coincideCategoria && coincidePrecio && coincideDuracion;
   return (
     <div className="bg-white min-h-screen max-w-4xl mb-24 mx-auto px-4 pt-24 pb-8">
       <div className="mb-6 text-center">
-        <h2 className="text-2xl md:text-xl font-normal text-[#333] mb-2">
+        <h2 className="text-2xl md:text-xl font-semibold text-[#333] mb-2">
           Reservá hoy tu sesión online y comenzá tu camino de transformación 🌟
         </h2>
       </div>

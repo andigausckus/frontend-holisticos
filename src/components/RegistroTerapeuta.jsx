@@ -81,7 +81,7 @@ setMensaje("❌ Error de conexión con el servidor.");
 return (
 <div className="bg-white pt-24 max-w-full mx-auto p-8 rounded-xl">
 <h2 className="text-xl font-normal text-center text-gray-800 mb-4">
-🐣 Publicá tus servicios y sé parte de nuestra comunidad holística
+🐣 Publicá tus servicios y sé parte de nuestra comunidad 
 </h2>
 
 {mensaje && (  
