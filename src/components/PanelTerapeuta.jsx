@@ -222,7 +222,7 @@ Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
 
     <button
       onClick={() => window.open(`https://www.serviciosholisticos.com.ar/#/terapeuta/${terapeuta._id}`, "_blank")}
-      className="mx-auto bg-green-500 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-green-600 hover:scale-105 transition-transform duration-200 ease-in-out"
+      className="mx-auto mb-8 bg-green-500 text-white py-3 px-5 rounded-xl font-normal shadow hover:bg-green-600 hover:scale-105 transition-transform duration-200 ease-in-out"
     >
       ✏️ Editar perfil público
     </button>
@@ -239,7 +239,7 @@ Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
 
 {/* Servicios */}    
 <div className="text-left mb-12">    
-  <h2 className="text-xl font-normal text-[#333] mb-4">🌻 Mis servicios</h2>    
+  <h2 className="text-xl font-normal text-[#333] mb-6">🌻 Mis servicios</h2>    
 
   {(misServicios || []).length === 0 ? (    
     <p className="text-gray-500 text-md text-center">Aún no cargaste ningún servicio</p>    

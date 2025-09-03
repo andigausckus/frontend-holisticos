@@ -1,5 +1,5 @@
 // EditarServicio.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Select from "react-select";
 import { FaWhatsapp, FaSkype, FaVideo, FaGoogle } from "react-icons/fa";
@@ -8,27 +8,31 @@ import axios from "axios";
 export default function EditarServicio() {
   const navigate = useNavigate();
   const { servicioId } = useParams();
+const fileInputRef = useRef(null);
+    // Estado para abrir/cerrar el modal
+  
+
 
   const categorias = [
-    "🌺 Aromaterapia",
+    "🌸 Aromaterapia",
     "🌸 Astrología",
-    "🌿 Biodescodificación",
-    "🌳 Chamanismo",
-    "🍃 Coaching Holístico",
-    "🌲 Constelaciones Familiares",
-    "🌴 Hipnosis Regresiva",
-    "🍀 Meditación",
+    "🌸 Biodescodificación",
+    "🌸 Chamanismo",
+    "🌸 Coaching Holístico",
+    "🌸 Constelaciones Familiares",
+    "🌸 Hipnosis Regresiva",
+    "🌸 Meditación",
     "🌸 Mindfulness",
-    "🌻 Numerología",
-    "🍃 Péndulo Hebreo",
-    "🌺 Reiki",
-    "🌳 Registros Akáshicos",
-    "🌿 Sanación Energética",
-    "🎶 Sonoterapia",
+    "🌸 Numerología",
+    "🌸 Péndulo Hebreo",
+    "🌸 Reiki",
+    "🌸 Registros Akáshicos",
+    "🌸 Sanación Energética",
+    "🌸 Sonoterapia",
     "🌸 Tarot",
-    "🌺 Terapia Floral",
-    "🌿 ThetaHealing",
-    "🍀 Yoga"
+    "🌸 Terapia Floral",
+    "🌸 ThetaHealing",
+    "🌸 Yoga"
   ];
 
   const cloudName = "dbu5cfqzf";
@@ -42,7 +46,8 @@ export default function EditarServicio() {
   ];
 
   const [imagenFile, setImagenFile] = useState(null);
-  const [cargando, setCargando] = useState(true);
+  const [subiendo, setSubiendo] = useState(false); // ⬅️ spinner
+  const [mostrarModal, setMostrarModal] = useState(false);
   const [formulario, setFormulario] = useState({
     titulo: "",
     descripcion: "",
@@ -55,12 +60,13 @@ export default function EditarServicio() {
     imagen: null,
   });
 
-  const [alerta, setAlerta] = useState(null); // null o string del mensaje
+  const [alerta, setAlerta] = useState(null);
+  const [cargando, setCargando] = useState(true);
 
   const mostrarAlerta = (mensaje) => {
-  setAlerta(mensaje);
-  setTimeout(() => setAlerta(null), 4000); // desaparece después de 4 segundos
-};
+    setAlerta(mensaje);
+    setTimeout(() => setAlerta(null), 4000);
+  };
 
   // Cargar datos del servicio al iniciar
   useEffect(() => {
@@ -105,6 +111,9 @@ export default function EditarServicio() {
     const { name, value } = e.target;
     setFormulario((prev) => ({ ...prev, [name]: value }));
   };
+  const handleFileClick = () => {
+  setMostrarModal(true); // abre el modal
+};
 
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
@@ -180,7 +189,6 @@ export default function EditarServicio() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones
     if (
       !formulario.titulo.trim() ||
       !formulario.descripcion.trim() ||
@@ -192,10 +200,9 @@ export default function EditarServicio() {
       !formulario.imagen
     ) {
       mostrarAlerta("❌ Por favor completá todos los campos obligatorios");
-      return; // Detiene el submit
+      return;
     }
 
-    // Duración en minutos
     const duracionTotalMinutos = Number(formulario.duracionHoras) * 60 + Number(formulario.duracionMinutos);
 
     const servicioActualizado = {
@@ -230,16 +237,53 @@ export default function EditarServicio() {
 
   if (cargando) return <p className="p-6 text-gray-600">Cargando servicio...</p>;
 
-  return (
-    <div className="bg-white pt-24 p-4 min-h-screen">
+  const handleConfirmModal = () => {
+    setMostrarModal(false); // cierra el modal
+  };
 
-      {alerta && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-pink-100 text-[#333] px-8 py-4 rounded-lg shadow-md z-50 animate-fade-in max-w-xl w-full text-center">
-          {alerta}
-        </div>
-      )}
+    return (
+      <div className="bg-white pt-24 p-4 min-h-screen">
+        {alerta && (
+          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-pink-100 text-[#333] px-8 py-4 rounded-lg shadow-md z-50 animate-fade-in max-w-xl w-full text-center">
+            {alerta}
+          </div>
+        )}
+
+        {/* Modal de advertencia */}
+        {mostrarModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white p-6 rounded-xl shadow-lg max-w-md text-center">
+              <h3 className="text-lg font-semibold mb-4">📸 Antes de subir tu imagen</h3>
+
+              <p className="text-sm text-gray-700 mb-4">
+                Subí una imagen clara y profesional para tu servicio
+              </p>
+
+              <ul className="text-sm text-gray-700 text-left mb-4 space-y-2">
+                <li>❌ No incluyas información personal (teléfono, email, etc.)</li>
+                <li>❌ No escribas otras terapias en la imagen</li>
+                <li>✅ Usá una foto limpia, sin textos adicionales</li>
+              </ul>
+
+              <p className="text-sm text-gray-700 mb-4">
+                🔎 Todas las imágenes son revisadas antes de publicarse para mantener 
+                una estética visual ordenada y agradable para todos los usuarios 😊
+              </p>
+
+              <button
+                onClick={() => {
+                  handleConfirmModal(); // cierra el modal
+                  if (fileInputRef.current) fileInputRef.current.click(); // abre el selector de archivos
+                }}
+                className="bg-pink-400 text-white py-2 px-6 rounded-xl hover:bg-violet-600 transition"
+              >
+                Aceptar y subir imagen
+              </button>
+            </div>
+          </div>
+        )}
       
-      <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-4 mb-24">
+      <form onSubmit={handleSubmit} className="max-w-2xl w-full mx-auto mb-24">
         <h2 className="text-2xl font-normal pt-6 text-center mb-6">Editar servicio ✍️</h2>
 
         {/* Título */}
@@ -248,7 +292,7 @@ export default function EditarServicio() {
           <div className="text-xs text-[#444444] mb-2">
             <p>✍️ Escribí un título con 3-6 palabras máximo</p>
             <p>❌️ No incluyas la palabra "Online"</p>
-            <p>🍃 Podes incluir un (1) emoji al final para darle un toque amigable (opcional)</p>
+            <p>🌸 Podés incluir un (1) emoji al final para darle un toque amigable (opcional)</p>
           </div>
           <input
             type="text"
@@ -283,19 +327,19 @@ export default function EditarServicio() {
           </div>
           <div className="flex-1">
             <label className="block mb-1">Precio *</label>
-        <div className="flex items-center border border-[#c7b6eb] rounded px-2">
-          <span className="text-lg text-[#555]">$</span>
-          <input
-            type="number"
-            name="precio"
-            value={formulario.precio}
-            onChange={handleChange}
-            placeholder="Usá un valor real"
-            className="w-full p-2 border-none focus:outline-none placeholder:text-xs"
-            required
-          />
-        </div>
-        </div>
+            <div className="flex items-center border border-[#c7b6eb] rounded px-2">
+              <span className="text-lg text-[#555]">$</span>
+              <input
+                type="number"
+                name="precio"
+                value={formulario.precio}
+                onChange={handleChange}
+                placeholder="Usá un valor real"
+                className="w-full p-2 border-none focus:outline-none placeholder:text-xs"
+                required
+              />
+            </div>
+          </div>
         </div>
 
         {/* Duración */}
@@ -328,11 +372,10 @@ export default function EditarServicio() {
         </div>
 
         {/* Plataformas */}
-<label className="block mb-4">
-  <span className="block mb-1">Plataforma para la sesión</span>
-  <span className="block text-xs text-[#444444] mb-2">Seleccioná al menos una</span>
-  <div className="flex flex-wrap justify-between p-3 border border-[#c7b6eb] rounded">
-    
+        <label className="block mb-4">
+          <span className="block mb-1">Plataforma para la sesión</span>
+          <span className="block text-xs text-[#444444] mb-2">Seleccioná al menos una</span>
+          <div className="flex flex-wrap justify-between p-3 border border-[#c7b6eb] rounded">
             {plataformasDisponibles.map(({ nombre, icono }) => (
               <label key={nombre} className="flex flex-col items-center text-center text-sm cursor-pointer w-1/4">
                 <input
@@ -366,42 +409,44 @@ export default function EditarServicio() {
           />
         </label>
 
-          {/* Imagen */}
-          <div className="block mb-8">
-            <label>
-              <span className="block mb-2">Imagen del servicio *</span>
-            </label>
-            <div className="bg-gray-100 p-3 rounded-md text-xs text-gray-600 mb-2 whitespace-pre-line">
-              {`Subí una imagen limpia para este servicio 🦋
+        {/* Imagen */}
+        <div className="block mb-8">
+          <label>
+            <span className="block mb-2">Imagen del servicio *</span>
+          </label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={handleFileClick}
+            className="bg-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-300"
+          >
+            Seleccionar archivo
+          </button>
 
-              ❌ Sin información personal
-              ❌ Sin otras terapias escritas
+          {subiendo && (
+            <div className="mt-4 text-center text-sm text-gray-600">
+              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-violet-500 mx-auto mb-2"></div>
+              Subiendo imagen... 🐣
+            </div>
+          )}
 
-              Revisamos todos los servicios antes de ser publicados para mantener una estética visual prolija y ordenada en la plataforma 🌈
-
-              `}
-                <span className="font-semibold">
-                  Esto ayuda a evitar la confusión de los usuarios 😀
-                </span>
-              </div>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="mb-2 pt-6"
-            />
-            {imagenFile || formulario.imagen ? (
-              <div className="mt-4">
-                <p className="text-sm text-gray-600 mb-2">Esperá a que cargue la vista previa 🦋</p>
-                <img
-                  src={formulario.imagen}
-                  alt="Vista previa"
-                  style={{ height: "250px", objectFit: "cover" }}
-                  className="w-full rounded-2xl"
-                />
-              </div>
-            ) : null}
-          </div>
+          {formulario.imagen && !subiendo && (
+            <div className="mt-4">
+              <img
+                src={formulario.imagen}
+                alt="Vista previa"
+                style={{ height: "250px", objectFit: "cover" }}
+                className="w-full rounded-2xl"
+              />
+            </div>
+          )}
+        </div>
 
         {/* Botón */}
         <div className="w-full flex justify-center mt-10">
