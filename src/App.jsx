@@ -1,4 +1,4 @@
-import { HashRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -21,7 +21,6 @@ import Privacidad from "./pages/Privacidad";
 import PaginaGracias from "./pages/PaginaGracias";
 import PaginaPagoFallido from "./pages/PaginaPagoFallido";
 import PaginaPagoPendiente from "./pages/PaginaPagoPendiente";
-import TestRouter from "./pages/TestRouter";
 
 // Administración y otras
 import NuevoServicio from "./pages/NuevoServicio";
@@ -33,46 +32,61 @@ import AdminComunicado from "./pages/AdminComunicado";
 import AdminDashboard from "./pages/AdminDashboard";
 import Tienda from "./pages/Tienda";
 import ResenaPage from "./pages/ResenaPage";
+
 // Blog
 import QueSonLasTerapiasHolisticas from "./pages/blog/QueSonLasTerapiasHolisticas";
 import QueEsElYoga from "./pages/blog/QueEsElYoga";
 
 export default function App() {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <ScrollToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
+          {/* Home */}
           <Route index element={<Home />} />
+
+          {/* Servicios */}
           <Route path="servicios" element={<Servicios />} />
+          <Route path="servicios/:slug" element={<ServicioDetalle />} />
+          <Route path="disponibilidad/:servicioId" element={<DisponibilidadServicio />} />
+
+          {/* Blog */}
           <Route path="blog" element={<Blog />} />
           <Route path="blog/que-son-las-terapias-holisticas" element={<QueSonLasTerapiasHolisticas />} />
           <Route path="blog/que-es-el-yoga" element={<QueEsElYoga />} />
+
+          {/* Usuarios */}
           <Route path="login" element={<Login />} />
           <Route path="registro" element={<Registro />} />
           <Route path="panel" element={<PanelTerapeuta />} />
           <Route path="terapeuta/:id" element={<PerfilTerapeuta />} />
-          <Route path="servicios/:slug" element={<ServicioDetalle />} />
           <Route path="resenas/:reservaId" element={<ResenaPage />} />
           <Route path="pago" element={<PaginaPagoSimple />} />
+          <Route path="contacto" element={<Contacto />} />
+
+          {/* Pagos */}
+          <Route path="pago-fallido" element={<PaginaPagoFallido />} />
+          <Route path="pago-pendiente" element={<PaginaPagoPendiente />} />
+          <Route path="gracias" element={<PaginaGracias />} />
+
+          {/* Administración */}
           <Route path="admin/reservas" element={<AdminReservas />} />
           <Route path="admin/terapeutas" element={<AdminTerapeutas />} />
           <Route path="admin/comunicado" element={<AdminComunicado />} />
           <Route path="admin/dashboard" element={<AdminDashboard />} />
+          <Route path="admin/pagos" element={<AdminPagos />} />
+
+          {/* Otros */}
           <Route path="tienda" element={<Tienda />} />
+          <Route path="nuevo-servicio" element={<NuevoServicio />} />
+          <Route path="editar-servicio/:servicioId" element={<EditarServicio />} />
+
+          {/* Páginas legales */}
           <Route path="terminos" element={<Terminos />} />
           <Route path="privacidad" element={<Privacidad />} />
-          <Route path="gracias" element={<PaginaGracias />} />
-          <Route path="/contacto" element={<Contacto />} />
-          <Route path="pago-fallido" element={<PaginaPagoFallido />} />
-          <Route path="pago-pendiente" element={<PaginaPagoPendiente />} />
-          <Route path="nuevo-servicio" element={<NuevoServicio />} />
-          <Route path="/servicios/:slug" element={<TestRouter />} />
-          <Route path="/disponibilidad/:servicioId" element={<DisponibilidadServicio />} />
-          <Route path="/admin/pagos" element={<AdminPagos />} />
-          <Route path="editar-servicio/:servicioId" element={<EditarServicio />} />
         </Route>
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
