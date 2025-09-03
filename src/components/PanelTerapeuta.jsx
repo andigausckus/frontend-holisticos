@@ -57,7 +57,7 @@ export default function PanelTerapeuta() {
     const nuevosVistos = { ...serviciosVistos, [id]: true };
     setServiciosVistos(nuevosVistos);
     localStorage.setItem("serviciosVistos", JSON.stringify(nuevosVistos));
-    window.open(`/servicios/${slug}`, "_blank");
+    window.open(`/#/servicios/${slug}`, "_blank");
   };
 
   const handleEliminarServicio = async (id) => {
