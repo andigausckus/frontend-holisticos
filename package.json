@@ -39,13 +39,13 @@
     "postcss": "^8.4.21",
     "tailwindcss": "^3.3.2"
   },
-  ""scripts": {
+  "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "postbuild": "cp vercel.json build/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  }
+  },
   "browserslist": {
     "production": [
       ">0.2%",
