@@ -164,7 +164,7 @@ const data = JSON.parse(texto);
           <div className="flex justify-center items-center gap-2 mb-3">
             {/* Promedio grande con fondo amarillo oscuro y algo de padding */}
             <span 
-  className="text-gl font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3 text-center"
+  className="text-gl font-bold text-white bg-yellow-500 px-2 py-1 rounded-md mr-3 text-center"
   style={{ 
     width: "4.5ch", 
     display: "inline-block",
@@ -180,7 +180,7 @@ const data = JSON.parse(texto);
     key={n}
     className={`text-md ${
       n <= Math.round(servicio.promedioEstrellas || 0)
-        ? "text-yellow-400"
+        ? "text-yellow-500"
         : "text-gray-300"
     }`}
   >
@@ -189,7 +189,7 @@ const data = JSON.parse(texto);
 ))}
 
             {/* Cantidad de reseñas */}
-            <span className="text-gray-400 text-sm ml-2">
+            <span className="text-yellow-500 text-sm ml-2">
               ({servicio.totalReseñas || 0} reseñas)
             </span>
           </div>

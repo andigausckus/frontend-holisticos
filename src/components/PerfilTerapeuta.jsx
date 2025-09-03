@@ -148,6 +148,7 @@ useEffect(() => {
     try {
       const res = await fetch(`${BACKEND_URL}/terapeutas/publico/${id}/resenas`);
       const data = await res.json();
+      console.log("RESEÑAS RECIBIDAS:", data);
       setPromedioResenas(data.promedio || 0);
       setTotalResenas(data.total || 0);
       setResenas(data.resenas || []);
@@ -264,13 +265,13 @@ return (
             {[1, 2, 3, 4, 5].map((n) => (
               <span
                 key={n}
-                className={`text-md ${n <= Math.round(promedioResenas) ? "text-yellow-400" : "text-gray-300"}`}
+                className={`text-md ${n <= Math.round(promedioResenas) ? "text-yellow-600" : "text-gray-300"}`}
               >
                 ★
               </span>
             ))}
 
-            <span className="text-yellow-600 text-sm ml-2">({totalResenas} basado en reseñas)</span>
+            <span className="text-yellow-600 text-sm ml-2">(basado en {totalResenas} reseñas)</span>
           </>
         )}
       </div>
@@ -333,64 +334,85 @@ return (
       </div>
 
       {/* Mis servicios */}
-      <div className="mt-6 mb-24 bg-gray-50 rounded-xl shadow p-4">
-        <h3 className="text-md font-semibold text-[#444] mb-3">Mis servicios 🦋</h3>
-        {terapeuta.servicios?.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
-            {terapeuta.servicios.map((servicio) => {
-              const servicioId = servicio._id || servicio.id;
-              return (
-                <div key={servicioId} className="bg-white border rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
-                  {servicio.imagen && <img src={servicio.imagen} alt={servicio.titulo} className="w-full h-32 object-cover" />}
-                  <div className="p-3 flex flex-col gap-1">
-                    <p className="font-semibold text-[#333] text-sm">{servicio.titulo}</p>
-                    <p className="text-gray-600 text-xs line-clamp-3">{servicio.descripcion}</p>
+<div className="mt-6 mb-24 bg-gray-50 rounded-xl shadow p-4">
+  <h3 className="text-md font-semibold text-[#444] mb-3">Mis servicios 🦋</h3>
 
-                    {/* Reseñas */}
-                    {servicio.reseñas?.length > 0 ? (
-                      <div className="mt-1 flex items-center gap-1 justify-center">
-                        <span className="text-sm font-bold text-white bg-yellow-600 px-1 rounded text-center">
-                          {(servicio.reseñas.reduce((sum, r) => sum + r.puntuacion, 0) / servicio.reseñas.length).toFixed(1)}
-                        </span>
-                        {[1, 2, 3, 4, 5].map((n) => (
-                          <span
-                            key={n}
-                            className={`text-xs ${n <= Math.round(servicio.reseñas.reduce((sum, r) => sum + r.puntuacion, 0) / servicio.reseñas.length) ? "text-yellow-400" : "text-gray-300"}`}
-                          >
-                            ★
-                          </span>
-                        ))}
-                        <span className="text-yellow-600 text-xs ml-1">({servicio.reseñas.length})</span>
-                      </div>
-                    ) : (
-                      <p className="text-gray-400 text-xs mt-1 text-center">Sin reseñas</p>
-                    )}
+  {terapeuta.servicios?.length > 0 ? (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-12">
+      {terapeuta.servicios.map((servicio) => {
+        // Filtrar reseñas de este servicio
+      const resenasServicio = resenas.filter(
+        (r) => r.servicio === servicio._id
+      );
 
-                    {/* Botón centrado */}
-                    <div className="mt-2 flex justify-center">
-                      <Link
-                        to={`/servicios/${(servicio.slug || servicio.titulo
-                          .normalize("NFD")
-                          .replace(/[\u0300-\u036f]/g, "")
-                          .toLowerCase()
-                          .replace(/\s+/g, "-")
-                          .replace(/[^a-z0-9-]/g, "")
-                          .replace(/^-+|-+$/g, "")) || "sin-titulo"}`}
-                        className="bg-sky-500 text-white px-4 py-1 rounded-full text-base hover:bg-sky-500 transition-all text-center block"
-                      >
-                        Ver servicio
-                      </Link>
-                    </div>
-                  </div>
+        // Calcular promedio
+        const promedio =
+          resenasServicio.length > 0
+            ? resenasServicio.reduce((sum, r) => sum + r.puntaje, 0) /
+              resenasServicio.length
+            : null;
+
+        return (
+          <div key={servicio._id} className="bg-white border rounded-xl shadow-sm overflow-hidden flex flex-col h-full">
+            {servicio.imagen && (
+              <img
+                src={servicio.imagen}
+                alt={servicio.titulo}
+                className="w-full h-32 object-cover"
+              />
+            )}
+            <div className="p-3 flex flex-col gap-1">
+              <p className="font-semibold text-[#333] text-sm">{servicio.titulo}</p>
+              <p className="text-gray-600 text-xs line-clamp-3">{servicio.descripcion}</p>
+
+              {/* Reseñas */}
+              {resenasServicio.length > 0 ? (
+                <div className="mt-1 flex items-center gap-1 justify-center">
+                  <span className="text-sm font-bold text-white bg-yellow-500 px-1 rounded text-center mr-2">
+                    {promedio.toFixed(1)}
+                  </span>
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <span
+                      key={n}
+                      className={`text-md ${
+                        n <= Math.round(promedio) ? "text-yellow-500" : "text-gray-300"
+                      }`}
+                    >
+                      ★
+                    </span>
+                  ))}
+                  <span className="text-yellow-500 text-sm ml-1">({resenasServicio.length})</span>
                 </div>
-              );
-            })}
+              ) : (
+                <p className="text-gray-400 text-xs mt-1 text-center">Sin reseñas</p>
+              )}
+
+              {/* Botón centrado */}
+              <div className="mt-2 flex justify-center">
+                <Link
+                  to={`/servicios/${(servicio.slug || servicio.titulo
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .toLowerCase()
+                    .replace(/\s+/g, "-")
+                    .replace(/[^a-z0-9-]/g, "")
+                    .replace(/^-+|-+$/g, "")) || "sin-titulo"}`}
+                  className="bg-sky-500 text-white px-4 py-1 rounded-full text-base hover:bg-sky-500 transition-all text-center block"
+                >
+                  Ver servicio
+                </Link>
+              </div>
+            </div>
           </div>
-        ) : (
-          <p className="text-gray-600 text-sm text-center">Aún no tiene servicios publicados.</p>
-        )}
-      </div>
+        );
+      })}
     </div>
+  ) : (
+    <p className="text-gray-600 text-sm text-center">Aún no tiene servicios publicados.</p>
+  )}
+</div>
+      </div>
+                          
 
     {/* Modal de fotos */}
     {mostrarModalFotos && (

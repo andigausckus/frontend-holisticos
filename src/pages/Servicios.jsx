@@ -15,26 +15,26 @@ function Servicios() {
   const normalizar = (texto) => texto.trim();
 
   const categoriaEmojis = {
-  "Aromaterapia": "🌺",
-  "Astrología": "🌸",
-  "Biodescodificación": "🌿",
-  "Chamanismo": "🌳",
-  "Coaching Holístico": "🍃",
-  "Constelaciones Familiares": "🌲",
-  "Hipnosis Regresiva": "🌴",
-  "Meditación": "🧘‍♀️",
-  "Mindfulness": "🌸",
-  "Numerología": "🌻",
-  "Péndulo Hebreo": "🍃",
-  "Reiki": "🙌",
-  "Registros Akáshicos": "🌳",
-  "Sanación Energética": "✨",
-  "Sonoterapia": "🎶",
-  "Tarot": "🔮",
-  "Terapia Floral": "🌺",
-  "ThetaHealing": "🌿",
-  "Yoga": "🍀"
-};
+    "Aromaterapia": "🌻",
+    "Astrología": "🌻",
+    "Biodescodificación": "🌻",
+    "Chamanismo": "🌻",
+    "Coaching Holístico": "🌻",
+    "Constelaciones Familiares": "🌻",
+    "Hipnosis Regresiva": "🌻",
+    "Meditación": "🌻",
+    "Mindfulness": "🌻",
+    "Numerología": "🌻",
+    "Péndulo Hebreo": "🌻",
+    "Reiki": "🌻",
+    "Registros Akáshicos": "🌻",
+    "Sanación Energética": "🌻",
+    "Sonoterapia": "🌻",
+    "Tarot": "🌻",
+    "Terapia Floral": "🌻",
+    "ThetaHealing": "🌻",
+    "Yoga": "🌻"
+  };
 
   useEffect(() => {
     const cargarServicios = async () => {
@@ -273,7 +273,7 @@ min={0}
                   <div className="flex items-center justify-center gap-2 mb-3">
   {/* Promedio grande con fondo amarillo oscuro */}
   <span 
-  className="text-md font-bold text-white bg-yellow-700 px-2 py-1 rounded-md mr-3 text-center"
+  className="text-md font-bold text-white bg-yellow-500 px-2 py-1 rounded-md mr-3 text-center"
   style={{ 
     width: "4.5ch", 
     display: "inline-block",
@@ -292,7 +292,7 @@ min={0}
                         key={n}
                         className={`text-md ${
                           n <= Math.round(servicio.promedioResenas || 0)
-                            ? "text-yellow-400"
+                            ? "text-yellow-500"
                             : "text-gray-300"
                         }`}
                       >
@@ -301,7 +301,7 @@ min={0}
                     ))}
 
                     {/* Cantidad de reseñas */}
-                    <span className="text-gray-400 text-sm ml-2">
+                    <span className="text-yellow-500 text-sm ml-2">
                       ({servicio.cantidadResenas || 0} reseñas)
                     </span>
                   </div>
