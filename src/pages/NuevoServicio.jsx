@@ -225,17 +225,17 @@ export default function NuevoServicio() {
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-md text-center">
             <h3 className="text-lg font-semibold mb-4">📸 Antes de subir tu imagen</h3>
 
-            <p className="text-sm text-gray-700 mb-4">
+            <p className="text-sm text-gray-700 pt-4">
               Subí una imagen clara y profesional para tu servicio
             </p>
 
             <ul className="text-sm text-gray-700 text-left mb-4 space-y-2">
-              <li>❌ No incluyas información personal (teléfono, email, etc.)</li>
-              <li>❌ No escribas otras terapias en la imagen</li>
+              <li>❌ Que no incluya información personal (teléfono, email, etc.)</li>
+              <li>❌ Que no este escrita con otras terapias</li>
               <li>✅ Usá una foto limpia, sin textos adicionales</li>
             </ul>
 
-            <p className="text-sm text-gray-700 mb-2">
+            <p className="text-sm mb-4 text-gray-700 mb-2">
               🔎 Todas las imagenes son revisadas antes de publicarse para mantener una estética visual ordenada y agradable para todos los usuarios 😊
             </p>
 
