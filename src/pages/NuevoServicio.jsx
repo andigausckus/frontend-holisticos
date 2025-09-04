@@ -300,7 +300,7 @@ export default function NuevoServicio() {
         name="precio"  
         value={formulario.precio}  
         onChange={handleChange}  
-        placeholder="Ingresa un valor real"  
+        placeholder="10000, 15000,etc"  
         className="w-full p-2 border-none focus:outline-none placeholder:text-xs"  
           
       />  
@@ -317,7 +317,8 @@ export default function NuevoServicio() {
           name="duracionHoras"  
           value={formulario.duracionHoras}  
           onChange={handleChange}  
-          min="0"  
+          min="0"
+          placeholder="0,1,2,etc"
             
           className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none"  
             
@@ -331,7 +332,7 @@ export default function NuevoServicio() {
           value={formulario.duracionMinutos}  
           onChange={handleChange}  
           min="0"  
-          placeholder="Desde 0 a 59"  
+          placeholder="de 0 a 59"  
           max="59"  
           className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none placeholder:text-xs"  
             
