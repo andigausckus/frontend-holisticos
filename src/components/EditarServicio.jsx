@@ -343,6 +343,10 @@ const fileInputRef = useRef(null);
         </div>
 
         {/* Duración */}
+        <div className="mb-2">
+          <p className="text-base text-gray-600 mb-1">Duración de sesión</p>
+        </div>
+
         <div className="flex gap-4 mb-4">
           <label className="flex-1">
             <span>Horas *</span>
@@ -374,7 +378,7 @@ const fileInputRef = useRef(null);
         {/* Plataformas */}
         <label className="block mb-4">
           <span className="block mb-1">Plataforma para la sesión</span>
-          <span className="block text-xs text-[#444444] mb-2">Seleccioná al menos una</span>
+          
           <div className="flex flex-wrap justify-between p-3 border border-[#c7b6eb] rounded">
             {plataformasDisponibles.map(({ nombre, icono }) => (
               <label key={nombre} className="flex flex-col items-center text-center text-sm cursor-pointer w-1/4">

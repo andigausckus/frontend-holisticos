@@ -234,7 +234,7 @@ export default function NuevoServicio() {
             </ul>
 
             <p className="text-sm text-gray-700 mb-2">
-              🔎 Todas las imágenes son revisadas antes de publicarse para mantener una estética visual ordenada y agradable para todos los usuarios 😊
+              🔎 Todas las imagenes son revisadas antes de publicarse para mantener una estética visual ordenada y agradable para todos los usuarios 😊
             </p>
 
             
@@ -300,7 +300,7 @@ export default function NuevoServicio() {
         name="precio"  
         value={formulario.precio}  
         onChange={handleChange}  
-        placeholder="10000, 15000,etc"  
+        placeholder="8000, 20000, etc"  
         className="w-full p-2 border-none focus:outline-none placeholder:text-md"  
           
       />  
@@ -308,42 +308,44 @@ export default function NuevoServicio() {
     </div>  
     </div>  
 
-    {/* Duración */}  
-    <div className="flex gap-4 mb-4">  
-      <label className="flex-1">  
-        <span>Horas *</span>  
-        <input  
-          type="number"  
-          name="duracionHoras"  
-          value={formulario.duracionHoras}  
-          onChange={handleChange}  
-          min="0"
-          placeholder="0,1,2, etc"
-            
-          className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none"  
-            
-        />  
-      </label>  
-      <label className="flex-1">  
-        <span>Minutos *</span>  
-        <input  
-          type="number"  
-          name="duracionMinutos"  
-          value={formulario.duracionMinutos}  
-          onChange={handleChange}  
-          min="0"  
-          placeholder="de 0 a 59"  
-          max="59"  
-          className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none placeholder:text-md"  
-            
-        />  
-      </label>  
-    </div>  
+        {/* Duración */}
+        <div className="mb-2">
+          <p className="text-base text-gray-600 mb-1">Duración de sesión</p>
+        </div>
+
+        <div className="flex gap-4 mb-4">
+          <label className="flex-1">
+            <span>Horas *</span>
+            <input
+              type="number"
+              name="duracionHoras"
+              value={formulario.duracionHoras}
+              onChange={handleChange}
+              min="0"
+              placeholder="0,1,2, etc"
+              className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none"
+            />
+          </label>
+
+          <label className="flex-1">
+            <span>Minutos *</span>
+            <input
+              type="number"
+              name="duracionMinutos"
+              value={formulario.duracionMinutos}
+              onChange={handleChange}
+              min="0"
+              placeholder="de 0 a 59"
+              max="59"
+              className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none placeholder:text-md"
+            />
+          </label>
+        </div>  
 
         {/* Plataformas */}  
         <label className="block mb-4">  
           <span className="block mb-1">Plataforma para la sesión</span>  
-          <span className="block text-xs text-[#444444] mb-2">Seleccioná al menos una</span>  
+            
           <div className="flex flex-wrap justify-between p-3 border border-[#c7b6eb] rounded">  
         {plataformasDisponibles.map(({ nombre, icono }) => (  
           <label key={nombre} className="flex flex-col items-center text-center text-sm cursor-pointer w-1/4">  
