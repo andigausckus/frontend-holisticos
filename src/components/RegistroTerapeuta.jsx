@@ -147,7 +147,7 @@ return (
         💰 Datos para transferirte tu dinero  
       </h3>  
       <p className="text-sm text-gray-600 mb-4">  
-        Te enviamos el <strong>85%</strong> del valor de cada sesión. El <strong>15%</strong> es comisión por el uso de nuestra plataforma.   
+        Te enviamos el <strong>90%</strong> del valor de cada sesión. El <strong>10%</strong> es comisión por el uso de nuestra plataforma.   
       </p>  
 
       <input  
