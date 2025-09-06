@@ -33,10 +33,11 @@ export default function PanelTerapeuta() {
   }, [location.state]);
 
   // Cargar servicios vistos desde localStorage
-useEffect(() => {
-  const vistosStorage = JSON.parse(localStorage.getItem("serviciosVistos")) || {};
-  setServiciosVistos(vistosStorage);
-}, []);
+  useEffect(() => {
+    const vistosStorage = JSON.parse(localStorage.getItem("serviciosVistos")) || {};
+    setServiciosVistos(vistosStorage);
+    refrescarServicios();
+  }, []);
 
 const refrescarServicios = async () => {
   const token = localStorage.getItem("token");
@@ -47,8 +48,8 @@ const refrescarServicios = async () => {
       headers: { Authorization: `Bearer ${token}` }  
     });  
     const data = await res.json();  
-alert("👉 Respuesta completa mis-servicios: " + JSON.stringify(data));  
-setMisServicios(data || []);  
+  
+setMisServicios((data || []).filter(serv => !serv.rechazado));  
   } catch (err) {  
     console.error("Error al refrescar servicios:", err);  
   }
@@ -60,6 +61,7 @@ const handleVerOnline = (id, slug) => {
   localStorage.setItem("serviciosVistos", JSON.stringify(nuevosVistos));
   window.open(`/#/servicios/${slug}`, "_blank");
 };
+  
 
 const handleEliminarServicio = async (id) => {
   setModalEliminar(id);
@@ -248,12 +250,12 @@ Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
     <>
       {(() => {
         // Filtrar servicios visibles: aprobados o pendientes (no rechazados)
-        const serviciosVisibles = misServicios.filter(
-          s => s.aprobado || s.estado !== "rechazado"
-        );
+      const serviciosVisibles = misServicios.filter(
+        s => !s.rechazado
+      );
 
         if (serviciosVisibles.length === 0) {
-          return <p className="text-gray-500 text-md text-center">No tienes servicios activos.</p>;
+          return <p className="text-gray-500 text-md text-center">Aún no cargaste ningún servicio</p>;
         }
 
         return (
@@ -293,9 +295,11 @@ Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
 
                     {/* Servicio Pendiente */}
                     {estaPendiente && (
-                      <div className="text-sm text-gray-500 mt-1">
-                        Estamos revisando tu servicio 🕒 Podrás verlo en tu panel una vez aprobado.
-                      </div>
+                    <div className="text-sm text-gray-500 mt-1">
+                      🔍 Estamos revisando tu servicio. Podrás verlo en tu panel una vez aprobado.<br /><br />
+                      😣 Si se borra de tu panel, significa que NO fue aprobado, en ese caso debes volver a subirlo.<br /><br />
+                      💙 Recordá seguir las indicaciones para que tu servicio sea creado correctamente y aprobado.
+                    </div>
                     )}
 
                     {/* Servicio Aprobado */}

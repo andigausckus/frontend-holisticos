@@ -398,6 +398,17 @@ useEffect(() => {
   </p>
 </div>
 
+          <p className="text-sm text-gray-500 mt-2">
+  Opciones para descargar buenas imágenes gratis para tus servicios:{" "}
+  <a href="https://pixabay.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+    Pixabay
+  </a>{" "}
+  |{" "}
+  <a href="https://www.freepik.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">
+    Freepik
+  </a>
+</p>
+
           {subiendo && (
             <div className="mt-4 text-center text-sm text-gray-600">
               <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-violet-500 mx-auto mb-2"></div>
