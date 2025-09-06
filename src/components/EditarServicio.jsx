@@ -65,6 +65,11 @@ const fileInputRef = useRef(null);
   const [alerta, setAlerta] = useState(null);
   const [cargando, setCargando] = useState(true);
 
+  // dentro del componente
+useEffect(() => {
+  setMostrarModal(true); // abre el modal al cargar la página
+}, []);
+
   const mostrarAlerta = (mensaje) => {
     setAlerta(mensaje);
     setTimeout(() => setAlerta(null), 4000);
@@ -114,8 +119,8 @@ const fileInputRef = useRef(null);
     setFormulario((prev) => ({ ...prev, [name]: value }));
   };
   const handleFileClick = () => {
-  setMostrarModal(true); // abre el modal
-};
+    fileInputRef.current.click(); // abre directamente la galería
+  };
 
   const handleCheckboxChange = (e) => {
     const { value, checked } = e.target;
@@ -251,35 +256,17 @@ const fileInputRef = useRef(null);
           </div>
         )}
 
-        {/* Modal de advertencia */}
         {mostrarModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-6 rounded-xl shadow-lg max-w-md text-center">
-              <h3 className="text-lg font-semibold mb-4">📸 Antes de subir tu imagen</h3>
-
-              <p className="text-sm text-gray-700 pt-4">
-                Subí una imagen clara y profesional para tu servicio
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-pink-100 p-6 rounded-2xl shadow-lg max-w-md w-full text-center">
+              <p className="text-[#333] mb-4">
+                Seguí las indicaciones para editar tu servicio correctamente 💜
               </p>
-
-              <ul className="text-sm text-gray-700 text-left mb-4 space-y-2">
-                <li>❌ No incluyas información personal (teléfono, email, etc.)</li>
-                <li>❌ No escribas otras terapias en la imagen</li>
-                <li>✅ Usá una foto limpia, sin textos adicionales</li>
-              </ul>
-
-              <p className="text-sm text-gray-700 mb-4">
-                🔎 Todas las imágenes son revisadas antes de publicarse para mantener 
-                una estética visual ordenada y agradable para todos los usuarios 😊
-              </p>
-
               <button
-                onClick={() => {
-                  handleConfirmModal(); // cierra el modal
-                  if (fileInputRef.current) fileInputRef.current.click(); // abre el selector de archivos
-                }}
-                className="bg-pink-400 text-white py-2 px-6 rounded-xl hover:bg-violet-600 transition"
+                onClick={() => setMostrarModal(false)}
+                className="bg-violet-500 text-white px-6 py-2 rounded-lg hover:bg-violet-600 transition"
               >
-                Aceptar y subir imagen
+                Aceptar
               </button>
             </div>
           </div>
@@ -292,7 +279,7 @@ const fileInputRef = useRef(null);
         <label className="block mb-4">
           <span className="block mb-2">Título *</span>
           <div className="text-xs text-[#444444] mb-2">
-            <p>✍️ Escribí un título con 3-6 palabras máximo</p>
+            <p>✍️ Escribí un título con 3-8 palabras máximo</p>
             <p>❌️ No incluyas la palabra "Online"</p>
             <p>🌸 Podés incluir un (1) emoji al final para darle un toque amigable (opcional)</p>
           </div>
@@ -434,6 +421,15 @@ const fileInputRef = useRef(null);
           >
             Seleccionar archivo
           </button>
+
+          <div className="mt-4 border border-gray-300 bg-white rounded-xl p-4 text-sm text-[#333] leading-relaxed">
+  <p className="mb-2">✅ Subí una imagen limpia para este servicio</p>
+  <p>❗Sin información personal como WhatsApp, email, etc.</p>
+  <p>❗Sin otras terapias escritas</p>
+  <p className="mt-2">
+    Revisamos todos los servicios para mantener una estética prolija y minimalista en la plataforma, y evitar la confusión de los usuarios 🦋
+  </p>
+</div>
 
           {subiendo && (
             <div className="mt-4 text-center text-sm text-gray-600">

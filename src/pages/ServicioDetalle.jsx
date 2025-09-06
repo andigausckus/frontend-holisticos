@@ -144,7 +144,7 @@ const data = JSON.parse(texto);
   }
 
     return (
-      <div className="bg-white pt-24 px-4 max-w-4xl mx-auto shadow-md rounded-xl overflow-hidden">
+      <div className="bg-white pt-24 px-5 max-w-4xl mx-auto shadow-md rounded-xl overflow-hidden">
         <div className="relative shadow-md rounded-xl overflow-hidden bg-white space-y-4 pb-8">
           
         {/* Imagen del servicio */}

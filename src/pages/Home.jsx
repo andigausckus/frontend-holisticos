@@ -130,7 +130,7 @@ export default function Home() {
               to="/registro"
               className="bg-[#c96a8c] text-white px-6 py-3 rounded-full hover:opacity-90 transition"
             >
-              Registrate como Terapeuta
+              Más información
             </Link>
           </div>
         </section>

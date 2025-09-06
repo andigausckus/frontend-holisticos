@@ -240,7 +240,7 @@ min={0}
               <div
                 key={servicio._id}
                 className="bg-white rounded-2xl shadow-md overflow-hidden flex flex-col justify-between"
-                style={{ height: "520px" }}
+                style={{ height: "550px" }}
               >
                 {/* Contenedor relativo para poder colocar el badge */}
                 <div className="relative w-full h-[60%]">
@@ -267,7 +267,7 @@ min={0}
                 </div>
               <div className="p-4 flex flex-col items-center justify-between flex-grow text-center">
                 <div className="mb-2">
-                  <h3 className="text-xl text-[#444] font-medium mb-2 mt-2 truncate">
+                  <h3 className="text-xl text-[#444] font-medium mb-2 mt-2">
   {servicio.titulo}
 </h3>
                   <div className="flex items-center justify-center gap-2 mb-3">

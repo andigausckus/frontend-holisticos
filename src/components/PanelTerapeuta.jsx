@@ -33,66 +33,67 @@ export default function PanelTerapeuta() {
   }, [location.state]);
 
   // Cargar servicios vistos desde localStorage
-  useEffect(() => {
-    const vistosStorage = JSON.parse(localStorage.getItem("serviciosVistos")) || {};
-    setServiciosVistos(vistosStorage);
-  }, []);
+useEffect(() => {
+  const vistosStorage = JSON.parse(localStorage.getItem("serviciosVistos")) || {};
+  setServiciosVistos(vistosStorage);
+}, []);
 
-  const refrescarServicios = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+const refrescarServicios = async () => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
 
-    try {  
-      const res = await fetch("https://servicios-holisticos-backend.onrender.com/api/servicios/mis-servicios", {  
-        headers: { Authorization: `Bearer ${token}` }  
-      });  
-      const data = await res.json();  
-      setMisServicios(data || []);  
-    } catch (err) {  
-      console.error("Error al refrescar servicios:", err);  
-    }
-  };
+  try {  
+    const res = await fetch("https://servicios-holisticos-backend.onrender.com/api/servicios/mis-servicios", {  
+      headers: { Authorization: `Bearer ${token}` }  
+    });  
+    const data = await res.json();  
+alert("👉 Respuesta completa mis-servicios: " + JSON.stringify(data));  
+setMisServicios(data || []);  
+  } catch (err) {  
+    console.error("Error al refrescar servicios:", err);  
+  }
+};
 
-  const handleVerOnline = (id, slug) => {
-    const nuevosVistos = { ...serviciosVistos, [id]: true };
-    setServiciosVistos(nuevosVistos);
-    localStorage.setItem("serviciosVistos", JSON.stringify(nuevosVistos));
-    window.open(`/#/servicios/${slug}`, "_blank");
-  };
+const handleVerOnline = (id, slug) => {
+  const nuevosVistos = { ...serviciosVistos, [id]: true };
+  setServiciosVistos(nuevosVistos);
+  localStorage.setItem("serviciosVistos", JSON.stringify(nuevosVistos));
+  window.open(`/#/servicios/${slug}`, "_blank");
+};
 
-  const handleEliminarServicio = async (id) => {
-    setModalEliminar(id);
-  };
+const handleEliminarServicio = async (id) => {
+  setModalEliminar(id);
+};
 
-  const confirmarEliminar = async () => {
-    const id = modalEliminar;
-    if (!id) return;
-    const token = localStorage.getItem("token");
+const confirmarEliminar = async () => {
+  const id = modalEliminar;
+  if (!id) return;
+  const token = localStorage.getItem("token");
 
-    try {
-      await fetch(`https://servicios-holisticos-backend.onrender.com/api/servicios/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setMisServicios(prev => prev.filter(s => s._id !== id));
-      setMensajeAlerta("✅ Servicio eliminado correctamente.");
-    } catch (err) {
-      console.error("Error al eliminar servicio:", err);
-      setMensajeAlerta("❌ No se pudo eliminar el servicio.");
-    } finally {
-      setModalEliminar(null);
-      setTimeout(() => setMensajeAlerta(null), 4000);
-    }
-  };
+  try {
+    await fetch(`https://servicios-holisticos-backend.onrender.com/api/servicios/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setMisServicios(prev => prev.filter(s => s._id !== id));
+    setMensajeAlerta("✅ Servicio eliminado correctamente.");
+  } catch (err) {
+    console.error("Error al eliminar servicio:", err);
+    setMensajeAlerta("❌ No se pudo eliminar el servicio.");
+  } finally {
+    setModalEliminar(null);
+    setTimeout(() => setMensajeAlerta(null), 4000);
+  }
+};
 
-  const handleCompartir = (id, slug) => {
-    const slugFinal = slug || "sin-titulo";
-    const url = `https://www.serviciosholisticos.com.ar/servicios/${slugFinal}`;
-    setUrlCompartir(url);
-    setMostrarModal(true);
-  };
+const handleCompartir = (id, slug) => {
+  const slugFinal = slug || "sin-titulo";
+  const url = `https://www.serviciosholisticos.com.ar/servicios/${slugFinal}`;
+  setUrlCompartir(url);
+  setMostrarModal(true);
+};
 
-  // Carga inicial de datos
+// Carga inicial de datos
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return navigate("/login");
@@ -237,105 +238,116 @@ Unite a la Comunidad de terapeutas de Servicios Holísticos 🔮
     )}    
 </div>    
 
-{/* Servicios */}    
-<div className="text-left mb-12">    
-  <h2 className="text-xl font-normal text-[#333] mb-6">🌻 Mis servicios</h2>    
+    {/* Servicios */}
+<div className="text-left mb-12">
+  <h2 className="text-xl font-normal text-[#333] mb-6">🌻 Mis servicios</h2>
 
-  {(misServicios || []).length === 0 ? (    
-    <p className="text-gray-500 text-md text-center">Aún no cargaste ningún servicio</p>    
-  ) : (    
+  {(!misServicios || misServicios.length === 0) ? (
+    <p className="text-gray-500 text-md text-center">Aún no cargaste ningún servicio</p>
+  ) : (
     <>
+      {(() => {
+        // Filtrar servicios visibles: aprobados o pendientes (no rechazados)
+        const serviciosVisibles = misServicios.filter(
+          s => s.aprobado || s.estado !== "rechazado"
+        );
 
-<ul className="space-y-4">  
-        {(mostrarTodosServicios ? misServicios : misServicios.slice(0, 1)).map((serv) => {
-          const slug =
-            serv.slug ||
-            (serv.titulo
-              ? serv.titulo
-                  .normalize("NFD")
-                  .replace(/[\u0300-\u036f]/g, "")
-                  .toLowerCase()
-                  .replace(/\s+/g, "-")
-                  .replace(/[^a-z0-9\-]/g, "")
-                  .replace(/^-+|-+$/g, "")
-              : "sin-titulo");
+        if (serviciosVisibles.length === 0) {
+          return <p className="text-gray-500 text-md text-center">No tienes servicios activos.</p>;
+        }
 
-          const estaRechazado = serv.estado === "rechazado";
-          const estaPendiente = !serv.aprobado && !estaRechazado;
+        return (
+          <>
+            <ul className="space-y-4">
+              {(mostrarTodosServicios ? serviciosVisibles : serviciosVisibles.slice(0, 1)).map((serv) => {
+                const slug =
+                  serv.slug ||
+                  (serv.titulo
+                    ? serv.titulo
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .toLowerCase()
+                        .replace(/\s+/g, "-")
+                        .replace(/[^a-z0-9\-]/g, "")
+                        .replace(/^-+|-+$/g, "")
+                    : "sin-titulo");
 
-          return (
-            <li
-              key={serv._id}
-              className={`p-4 rounded-xl shadow-sm ${
-                estaRechazado
-                  ? "bg-red-50 text-red-600"
-                  : estaPendiente
-                  ? "bg-gray-100 text-gray-400"
-                  : "bg-[#f9f6ff] text-[#333]"
-              }`}
-            >
-              <p className="text-lg font-normal">{serv.titulo || "Sin título"}</p>
-              <p className="text-sm text-gray-500 overflow-hidden text-ellipsis line-clamp-2">
-                {serv.descripcion}
-              </p>
+                const estaRechazado = serv.estado === "rechazado";
+                const estaPendiente = !serv.aprobado && !estaRechazado;
 
-              {/* Servicio Pendiente */}
-              {estaPendiente && (
-                <div className="text-sm text-gray-500 mt-1">
-                  Estamos revisando tu servicio 🕒 Podrás verlo en tu panel una vez aprobado.
-                </div>
-              )}
+                return (
+                  <li
+                    key={serv._id}
+                    className={`p-4 rounded-xl shadow-sm ${
+                      estaRechazado
+                        ? "hidden"
+                        : estaPendiente
+                        ? "bg-gray-100 text-gray-400"
+                        : "bg-[#f9f6ff] text-[#333]"
+                    }`}
+                  >
+                    <p className="text-lg font-normal">{serv.titulo || "Sin título"}</p>
+                    <p className="text-sm text-gray-500 overflow-hidden text-ellipsis line-clamp-2">
+                      {serv.descripcion}
+                    </p>
 
-              {/* Servicio Aprobado */}
-              {serv.aprobado && !estaRechazado && (
-                <div className="mt-2">
-                  {!serviciosVistos[serv._id] && (
-                    <div className="text-sm text-green-700 mb-2">¡Tu servicio fue aprobado! 🎉</div>
-                  )} 
-                  
-        <div className="flex justify-center gap-5">  
-          <button  
-            onClick={() => handleVerOnline(serv._id, slug)}  
-            className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition"  
-          >  
-            Ver  
-          </button>  
-          <button  
-            onClick={() => navigate(`/editar-servicio/${serv._id}`)}  
-            className="bg-sky-500 text-white py-1 px-3 rounded hover:bg-sky-600 transition"  
-          >  
-            Editar  
-          </button>  
-          <button  
-            onClick={() => handleEliminarServicio(serv._id)}  
-            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"  
-          >  
-            Eliminar  
-          </button>  
-        </div>  
-      </div>  
-    )}  
-  </li>  
-);
+                    {/* Servicio Pendiente */}
+                    {estaPendiente && (
+                      <div className="text-sm text-gray-500 mt-1">
+                        Estamos revisando tu servicio 🕒 Podrás verlo en tu panel una vez aprobado.
+                      </div>
+                    )}
 
-})}
+                    {/* Servicio Aprobado */}
+                    {serv.aprobado && !estaRechazado && (
+                      <div className="mt-2">
+                        {!serviciosVistos[serv._id] && (
+                          <div className="text-sm text-green-700 mb-2">¡Tu servicio fue aprobado! 🎉</div>
+                        )}
 
-</ul>  {misServicios.length > 1 && (
-<button
-onClick={() => setMostrarTodosServicios(!mostrarTodosServicios)}
-className="mt-4 text-blue-600 hover:underline text-sm"
+                        <div className="flex justify-center gap-5">
+                          <button
+                            onClick={() => handleVerOnline(serv._id, slug)}
+                            className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition"
+                          >
+                            Ver
+                          </button>
+                          <button
+                            onClick={() => navigate(`/editar-servicio/${serv._id}`)}
+                            className="bg-sky-500 text-white py-1 px-3 rounded hover:bg-sky-600 transition"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => handleEliminarServicio(serv._id)}
+                            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"
+                          >
+                            Eliminar
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
 
-> 
+            {serviciosVisibles.length > 1 && (
+              <button
+                onClick={() => setMostrarTodosServicios(!mostrarTodosServicios)}
+                className="mt-4 text-blue-600 hover:underline text-sm"
+              >
+                {mostrarTodosServicios ? "Ver menos ▲" : "Más servicios ▼"}
+              </button>
+            )}
+          </>
+        );
+      })()}
+    </>
+  )}
+</div>
 
-{mostrarTodosServicios ? "Ver menos ▲" : "Más servicios ▼"}
-
-  </button>  
-)}  </>
-)}  </div>  {/* --- RESERVAS (ocultas por ahora) --- */}
-
-{false && (
-<>
-
+    {/*}
 <h2 className="text-xl text-left font-normal text-[#333] mt-12 mb-4">  
 📅 Mis reservas  
 </h2>  {(reservas || []).length === 0 ? (
@@ -372,9 +384,9 @@ className="mt-4 text-blue-600 hover:underline text-sm"
 
 </>
 )}
+*/}
 
-</>
-)}
+
 
 {modalEliminar && (
 

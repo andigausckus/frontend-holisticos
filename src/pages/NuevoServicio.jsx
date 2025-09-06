@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useEffect } from "react"; // arriba con los otros imports
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { FaWhatsapp, FaSkype, FaVideo, FaGoogle } from "react-icons/fa";
@@ -60,6 +61,11 @@ export default function NuevoServicio() {
 
   const [alerta, setAlerta] = useState(null);
 
+  // dentro del componente
+useEffect(() => {
+  setMostrarModal(true); // abre el modal al cargar la página
+}, []);
+
   const mostrarAlerta = (mensaje) => {
     setAlerta(mensaje);
     setTimeout(() => setAlerta(null), 4000);
@@ -88,12 +94,7 @@ export default function NuevoServicio() {
   };
 
   const handleFileClick = () => {
-    setMostrarModal(true); // ⬅️ abre modal en vez de abrir galería
-  };
-
-  const handleConfirmModal = () => {
-    setMostrarModal(false);
-    fileInputRef.current.click(); // ⬅️ ahora sí abre galería
+    fileInputRef.current.click(); // abre directamente la galería
   };
 
   const handleImageChange = async (e) => {
@@ -219,37 +220,22 @@ export default function NuevoServicio() {
         </div>
       )}
 
-      {/* Modal de advertencia */}
       {mostrarModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg max-w-md text-center">
-            <h3 className="text-lg font-semibold mb-4">📸 Antes de subir tu imagen</h3>
-
-            <p className="text-sm text-gray-700 pt-4">
-              Subí una imagen clara y profesional para tu servicio
-            </p>
-
-            <ul className="text-sm text-gray-700 text-left mb-4 space-y-2">
-              <li>❌ Que no incluya información personal (teléfono, email, etc.)</li>
-              <li>❌ Que no este escrita con otras terapias</li>
-              <li>✅ Usá una foto limpia, sin textos adicionales</li>
-            </ul>
-
-            <p className="text-sm mb-4 text-gray-700 mb-2">
-              🔎 Todas las imagenes son revisadas antes de publicarse para mantener una estética visual ordenada y agradable para todos los usuarios 😊
-            </p>
-
-            
-
-            <button
-              onClick={handleConfirmModal}
-              className="bg-pink-400 text-white py-2 px-6 rounded-xl hover:bg-violet-600 transition"
-            >
-              Aceptar y subir imagen
-            </button>
-          </div>
-        </div>
-      )}
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-pink-100 p-6 rounded-2xl shadow-lg max-w-md w-full text-center">
+      <p className="text-[#333] mb-4">
+        Seguí las indicaciones para crear tu servicio correctamente y pueda ser aprobado 💜
+      </p>
+      <button
+        onClick={() => setMostrarModal(false)}
+        className="bg-violet-500 text-white px-6 py-2 rounded-lg hover:bg-violet-600 transition"
+      >
+        Aceptar
+      </button>
+    </div>
+  </div>
+)}
+   
 
       <form onSubmit={handleSubmit} className="max-w-gl mx-auto mb-24">
         <h2 className="text-2xl font-normal pt-6 text-center mb-6">Nuevo servicio 🐥</h2>
@@ -258,7 +244,7 @@ export default function NuevoServicio() {
     <label className="block mb-4">  
       <span className="block mb-2">Título *</span>  
       <div className="text-xs text-[#444444] mb-2">  
-        <p>✍️ Escribí un título con 3-6 palabras máximo</p>  
+        <p>✍️ Escribí un título con 3-8 palabras máximo</p>  
         <p>❌️ No incluyas la palabra "Online"</p>  
         <p>🍃 Podes incluir un (1) emoji al final para darle un toque amigable (opcional)</p>  
       </div>  
@@ -267,7 +253,7 @@ export default function NuevoServicio() {
         name="titulo"  
         value={formulario.titulo}  
         onChange={handleChange}  
-        placeholder="Ej: Sesión de meditación guiada 💜"  
+        placeholder="Ej: Sesión de meditación guiada para niños 💜"  
         className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none"  
           
       />  
@@ -302,7 +288,7 @@ export default function NuevoServicio() {
         name="precio"  
         value={formulario.precio}  
         onChange={handleChange}  
-        placeholder="8000, 20000, etc"  
+        placeholder="5000, 10000, etc"  
         className="w-full p-2 border-none focus:outline-none placeholder:text-md"  
           
       />  
@@ -324,7 +310,7 @@ export default function NuevoServicio() {
               value={formulario.duracionHoras}
               onChange={handleChange}
               min="0"
-              placeholder="0,1,2, etc"
+              placeholder="0, 1, 2, etc"
               className="w-full p-2 border border-[#c7b6eb] rounded focus:outline-none"
             />
           </label>
@@ -402,6 +388,15 @@ export default function NuevoServicio() {
           >
             Seleccionar archivo
           </button>
+
+          <div className="mt-4 border border-gray-300 bg-white rounded-xl p-4 text-sm text-[#333] leading-relaxed">
+  <p className="mb-2">✅ Subí una imagen limpia para este servicio</p>
+  <p>❗Sin información personal como WhatsApp, email, etc.</p>
+  <p>❗Sin otras terapias escritas</p>
+  <p className="mt-2">
+    Revisamos todos los servicios antes de publicarlos para mantener una estética prolija y minimalista en la plataforma, y evitar la confusión de los usuarios 🦋
+  </p>
+</div>
 
           {subiendo && (
             <div className="mt-4 text-center text-sm text-gray-600">
